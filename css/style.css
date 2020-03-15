@@ -1,0 +1,78 @@
+.relatedEntries p {
+  clear: both;
+  padding-top: 2em;
+}
+
+.relatedEntries {
+  margin: 1em 0;
+}
+
+.relatedEntries img {
+  border: 1px solid #fff;
+}
+
+.relatedEntries .landscape,
+.relatedEntries .portrait {
+  display: inline-block;
+  vertical-align: top;
+}
+
+.relatedEntries .outer_landscape,
+.relatedEntries .outer_portrait {
+  display: inline-block;
+  vertical-align: top;
+  text-align: center;
+}
+
+.relatedEntries .outer_landscape div,
+.relatedEntries .outer_landscape .legend,
+.relatedEntries .outer_portrait div,
+.relatedEntries .outer_portrait .legend {
+  text-align: center;
+}
+
+.relatedEntries .legend {
+  font-size: x-small;
+  padding: 0 12px;
+  margin: 0;
+}
+
+/*widget*/
+
+.relatedEntries-wrapper {
+  padding: 0;
+  margin: 0 !important;
+}
+
+.relatedEntries-wrapper img {
+  border: 1px solid #fff;
+}
+
+.relatedEntries-wrapper .landscape,
+.relatedEntries-wrapper .portrait {
+  display: inline-block;
+  vertical-align: top;
+}
+
+.relatedEntries-wrapper p {
+  text-align: left !important;
+}
+
+.relatedEntries-wrapper .outer_landscape,
+.relatedEntries-wrapper .outer_portrait {
+  display: inline-block;
+  vertical-align: top;
+}
+
+.relatedEntries-wrapper .outer_landscape div,
+.relatedEntries-wrapper .outer_landscape .legend,
+.relatedEntries-wrapper .outer_portrait div,
+.relatedEntries-wrapper .outer_portrait .legend {
+  text-align: center;
+}
+
+.relatedEntries-wrapper .legend {
+  font-size: x-small;
+  padding: 0;
+  margin: 0;
+}
