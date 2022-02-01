@@ -145,7 +145,7 @@ class relatedEntriesPublic
         if (!$s->relatedEntries_beforePost) {
             return;
         }
-        if (self::thisPostrelatedEntries($_ctx->posts->post_id) != '') {
+        if ($_ctx->posts->post_type == 'post' && self::thisPostrelatedEntries($_ctx->posts->post_id) != '') {
             
             //related entries
             $meta =& $GLOBALS['core']->meta;
@@ -210,7 +210,7 @@ class relatedEntriesPublic
         if (!$s->relatedEntries_afterPost) {
             return;
         }
-        if (self::thisPostrelatedEntries($_ctx->posts->post_id) != '') {
+        if ($_ctx->posts->post_type == 'post' && self::thisPostrelatedEntries($_ctx->posts->post_id) != '') {
             
             //related entries
             $meta =& $GLOBALS['core']->meta;
