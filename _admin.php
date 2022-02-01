@@ -2,12 +2,11 @@
 /**
  * @brief Related Entries, a plugin for Dotclear 2
  *
- * @package Dotclear
+ * @package    Dotclear
  * @subpackage Plugins
  *
- * @author Philippe aka amalgame
+ * @author Philippe aka amalgame <philippe@dissitou.org>
  *
- * @copyright Philippe Hénaff philippe@dissitou.org
  * @copyright GPL-2.0 [https://www.gnu.org/licenses/gpl-2.0.html]
  */
 
@@ -16,7 +15,6 @@ if (!defined('DC_CONTEXT_ADMIN')) {
 }
 
 $_menu['Blog']->addItem(
-
     __('Related posts'),
     'plugin.php?p=relatedEntries',
     'index.php?pf=relatedEntries/icon.png',

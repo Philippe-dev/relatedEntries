@@ -2,12 +2,11 @@
 /**
  * @brief Related Entries, a plugin for Dotclear 2
  *
- * @package Dotclear
+ * @package    Dotclear
  * @subpackage Plugins
  *
- * @author Philippe aka amalgame
+ * @author Philippe aka amalgame <philippe@dissitou.org>
  *
- * @copyright Philippe Hénaff philippe@dissitou.org
  * @copyright GPL-2.0 [https://www.gnu.org/licenses/gpl-2.0.html]
  */
 
@@ -52,7 +51,6 @@ class relatedEntriesWidgetBehaviors
                 __('Images origin:'),
                 1,
                 'combo',
-
                 array(__('full post') => 'full', __('post excerpt') => 'excerpt', __('post content') => 'content')
             );
             
@@ -61,7 +59,6 @@ class relatedEntriesWidgetBehaviors
                 __('Image size'),
                 1,
                 'combo',
-
                 array(__('square') => 'sq',__('thumbnail') => 't',  __('small') => 's', __('medium') => 'm', __('original') => 'o')
             );
             
@@ -72,7 +69,6 @@ class relatedEntriesWidgetBehaviors
                 __('Images alt attribute:'),
                 'inherit',
                 'combo',
-
                 array(__('image title') => 'inherit', __('no alt') => 'none')
             );
                 
@@ -85,7 +81,6 @@ class relatedEntriesWidgetBehaviors
                 __('Legend:'),
                 1,
                 'combo',
-
                 array(__('no legend') => 'none', __('image title') => 'image', __('entry title') => 'entry')
             );
             
@@ -94,7 +89,6 @@ class relatedEntriesWidgetBehaviors
                 __('HTML tag around image:'),
                 'div',
                 'combo',
-
                 array('list' => 'li', 'div' => 'div', __('no tag') => 'none')
             );
             
@@ -105,7 +99,6 @@ class relatedEntriesWidgetBehaviors
                 __('Links destination:'),
                 'entry',
                 'combo',
-
                 array(__('original images') => 'image', __('related posts') => 'entry', __('no link') => 'none')
             );
 
@@ -114,7 +107,6 @@ class relatedEntriesWidgetBehaviors
                 __('Bubble:'),
                 1,
                 'combo',
-
                 array(__('no bubble') => 'none', __('image title') => 'image', __('entry title') => 'entry')
             );
         }

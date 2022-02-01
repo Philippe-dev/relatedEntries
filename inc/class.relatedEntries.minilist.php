@@ -2,12 +2,11 @@
 /**
  * @brief Related Entries, a plugin for Dotclear 2
  *
- * @package Dotclear
+ * @package    Dotclear
  * @subpackage Plugins
  *
- * @author Philippe aka amalgame
+ * @author Philippe aka amalgame <philippe@dissitou.org>
  *
- * @copyright Philippe Hénaff philippe@dissitou.org
  * @copyright GPL-2.0 [https://www.gnu.org/licenses/gpl-2.0.html]
  */
 
@@ -70,7 +69,7 @@ class adminRelatedPostMiniList extends adminGenericList
             $cat_title = sprintf(
                 $cat_link,
                 $this->rs->cat_id,
-            html::escapeHTML($this->rs->cat_title)
+                html::escapeHTML($this->rs->cat_title)
             );
         } else {
             $cat_title = __('None');

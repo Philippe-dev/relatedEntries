@@ -2,12 +2,11 @@
 /**
  * @brief Related Entries, a plugin for Dotclear 2
  *
- * @package Dotclear
+ * @package    Dotclear
  * @subpackage Plugins
  *
- * @author Philippe aka amalgame
+ * @author Philippe aka amalgame <philippe@dissitou.org>
  *
- * @copyright Philippe Hénaff philippe@dissitou.org
  * @copyright GPL-2.0 [https://www.gnu.org/licenses/gpl-2.0.html]
  */
 
@@ -62,7 +61,7 @@ if (!$core->error->flag()) {
         $user_cn = dcUtils::getUserCN(
             $users->user_id,
             $users->user_name,
-        $users->user_firstname,
+            $users->user_firstname,
             $users->user_displayname
         );
         
@@ -374,7 +373,7 @@ if (!$core->error->flag()) {
     $post_list->display(
         $page,
         $nb_per_page,
-    '<form action="'.$p_url.'" method="post" id="form-entries">'.
+        '<form action="'.$p_url.'" method="post" id="form-entries">'.
     
     '%s'.
     
@@ -389,7 +388,7 @@ if (!$core->error->flag()) {
     $core->formNonce().'</p>'.
     '</div>'.
     '</form>',
-    $show_filters
+        $show_filters
     );
 }
 dcPage::helpBlock('relatedEntriesposts');
