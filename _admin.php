@@ -141,7 +141,7 @@ class relatedEntriesPostBehaviors
         if (!$meta_rs) {
             echo
                 '<div class="area" id="relatedEntries-area">'.
-                '<label class="bold">'.__('Related posts').'</label>'.
+                '<p class="smart-title">'.__('Related posts').'</p>'.
                 '<div id="relatedEntries-list" >'.
                 '<p>'.__('No related posts').'</p>'.
                 '<p><a href="'.$p_url.'&amp;id='.$id.'">'.__('Add links to related posts').'</a></p>'.
@@ -150,7 +150,7 @@ class relatedEntriesPostBehaviors
         } else {
             echo
                 '<div class="area" id="relatedEntries-area">'.
-                '<label for="relatedEntries-list" class="bold">'.__('Links to related posts').'</label>'.
+                '<p class="smart-title">'.__('Links to related posts').'</p>'.
                 '<div id="relatedEntries-list" >';
             
             # Get related posts
