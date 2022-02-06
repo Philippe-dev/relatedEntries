@@ -15,15 +15,15 @@ if (!defined('DC_RC_PATH')) {
 }
 
 $this->registerModule(
-    "Related entries",							// Name
-    "Add links to other related posts",			// Description
-    "Philippe aka amalgame",					// Author
+    'Related entries',							// Name
+    'Add links to other related posts',			// Description
+    'Philippe aka amalgame',					// Author
     '2.6.2',                   					// Version
     [
-        'requires'    => [['core', '2.16']],   	// Dependencies
+        'requires' => [['core', '2.16']],   	// Dependencies
         'permissions' => 'usage,contentadmin', 	// Permissions
-        'type'        => 'plugin',             	// Type
-        'priority'    => 3000                 	// Priority
-        
+        'type' => 'plugin',             	    // Type
+        'priority' => 3000                 	    // Priority
+
     ]
 );

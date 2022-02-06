@@ -15,11 +15,11 @@ if (!defined('DC_CONTEXT_ADMIN')) {
 }
 
 if (isset($_GET['tab']) || isset($_POST['tab'])) {
-    require_once(dirname(__FILE__).'/config.php');
+    require_once dirname(__FILE__) . '/config.php';
 } elseif (isset($_GET['id']) || isset($_POST['id']) || isset($_GET['relatedEntries_filters'])) {
-    require_once(dirname(__FILE__).'/posts.php');
+    require_once dirname(__FILE__) . '/posts.php';
 } elseif ((isset($_GET['id']) || isset($_POST['id'])) && isset($_GET['relatedEntries_filters_config'])) {
-    require_once(dirname(__FILE__).'/config.php');
+    require_once dirname(__FILE__) . '/config.php';
 } else {
-    require_once(dirname(__FILE__).'/config.php');
+    require_once dirname(__FILE__) . '/config.php';
 }

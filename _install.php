@@ -13,19 +13,19 @@
 if (!defined('DC_CONTEXT_ADMIN')) {
     return;
 }
- 
+
 $m_version = $core->plugins->moduleInfo('relatedEntries', 'version');
- 
+
 $i_version = $core->getVersion('relatedEntries');
- 
+
 if (version_compare($i_version, $m_version, '>=')) {
     return;
 }
 
-# Settings
+// Settings
 $core->blog->settings->addNamespace('relatedEntries');
 
-$s =& $core->blog->settings->relatedEntries;
+$s = &$core->blog->settings->relatedEntries;
 
 $s->put('relatedEntries_enabled', false, 'boolean', 'Enable related entries', false, true);
 $s->put('relatedEntries_images', false, 'boolean', 'Display related entries links as images', false, true);
@@ -33,7 +33,7 @@ $s->put('relatedEntries_beforePost', false, 'boolean', 'Display related entries 
 $s->put('relatedEntries_afterPost', true, 'boolean', 'Display related entries after post content', false, true);
 $s->put('relatedEntries_title', __('Related posts'), 'string', 'Related entries block title', false, true);
 
-$opts = array(
+$opts = [
     'size' => 't',
     'html_tag' => 'div',
     'link' => 'entry',
@@ -46,7 +46,7 @@ $opts = array(
     'class' => '',
     'alt' => 'inherit',
     'img_dim' => 0
-);
+];
 
 $s->put('relatedEntries_images_options', serialize($opts), 'string', 'Related entries images options', false, true);
 
