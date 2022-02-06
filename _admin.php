@@ -17,7 +17,7 @@ if (!defined('DC_CONTEXT_ADMIN')) {
 $_menu['Blog']->addItem(
     __('Related posts'),
     'plugin.php?p=relatedEntries',
-    'index.php?pf=relatedEntries/icon.png',
+    'index.php?pf=relatedEntries/icon.svg',
     preg_match('/plugin.php\?p=relatedEntries(&.*)?$/', $_SERVER['REQUEST_URI']),
     $core->auth->check('admin', $core->blog->id)
 );
@@ -49,8 +49,8 @@ class relatedEntriesBehaviors
             'relatedEntries',
             __('Related posts'),
             'plugin.php?p=relatedEntries',
-            'index.php?pf=relatedEntries/icon.png',
-            'index.php?pf=relatedEntries/icon-big.png',
+            'index.php?pf=relatedEntries/icon.svg',
+            'index.php?pf=relatedEntries/icon.svg',
             'usage,contentadmin',
             null,
             null));
