@@ -90,7 +90,7 @@ class relatedEntriesPostBehaviors
         }
 
         return
-        '<script type="text/javascript">' . "\n" .
+        '<script>' . "\n" .
         '$(document).ready(function() {' . "\n" .
             '$(\'#relatedEntries-area label\').toggleWithLegend($(\'#relatedEntries-list\'), {' . "\n" .
                 'legend_click: true,' . "\n" .

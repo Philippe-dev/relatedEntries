@@ -356,7 +356,7 @@ $page_title = __('Related posts');
     $starting_script .= dcPage::jsPageTabs($default_tab);
     $starting_script .= dcPage::jsConfirmClose('config-form');
     $starting_script .=
-    '<script type="text/javascript">' . "\n" .
+    '<script>' . "\n" .
     '//<![CDATA[' . "\n" .
     dcPage::jsVar('dotclear.msg.show_filters', $show_filters ? 'true' : 'false') . "\n" .
     dcPage::jsVar('dotclear.msg.filter_posts_list', $form_filter_title) . "\n" .
