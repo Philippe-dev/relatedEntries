@@ -18,7 +18,7 @@ $this->registerModule(
     'Related entries',							// Name
     'Add links to other related posts',			// Description
     'Philippe aka amalgame',					// Author
-    '2.6.2',                   					// Version
+    '2.6.3',                   					// Version
     [
         'requires' => [['core', '2.16']],   	// Dependencies
         'permissions' => 'usage,contentadmin', 	// Permissions
