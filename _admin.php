@@ -121,13 +121,14 @@ class relatedEntriesPostBehaviors
     public static function adminPostForm($post)
     {
         global $core;
-        $s = &$core->blog->settings->relatedEntries;
+        $s = $core->blog->settings->relatedEntries;
         $p_url = 'plugin.php?p=' . basename(dirname(__FILE__));
+        $postTypes = ['post'];
 
         if (!$s->relatedEntries_enabled) {
             return;
         }
-        if (is_null($post)) {
+        if (is_null($post) || !in_array($post->post_type, $postTypes)) {
             return;
         }
 
