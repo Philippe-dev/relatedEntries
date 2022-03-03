@@ -116,9 +116,4 @@ class relatedEntriesWidgetBehaviors
         $w->relatedEntriesWidget->addClass();
         $w->relatedEntriesWidget->addOffline();
     }
-
-    public static function initDefaultWidgets($w, $d)
-    {
-        $d['nav']->append($w->pages);
-    }
 }
