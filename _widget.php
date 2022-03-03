@@ -15,7 +15,6 @@ if (!defined('DC_RC_PATH')) {
 }
 
 $core->addBehavior('initWidgets', ['relatedEntriesWidgetBehaviors', 'initWidgets']);
-$core->addBehavior('initDefaultWidgets', ['relatedEntriesWidgetBehaviors', 'initDefaultWidgets']);
 
 l10n::set(dirname(__FILE__) . '/locales/' . $_lang . '/main');
 
