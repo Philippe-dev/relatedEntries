@@ -15,6 +15,7 @@ if (!defined('DC_RC_PATH')) {
 }
 
 $core->addBehavior('initWidgets', ['relatedEntriesWidgetBehaviors', 'initWidgets']);
+$core->addBehavior('initDefaultWidgets', ['relatedEntriesWidgetBehaviors', 'initDefaultWidgets']);
 
 l10n::set(dirname(__FILE__) . '/locales/' . $_lang . '/main');
 
@@ -39,8 +40,7 @@ class relatedEntriesWidgetBehaviors
         );
 
         // Widget title
-        $w->relatedEntriesWidget->setting('title', __('Title:'), __('Related posts'));
-
+        $w->relatedEntriesWidget->addTitle(__('Related posts'));
         // Only if listImages plugin
 
         if ($core->plugins->moduleExists('listImages')) {
@@ -110,5 +110,15 @@ class relatedEntriesWidgetBehaviors
                 [__('no bubble') => 'none', __('image title') => 'image', __('entry title') => 'entry']
             );
         }
+
+        $w->relatedEntriesWidget->addHomeOnly();
+        $w->relatedEntriesWidget->addContentOnly();
+        $w->relatedEntriesWidget->addClass();
+        $w->relatedEntriesWidget->addOffline();
+    }
+
+    public static function initDefaultWidgets($w, $d)
+    {
+        $d['nav']->append($w->pages);
     }
 }

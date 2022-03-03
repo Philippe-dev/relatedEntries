@@ -56,15 +56,14 @@ class relatedEntriesWidget
             $params['no_content'] = false;
             $params['post_type'] = ['post'];
             $rs = $core->blog->getPosts($params);
+            $ret = ($w->title ? $w->renderTitle(html::escapeHTML($w->title)) : '');
+
             if (!$w->relatedEntries_images || !$core->plugins->moduleExists('listImages')) {
-                $ret = '<div class="relatedEntries-widget">';
-                $ret .= ($w->title ? '<h2>' . html::escapeHTML($w->title) . '</h2>' : '');
                 $ret .= '<ul>';
                 while ($rs->fetch()) {
                     $ret .= '<li><a href="' . $rs->getURL() . '" title="' . html::escapeHTML($rs->post_title) . '">' . $rs->post_title . '</a></li>';
                 }
                 $ret .= '</ul>';
-                $ret .= '</div>';
             } else {
                 // Récupération des options d'affichage des images
                 $size = $w->size;
@@ -82,8 +81,7 @@ class relatedEntriesWidget
                 $def_size = 'o';
 
                 // Début d'affichage
-                $ret = '<div class="relatedEntries-widget">';
-                $ret .= ($w->title ? '<h2>' . html::escapeHTML($w->title) . '</h2>' : '');
+
                 $ret .= '<' . ($html_tag == 'li' ? 'ul' : 'div') . ' class="relatedEntries-wrapper">';
 
                 // Appel de la fonction de traitement pour chacun des billets
@@ -93,11 +91,9 @@ class relatedEntriesWidget
 
                 // Fin d'affichage
                 $ret .= '</' . ($html_tag == 'li' ? 'ul' : 'div') . '>' . "\n";
-                $ret .= '</div>' . "\n";
             }
 
-            //$ret= '<p>'.$meta_rs.'</p>';
-            return $ret;
+            return $w->renderDiv($w->content_only, 'relatedEntries ' . $w->class, '', $ret);
         }
     }
 }
