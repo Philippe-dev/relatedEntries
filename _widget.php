@@ -111,7 +111,7 @@ class relatedEntriesWidgetBehaviors
             );
         }
 
-        $w->relatedEntriesWidget->addHomeOnly();
+        
         $w->relatedEntriesWidget->addContentOnly();
         $w->relatedEntriesWidget->addClass();
         $w->relatedEntriesWidget->addOffline();
