@@ -17,7 +17,7 @@ if (!defined('DC_CONTEXT_ADMIN')) {
 $_menu['Blog']->addItem(
     __('Related posts'),
     $core->adminurl->get('admin.plugin.relatedEntries'),
-    [dcPage::getPF('relatedEntries/icon.svg')],
+    [dcPage::getPF('relatedEntries/icon.svg'), dcPage::getPF('relatedEntries/icon-dark.svg')],
     preg_match('/' . preg_quote($core->adminurl->get('admin.plugin.relatedEntries')) . '(&.*)?$/', $_SERVER['REQUEST_URI']),
     $core->auth->check('usage,contentadmin', $core->blog->id)
 );
@@ -28,8 +28,8 @@ $core->addBehavior(
         $favs->register('relatedEntries', [
             'title' => __('Related posts'),
             'url' => $core->adminurl->get('admin.plugin.relatedEntries'),
-            'small-icon' => [dcPage::getPF('relatedEntries/icon.svg')],
-            'large-icon' => [dcPage::getPF('relatedEntries/icon.svg')],
+            'small-icon' => [dcPage::getPF('relatedEntries/icon.svg'), dcPage::getPF('relatedEntries/icon-dark.svg')],
+            'large-icon' => [dcPage::getPF('relatedEntries/icon.svg'), dcPage::getPF('relatedEntries/icon-dark.svg')],
             'permissions' => 'usage,contentadmin',
         ]);
     }
