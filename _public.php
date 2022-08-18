@@ -26,7 +26,6 @@ class relatedEntriesWidget
 {
     public static function Widget($w)
     {
-        $_ctx = &$GLOBALS['_ctx'];
 
         $s = dcCore::app()->blog->settings->relatedEntries;
 
@@ -38,7 +37,7 @@ class relatedEntriesWidget
             return;
         }
 
-        $id = $_ctx->posts->post_id;
+        $id = dcCore::app()->ctx->posts->post_id;
 
         //current post
         $params['post_id'] = $id;
@@ -138,11 +137,11 @@ class relatedEntriesPublic
         if (!$s->relatedEntries_beforePost) {
             return;
         }
-        if ($_ctx->posts->post_type == 'post' && self::thisPostrelatedEntries($_ctx->posts->post_id) != '') {
+        if (dcCore::app()->ctx->posts->post_type == 'post' && self::thisPostrelatedEntries(dcCore::app()->ctx->posts->post_id) != '') {
             //related entries
             $meta = dcCore::app()->meta;
 
-            $r_ids = self::thisPostrelatedEntries($_ctx->posts->post_id);
+            $r_ids = self::thisPostrelatedEntries(dcCore::app()->ctx->posts->post_id);
             $params['post_id'] = $meta->splitMetaValues($r_ids);
             $rs = dcCore::app()->blog->getPosts($params);
 
@@ -200,11 +199,11 @@ class relatedEntriesPublic
         if (!$s->relatedEntries_afterPost) {
             return;
         }
-        if ($_ctx->posts->post_type == 'post' && self::thisPostrelatedEntries($_ctx->posts->post_id) != '') {
+        if (dcCore::app()->ctx->posts->post_type == 'post' && self::thisPostrelatedEntries(dcCore::app()->ctx->posts->post_id) != '') {
             //related entries
             $meta = dcCore::app()->meta;
 
-            $r_ids = self::thisPostrelatedEntries($_ctx->posts->post_id);
+            $r_ids = self::thisPostrelatedEntries(dcCore::app()->ctx->posts->post_id);
             $params['post_id'] = $meta->splitMetaValues($r_ids);
             $rs = dcCore::app()->blog->getPosts($params);
 
