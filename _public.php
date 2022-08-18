@@ -16,9 +16,9 @@ if (!defined('DC_RC_PATH')) {
 
 require dirname(__FILE__) . '/_widget.php';
 
-$core->addBehavior('publicEntryBeforeContent', ['relatedEntriesPublic', 'publicEntryBeforeContent']);
-$core->addBehavior('publicEntryAfterContent', ['relatedEntriesPublic', 'publicEntryAfterContent']);
-$core->addBehavior('publicHeadContent', ['relatedEntriesPublic', 'publicHeadContent']);
+dcCore::app()->addBehavior('publicEntryBeforeContent', ['relatedEntriesPublic', 'publicEntryBeforeContent']);
+dcCore::app()->addBehavior('publicEntryAfterContent', ['relatedEntriesPublic', 'publicEntryAfterContent']);
+dcCore::app()->addBehavior('publicHeadContent', ['relatedEntriesPublic', 'publicHeadContent']);
 
 l10n::set(dirname(__FILE__) . '/locales/' . $_lang . '/main');
 
@@ -26,16 +26,15 @@ class relatedEntriesWidget
 {
     public static function Widget($w)
     {
-        global $core;
         $_ctx = &$GLOBALS['_ctx'];
 
-        $s = &$core->blog->settings->relatedEntries;
+        $s = dcCore::app()->blog->settings->relatedEntries;
 
         if (!$s->relatedEntries_enabled) {
             return;
         }
 
-        if ($core->url->type != 'post') {
+        if (dcCore::app()->url->type != 'post') {
             return;
         }
 
@@ -46,19 +45,19 @@ class relatedEntriesWidget
         $params['no_content'] = true;
         $params['post_type'] = ['post'];
 
-        $rs = $core->blog->getPosts($params);
+        $rs = dcCore::app()->blog->getPosts($params);
 
-        $meta = &$core->meta;
+        $meta = dcCore::app()->meta;
         $meta_rs = $meta->getMetaStr($rs->post_meta, 'relatedEntries');
         if ($meta_rs != '') {
             //related posts
             $params['post_id'] = $meta->splitMetaValues($meta_rs);
             $params['no_content'] = false;
             $params['post_type'] = ['post'];
-            $rs = $core->blog->getPosts($params);
+            $rs = dcCore::app()->blog->getPosts($params);
             $ret = ($w->title ? $w->renderTitle(html::escapeHTML($w->title)) : '');
 
-            if (!$w->relatedEntries_images || !$core->plugins->moduleExists('listImages')) {
+            if (!$w->relatedEntries_images || !dcCore::app()->plugins->moduleExists('listImages')) {
                 $ret .= '<ul>';
                 while ($rs->fetch()) {
                     $ret .= '<li><a href="' . $rs->getURL() . '" title="' . html::escapeHTML($rs->post_title) . '">' . $rs->post_title . '</a></li>';
@@ -100,17 +99,17 @@ class relatedEntriesWidget
 
 class relatedEntriesPublic
 {
-    public static function publicHeadContent($core)
+    public static function publicHeadContent()
     {
         // Settings
 
-        $s = &$core->blog->settings->relatedEntries;
+        $s = dcCore::app()->blog->settings->relatedEntries;
 
         if (!$s->relatedEntries_enabled) {
             return;
         }
 
-        $url = $core->blog->getQmarkURL() . 'pf=' . basename(dirname(__FILE__));
+        $url = dcCore::app()->blog->getQmarkURL() . 'pf=' . basename(dirname(__FILE__));
 
         echo
         '<link rel="stylesheet" type="text/css" href="' . $url . '/css/style.css" />' . "\n";
@@ -118,22 +117,20 @@ class relatedEntriesPublic
 
     public static function thisPostrelatedEntries($id)
     {
-        global $core;
-        $meta = &$core->meta;
+        $meta = dcCore::app()->meta;
         $params['post_id'] = $id;
         $params['no_content'] = false;
         $params['post_type'] = ['post'];
 
-        $rs = $core->blog->getPosts($params);
+        $rs = dcCore::app()->blog->getPosts($params);
         return $meta->getMetaStr($rs->post_meta, 'relatedEntries');
     }
 
     public static function publicEntryBeforeContent($core, $_ctx)
     {
-        global $core;
         // Settings
 
-        $s = &$core->blog->settings->relatedEntries;
+        $s = dcCore::app()->blog->settings->relatedEntries;
 
         if (!$s->relatedEntries_enabled) {
             return;
@@ -143,13 +140,13 @@ class relatedEntriesPublic
         }
         if ($_ctx->posts->post_type == 'post' && self::thisPostrelatedEntries($_ctx->posts->post_id) != '') {
             //related entries
-            $meta = &$GLOBALS['core']->meta;
+            $meta = dcCore::app()->meta;
 
             $r_ids = self::thisPostrelatedEntries($_ctx->posts->post_id);
             $params['post_id'] = $meta->splitMetaValues($r_ids);
-            $rs = $core->blog->getPosts($params);
+            $rs = dcCore::app()->blog->getPosts($params);
 
-            if ($core->plugins->moduleExists('listImages') && $s->relatedEntries_images) {
+            if (dcCore::app()->plugins->moduleExists('listImages') && $s->relatedEntries_images) {
                 //images display options
                 $img_options = unserialize($s->relatedEntries_images_options);
 
@@ -177,7 +174,7 @@ class relatedEntriesPublic
                 $ret .= '</' . ($html_tag == 'li' ? 'ul' : 'div') . '>' . "\n";
 
                 echo $ret;
-            } elseif (!$core->plugins->moduleExists('listImages') || !$s->relatedEntries_images) {
+            } elseif (!dcCore::app()->plugins->moduleExists('listImages') || !$s->relatedEntries_images) {
                 $ret = $s->relatedEntries_title != '' ? '<h3>' . $s->relatedEntries_title . '</h3>' : '';
                 $ret .= '<ul class="relatedEntries">';
 
@@ -193,10 +190,9 @@ class relatedEntriesPublic
 
     public static function publicEntryAfterContent($core, $_ctx)
     {
-        global $core;
         // Settings
 
-        $s = &$core->blog->settings->relatedEntries;
+        $s = dcCore::app()->blog->settings->relatedEntries;
 
         if (!$s->relatedEntries_enabled) {
             return;
@@ -206,13 +202,13 @@ class relatedEntriesPublic
         }
         if ($_ctx->posts->post_type == 'post' && self::thisPostrelatedEntries($_ctx->posts->post_id) != '') {
             //related entries
-            $meta = &$GLOBALS['core']->meta;
+            $meta = dcCore::app()->meta;
 
             $r_ids = self::thisPostrelatedEntries($_ctx->posts->post_id);
             $params['post_id'] = $meta->splitMetaValues($r_ids);
-            $rs = $core->blog->getPosts($params);
+            $rs = dcCore::app()->blog->getPosts($params);
 
-            if ($core->plugins->moduleExists('listImages') && $s->relatedEntries_images) {
+            if (dcCore::app()->plugins->moduleExists('listImages') && $s->relatedEntries_images) {
                 //images display options
                 $img_options = unserialize($s->relatedEntries_images_options);
 
@@ -240,7 +236,7 @@ class relatedEntriesPublic
                 $ret .= '</' . ($html_tag == 'li' ? 'ul' : 'div') . '>' . "\n";
 
                 echo $ret;
-            } elseif (!$core->plugins->moduleExists('listImages') || !$s->relatedEntries_images) {
+            } elseif (!dcCore::app()->plugins->moduleExists('listImages') || !$s->relatedEntries_images) {
                 $ret = $s->relatedEntries_title != '' ? '<h3>' . $s->relatedEntries_title . '</h3>' : '';
                 $ret .= '<ul class="relatedEntries">';
 

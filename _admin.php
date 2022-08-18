@@ -16,18 +16,18 @@ if (!defined('DC_CONTEXT_ADMIN')) {
 
 $_menu['Blog']->addItem(
     __('Related posts'),
-    $core->adminurl->get('admin.plugin.relatedEntries'),
+    dcCore::app()->adminurl->get('admin.plugin.relatedEntries'),
     [dcPage::getPF('relatedEntries/icon.svg'), dcPage::getPF('relatedEntries/icon-dark.svg')],
-    preg_match('/' . preg_quote($core->adminurl->get('admin.plugin.relatedEntries')) . '(&.*)?$/', $_SERVER['REQUEST_URI']),
-    $core->auth->check('usage,contentadmin', $core->blog->id)
+    preg_match('/' . preg_quote(dcCore::app()->adminurl->get('admin.plugin.relatedEntries')) . '(&.*)?$/', $_SERVER['REQUEST_URI']),
+    dcCore::app()->auth->check('usage,contentadmin', dcCore::app()->blog->id)
 );
 
-$core->addBehavior(
+dcCore::app()->addBehavior(
     'adminDashboardFavorites',
     function ($core, $favs) {
         $favs->register('relatedEntries', [
             'title' => __('Related posts'),
-            'url' => $core->adminurl->get('admin.plugin.relatedEntries'),
+            'url' => dcCore::app()->adminurl->get('admin.plugin.relatedEntries'),
             'small-icon' => [dcPage::getPF('relatedEntries/icon.svg'), dcPage::getPF('relatedEntries/icon-dark.svg')],
             'large-icon' => [dcPage::getPF('relatedEntries/icon.svg'), dcPage::getPF('relatedEntries/icon-dark.svg')],
             'permissions' => 'usage,contentadmin',
@@ -35,7 +35,7 @@ $core->addBehavior(
     }
 );
 
-$core->addBehavior('adminPageHelpBlock', ['relatedEntriesBehaviors', 'adminPageHelpBlock']);
+dcCore::app()->addBehavior('adminPageHelpBlock', ['relatedEntriesBehaviors', 'adminPageHelpBlock']);
 
 class relatedEntriesBehaviors
 {
@@ -57,14 +57,14 @@ class relatedEntriesBehaviors
 
 require dirname(__FILE__) . '/_widget.php';
 
-$core->addBehavior('adminPostHeaders', ['relatedEntriesPostBehaviors', 'postHeaders']);
-$core->addBehavior('adminPostForm', ['relatedEntriesPostBehaviors', 'adminPostForm']);
+dcCore::app()->addBehavior('adminPostHeaders', ['relatedEntriesPostBehaviors', 'postHeaders']);
+dcCore::app()->addBehavior('adminPostForm', ['relatedEntriesPostBehaviors', 'adminPostForm']);
 
 $__autoload['adminRelatedPostMiniList'] = dirname(__FILE__) . '/inc/class.relatedEntries.minilist.php';
 
 if (isset($_GET['id']) && isset($_GET['r_id'])) {
     try {
-        $meta = &$GLOBALS['core']->meta;
+        $meta = dcCore::app()->meta;
         $id = $_GET['id'];
         $r_ids = $_GET['r_id'];
 
@@ -75,7 +75,7 @@ if (isset($_GET['id']) && isset($_GET['r_id'])) {
 
         http::redirect(DC_ADMIN_URL . 'post.php?id=' . $id . '&del=1#relatedEntries-area');
     } catch (Exception $e) {
-        $core->error->add($e->getMessage());
+        dcCore::app()->error->add($e->getMessage());
     }
 }
 
@@ -83,8 +83,7 @@ class relatedEntriesPostBehaviors
 {
     public static function postHeaders()
     {
-        global $core;
-        $s = &$core->blog->settings->relatedEntries;
+        $s = dcCore::app()->blog->settings->relatedEntries;
         if (!$s->relatedEntries_enabled) {
             return;
         }
@@ -120,8 +119,7 @@ class relatedEntriesPostBehaviors
 
     public static function adminPostForm($post)
     {
-        global $core;
-        $s = $core->blog->settings->relatedEntries;
+        $s = dcCore::app()->blog->settings->relatedEntries;
         $p_url = 'plugin.php?p=' . basename(dirname(__FILE__));
         $postTypes = ['post'];
 
@@ -134,7 +132,7 @@ class relatedEntriesPostBehaviors
 
         $id = $post->post_id;
         $type = $post->post_type;
-        $meta = &$GLOBALS['core']->meta;
+        $meta = dcCore::app()->meta;
         $meta_rs = $meta->getMetaStr($post->post_meta, 'relatedEntries');
 
         if (!$meta_rs) {
@@ -157,11 +155,11 @@ class relatedEntriesPostBehaviors
                 $params['post_id'] = $meta->splitMetaValues($meta_rs);
                 $params['no_content'] = true;
                 $params['post_type'] = ['post'];
-                $posts = $core->blog->getPosts($params);
-                $counter = $core->blog->getPosts($params, true);
-                $post_list = new adminRelatedPostMiniList($core, $posts, $counter->f(0));
+                $posts = dcCore::app()->blog->getPosts($params);
+                $counter = dcCore::app()->blog->getPosts($params, true);
+                $post_list = new adminRelatedPostMiniList(dcCore::app(), $posts, $counter->f(0));
             } catch (Exception $e) {
-                $core->error->add($e->getMessage());
+                dcCore::app()->error->add($e->getMessage());
             }
             $page = '1';
             $nb_per_page = '50';

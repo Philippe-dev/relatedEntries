@@ -16,44 +16,42 @@ if (!defined('DC_CONTEXT_ADMIN')) {
 
 dcPage::check('usage,contentadmin');
 
-global $core;
-
 $p_url = 'plugin.php?p=' . basename(dirname(__FILE__));
 
-$s = &$core->blog->settings->relatedEntries;
+$s = dcCore::app()->blog->settings->relatedEntries;
 
 $page_title = __('Add related posts links to entry');
 
 // Getting categories
 try {
-    $categories = $core->blog->getCategories(['post_type' => 'post']);
+    $categories = dcCore::app()->blog->getCategories(['post_type' => 'post']);
 } catch (Exception $e) {
-    $core->error->add($e->getMessage());
+    dcCore::app()->error->add($e->getMessage());
 }
 
 // Getting authors
 try {
-    $users = $core->blog->getPostsUsers();
+    $users = dcCore::app()->blog->getPostsUsers();
 } catch (Exception $e) {
-    $core->error->add($e->getMessage());
+    dcCore::app()->error->add($e->getMessage());
 }
 
 // Getting dates
 try {
-    $dates = $core->blog->getDates(['type' => 'month']);
+    $dates = dcCore::app()->blog->getDates(['type' => 'month']);
 } catch (Exception $e) {
-    $core->error->add($e->getMessage());
+    dcCore::app()->error->add($e->getMessage());
 }
 
 // Getting langs
 try {
-    $langs = $core->blog->getLangs();
+    $langs = dcCore::app()->blog->getLangs();
 } catch (Exception $e) {
-    $core->error->add($e->getMessage());
+    dcCore::app()->error->add($e->getMessage());
 }
 
 // Creating filter combo boxes
-if (!$core->error->flag()) {
+if (!dcCore::app()->error->flag()) {
     // Filter form we'll put in html_block
     $users_combo = $categories_combo = [];
     $users_combo['-'] = $categories_combo['-'] = '';
@@ -82,7 +80,7 @@ if (!$core->error->flag()) {
     $status_combo = [
         '-' => ''
     ];
-    foreach ($core->blog->getAllPostStatus() as $k => $v) {
+    foreach (dcCore::app()->blog->getAllPostStatus() as $k => $v) {
         $status_combo[$v] = (string) $k;
     }
     $img_status_pattern = '<img class="img_select_option" alt="%1$s" title="%1$s" src="images/%2$s" />';
@@ -219,11 +217,11 @@ if (isset($_GET['id'])) {
         $id = $_GET['id'];
         $params['no_content'] = true;
         $params['exclude_post_id'] = $id;
-        $posts = $core->blog->getPosts($params);
-        $counter = $core->blog->getPosts($params, true);
-        $post_list = new adminPostList($core, $posts, $counter->f(0));
+        $posts = dcCore::app()->blog->getPosts($params);
+        $counter = dcCore::app()->blog->getPosts($params, true);
+        $post_list = new adminPostList(dcCore::app(), $posts, $counter->f(0));
     } catch (Exception $e) {
-        $core->error->add($e->getMessage());
+        dcCore::app()->error->add($e->getMessage());
     }
 }
 
@@ -234,7 +232,7 @@ if (isset($_POST['entries'])) {
         $entries = implode(', ', $_POST['entries']);
         $id = $_POST['id'];
 
-        $meta = $core->meta;
+        $meta = dcCore::app()->meta;
 
         foreach ($meta->splitMetaValues($entries) as $tag) {
             $meta->delPostMeta($id, 'relatedEntries', $tag);
@@ -253,7 +251,7 @@ if (isset($_POST['entries'])) {
 
         http::redirect(DC_ADMIN_URL . 'post.php?id=' . $id . '&add=1#relatedEntries-area');
     } catch (Exception $e) {
-        $core->error->add($e->getMessage());
+        dcCore::app()->error->add($e->getMessage());
     }
 }
 
@@ -282,24 +280,24 @@ if (isset($_POST['entries'])) {
 	<body>
 <?php
 
-if (!$core->error->flag()) {
+if (!dcCore::app()->error->flag()) {
     $id = (int) $_GET['id'];
     $my_params['post_id'] = $id;
     $my_params['no_content'] = true;
     $my_params['post_type'] = ['post'];
 
-    $rs = $core->blog->getPosts($my_params);
+    $rs = dcCore::app()->blog->getPosts($my_params);
     $post_title = $rs->post_title;
     $post_status = $rs->post_status;
 
     echo dcPage::breadcrumb(
         [
-            html::escapeHTML($core->blog->name) => '',
+            html::escapeHTML(dcCore::app()->blog->name) => '',
             __('Related posts') => $p_url,
             $page_title => ''
         ]
     ) .
-        '<p class="clear">' . __('Select posts related to entry:') . ' <a href="' . $core->getPostAdminURL($rs->post_type, $rs->post_id) . '">' . $post_title . '</a>';
+        '<p class="clear">' . __('Select posts related to entry:') . ' <a href="' . dcCore::app()->getPostAdminURL($rs->post_type, $rs->post_id) . '">' . $post_title . '</a>';
 
     if ($id) {
         switch ($post_status) {
@@ -363,7 +361,7 @@ if (!$core->error->flag()) {
     '<p>' . form::hidden(['relatedEntries_filters'], 'relatedEntries') .
     '<input type="hidden" name="p" value="relatedEntries" />' .
     form::hidden(['id'], $id) .
-    $core->formNonce() .
+    dcCore::app()->formNonce() .
     '</p>' .
     '</form>';
 
@@ -383,7 +381,7 @@ if (!$core->error->flag()) {
     '<p>' .
     '<input type="hidden" name="p" value="relatedEntries" />' .
     form::hidden(['id'], $id) .
-    $core->formNonce() . '</p>' .
+    dcCore::app()->formNonce() . '</p>' .
     '</div>' .
     '</form>',
         $show_filters

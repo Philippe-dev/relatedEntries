@@ -14,18 +14,18 @@ if (!defined('DC_CONTEXT_ADMIN')) {
     return;
 }
 
-$m_version = $core->plugins->moduleInfo('relatedEntries', 'version');
+$m_version = dcCore::app()->plugins->moduleInfo('relatedEntries', 'version');
 
-$i_version = $core->getVersion('relatedEntries');
+$i_version = dcCore::app()->getVersion('relatedEntries');
 
 if (version_compare($i_version, $m_version, '>=')) {
     return;
 }
 
 // Settings
-$core->blog->settings->addNamespace('relatedEntries');
+dcCore::app()->blog->settings->addNamespace('relatedEntries');
 
-$s = &$core->blog->settings->relatedEntries;
+$s = dcCore::app()->blog->settings->relatedEntries;
 
 $s->put('relatedEntries_enabled', false, 'boolean', 'Enable related entries', false, true);
 $s->put('relatedEntries_images', false, 'boolean', 'Display related entries links as images', false, true);
@@ -50,6 +50,6 @@ $opts = [
 
 $s->put('relatedEntries_images_options', serialize($opts), 'string', 'Related entries images options', false, true);
 
-$core->setVersion('relatedEntries', $m_version);
+dcCore::app()->setVersion('relatedEntries', $m_version);
 
 return true;

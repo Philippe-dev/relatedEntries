@@ -14,12 +14,12 @@ if (!defined('DC_CONTEXT_ADMIN')) {
     return;
 }
 
-if (!$core->auth->check('admin', $core->blog->id)) {
+if (!dcCore::app()->auth->check('admin', dcCore::app()->blog->id)) {
     return;
 }
 
 //Settings
-$s = &$core->blog->settings->relatedEntries;
+$s = dcCore::app()->blog->settings->relatedEntries;
 
 // Init var
 $p_url = 'plugin.php?p=' . basename(dirname(__FILE__));
@@ -51,13 +51,13 @@ if (isset($_POST['save'])) {
 
     $s->put('relatedEntries_images_options', serialize($opts));
 
-    $core->blog->triggerBlog();
+    dcCore::app()->blog->triggerBlog();
     http::redirect($p_url . '&upd=1');
 }
 //Remove related posts links
 
 if (isset($_POST['entries'])) {
-    $meta = &$GLOBALS['core']->meta;
+    $meta = dcCore::app()->meta;
 
     try {
         $tags = [];
@@ -79,13 +79,13 @@ if (isset($_POST['entries'])) {
 
         http::redirect($p_url . '&upd=2&tab=postslist');
     } catch (Exception $e) {
-        $core->error->add($e->getMessage());
+        dcCore::app()->error->add($e->getMessage());
     }
 }
 
 // Image size combo
 $img_size_combo = [];
-$media = new dcMedia($core);
+$media = new dcMedia(dcCore::app());
 
 $img_size_combo[__('square')] = 'sq';
 $img_size_combo[__('thumbnail')] = 't';
@@ -139,34 +139,34 @@ $alt_combo = [
 
 // Getting categories
 try {
-    $categories = $core->blog->getCategories(['post_type' => 'post']);
+    $categories = dcCore::app()->blog->getCategories(['post_type' => 'post']);
 } catch (Exception $e) {
-    $core->error->add($e->getMessage());
+    dcCore::app()->error->add($e->getMessage());
 }
 
 // Getting authors
 try {
-    $users = $core->blog->getPostsUsers();
+    $users = dcCore::app()->blog->getPostsUsers();
 } catch (Exception $e) {
-    $core->error->add($e->getMessage());
+    dcCore::app()->error->add($e->getMessage());
 }
 
 // Getting dates
 try {
-    $dates = $core->blog->getDates(['type' => 'month']);
+    $dates = dcCore::app()->blog->getDates(['type' => 'month']);
 } catch (Exception $e) {
-    $core->error->add($e->getMessage());
+    dcCore::app()->error->add($e->getMessage());
 }
 
 // Getting langs
 try {
-    $langs = $core->blog->getLangs();
+    $langs = dcCore::app()->blog->getLangs();
 } catch (Exception $e) {
-    $core->error->add($e->getMessage());
+    dcCore::app()->error->add($e->getMessage());
 }
 
 // Creating filter combo boxes
-if (!$core->error->flag()) {
+if (!dcCore::app()->error->flag()) {
     // Filter form we'll put in html_block
     $users_combo = $categories_combo = [];
     $users_combo['-'] = $categories_combo['-'] = '';
@@ -195,7 +195,7 @@ if (!$core->error->flag()) {
     $status_combo = [
         '-' => ''
     ];
-    foreach ($core->blog->getAllPostStatus() as $k => $v) {
+    foreach (dcCore::app()->blog->getAllPostStatus() as $k => $v) {
         $status_combo[$v] = (string) $k;
     }
 
@@ -327,13 +327,13 @@ if ($sortby !== '' && in_array($sortby, $sortby_combo)) {
 // Get posts with related posts
 try {
     $params['no_content'] = true;
-    $params['sql'] = 'AND P.post_id IN (SELECT META.post_id FROM ' . $core->prefix . 'meta META WHERE META.post_id = P.post_id ' .
+    $params['sql'] = 'AND P.post_id IN (SELECT META.post_id FROM ' . dcCore::app()->prefix . 'meta META WHERE META.post_id = P.post_id ' .
             "AND META.meta_type = 'relatedEntries' ) ";
-    $posts = $core->blog->getPosts($params);
-    $counter = $core->blog->getPosts($params, true);
-    $post_list = new adminPostList($core, $posts, $counter->f(0));
+    $posts = dcCore::app()->blog->getPosts($params);
+    $counter = dcCore::app()->blog->getPosts($params, true);
+    $post_list = new adminPostList(dcCore::app(), $posts, $counter->f(0));
 } catch (Exception $e) {
-    $core->error->add($e->getMessage());
+    dcCore::app()->error->add($e->getMessage());
 }
 
 /* DISPLAY
@@ -372,7 +372,7 @@ $page_title = __('Related posts');
 
 echo dcPage::breadcrumb(
     [
-        html::escapeHTML($core->blog->name) => '',
+        html::escapeHTML(dcCore::app()->blog->name) => '',
         '<span class="page-title">' . $page_title . '</span>' => ''
     ]
 );
@@ -411,7 +411,7 @@ echo
 '</div>' .
 '<div class="fieldset"><h3>' . __('Images extracting options') . '</h3>';
 
-if ($core->plugins->moduleExists('listImages')) {
+if (dcCore::app()->plugins->moduleExists('listImages')) {
     echo
     '<p><label class="classic" for="relatedEntries_images">' .
     form::checkbox('relatedEntries_images', '1', $s->relatedEntries_images) .
@@ -503,7 +503,7 @@ if ($core->plugins->moduleExists('listImages')) {
 }
 
 echo
-'<p class="clear"><input type="submit" name="save" value="' . __('Save configuration') . '" />' . $core->formNonce() . '</p>' .
+'<p class="clear"><input type="submit" name="save" value="' . __('Save configuration') . '" />' . dcCore::app()->formNonce() . '</p>' .
 '</form>' .
 '</div>' .
 
@@ -545,7 +545,7 @@ echo
         __('entries per page') . '</label></p>' .
     '</div>' .
     '</div>' .
-    '<p>' . $core->formNonce() . '</p>' .
+    '<p>' . dcCore::app()->formNonce() . '</p>' .
     '<p><input type="submit" value="' . __('Apply filters and display options') . '" />' .
         '<br class="clear" /></p>' . //Opera sucks
     '<p>' . form::hidden(['relatedEntries_filters_config'], 'relatedEntries') .
@@ -575,7 +575,7 @@ echo
         '<input type="hidden" name="p" value="relatedEntries" />' .
         form::hidden(['tab'], 'postslist') .
         form::hidden(['id'], 'fake') .
-        $core->formNonce() . '</p>' .
+        dcCore::app()->formNonce() . '</p>' .
         '</div>' .
         '</form>',
             $show_filters

@@ -14,7 +14,7 @@ if (!defined('DC_RC_PATH')) {
     return;
 }
 
-$core->addBehavior('initWidgets', ['relatedEntriesWidgetBehaviors', 'initWidgets']);
+dcCore::app()->addBehavior('initWidgets', ['relatedEntriesWidgetBehaviors', 'initWidgets']);
 
 l10n::set(dirname(__FILE__) . '/locales/' . $_lang . '/main');
 
@@ -22,9 +22,8 @@ class relatedEntriesWidgetBehaviors
 {
     public static function initWidgets($w)
     {
-        global $core;
 
-        $s = &$core->blog->settings->relatedEntries;
+        $s = dcCore::app()->blog->settings->relatedEntries;
 
         if (!$s->relatedEntries_enabled) {
             return;
@@ -42,7 +41,7 @@ class relatedEntriesWidgetBehaviors
         $w->relatedEntriesWidget->addTitle(__('Related posts'));
         // Only if listImages plugin
 
-        if ($core->plugins->moduleExists('listImages')) {
+        if (dcCore::app()->plugins->moduleExists('listImages')) {
             $w->relatedEntriesWidget->setting('relatedEntries_images', __('Extract images from related posts'), 0, 'check');
 
             $w->relatedEntriesWidget->setting(
