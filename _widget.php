@@ -22,7 +22,6 @@ class relatedEntriesWidgetBehaviors
 {
     public static function initWidgets($w)
     {
-
         $s = dcCore::app()->blog->settings->relatedEntries;
 
         if (!$s->relatedEntries_enabled) {
@@ -109,7 +108,7 @@ class relatedEntriesWidgetBehaviors
             );
         }
 
-        
+
         $w->relatedEntriesWidget->addContentOnly();
         $w->relatedEntriesWidget->addClass();
         $w->relatedEntriesWidget->addOffline();

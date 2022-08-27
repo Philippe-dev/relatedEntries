@@ -26,7 +26,6 @@ class relatedEntriesWidget
 {
     public static function Widget($w)
     {
-
         $s = dcCore::app()->blog->settings->relatedEntries;
 
         if (!$s->relatedEntries_enabled) {
@@ -71,11 +70,11 @@ class relatedEntriesWidget
                 $legend = $w->legend;
                 $bubble = $w->bubble;
                 $from = $w->from;
-                $start = abs((integer) $w->start);
-                $length = abs((integer) $w->length);
+                $start = abs((int) $w->start);
+                $length = abs((int) $w->length);
                 $class = $w->class;
                 $alt = $w->alt;
-                $img_dim = abs((integer) $w->img_dim);
+                $img_dim = abs((int) $w->img_dim);
                 $def_size = 'o';
 
                 // Début d'affichage

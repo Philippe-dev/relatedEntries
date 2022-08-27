@@ -18,7 +18,7 @@ $(function () {
       }
       $filtersform.hide();
       $(this).removeClass('open')
-      .text(dotclear.msg.filter_posts_list);
+        .text(dotclear.msg.filter_posts_list);
     } else {
       $filtersform.show();
       $(this).addClass('open')

@@ -246,14 +246,14 @@ $order = !empty($_GET['order']) ? $_GET['order'] : 'desc';
 
 $show_filters = false;
 
-$page = !empty($_GET['page']) ? (integer) $_GET['page'] : 1;
+$page = !empty($_GET['page']) ? (int) $_GET['page'] : 1;
 $nb_per_page = 30;
 
-if (!empty($_GET['nb']) && (integer) $_GET['nb'] > 0) {
+if (!empty($_GET['nb']) && (int) $_GET['nb'] > 0) {
     if ($nb_per_page != $_GET['nb']) {
         $show_filters = true;
     }
-    $nb_per_page = (integer) $_GET['nb'];
+    $nb_per_page = (int) $_GET['nb'];
 }
 
 $params['limit'] = [(($page - 1) * $nb_per_page), $nb_per_page];
@@ -351,20 +351,20 @@ $page_title = __('Related posts');
 	
 	<?php
     $form_filter_title = __('Show filters and display options');
-    $starting_script = dcPage::jsLoad('js/_posts_list.js');
-    $starting_script .= dcPage::jsLoad(DC_ADMIN_URL . '?pf=relatedEntries/js/filter-controls.js');
-    $starting_script .= dcPage::jsPageTabs($default_tab);
-    $starting_script .= dcPage::jsConfirmClose('config-form');
-    $starting_script .=
-    '<script>' . "\n" .
-    '//<![CDATA[' . "\n" .
-    dcPage::jsVar('dotclear.msg.show_filters', $show_filters ? 'true' : 'false') . "\n" .
-    dcPage::jsVar('dotclear.msg.filter_posts_list', $form_filter_title) . "\n" .
-    dcPage::jsVar('dotclear.msg.cancel_the_filter', __('Cancel filters and display options')) . "\n" .
-    '//]]>' .
-    '</script>';
-    echo $starting_script;
-     ?>
+$starting_script = dcPage::jsLoad('js/_posts_list.js');
+$starting_script .= dcPage::jsLoad(DC_ADMIN_URL . '?pf=relatedEntries/js/filter-controls.js');
+$starting_script .= dcPage::jsPageTabs($default_tab);
+$starting_script .= dcPage::jsConfirmClose('config-form');
+$starting_script .=
+'<script>' . "\n" .
+'//<![CDATA[' . "\n" .
+dcPage::jsVar('dotclear.msg.show_filters', $show_filters ? 'true' : 'false') . "\n" .
+dcPage::jsVar('dotclear.msg.filter_posts_list', $form_filter_title) . "\n" .
+dcPage::jsVar('dotclear.msg.cancel_the_filter', __('Cancel filters and display options')) . "\n" .
+'//]]>' .
+'</script>';
+echo $starting_script;
+?>
 </head>
 <body>
 
@@ -555,14 +555,14 @@ echo
     '</p>' .
     '</form>';
 
-    if (!isset($post_list) || empty($post_list)) {
-        echo '<p><strong>' . __('No related posts') . '</strong></p>';
-    } else {
-        // Show posts
-        $post_list->display(
-            $page,
-            $nb_per_page,
-            '<form action="' . $p_url . '" method="post" id="form-entries">' .
+if (!isset($post_list) || empty($post_list)) {
+    echo '<p><strong>' . __('No related posts') . '</strong></p>';
+} else {
+    // Show posts
+    $post_list->display(
+        $page,
+        $nb_per_page,
+        '<form action="' . $p_url . '" method="post" id="form-entries">' .
 
         '%s' .
 
@@ -578,9 +578,9 @@ echo
         dcCore::app()->formNonce() . '</p>' .
         '</div>' .
         '</form>',
-            $show_filters
-        );
-    }
+        $show_filters
+    );
+}
 
 echo
 '</div>';

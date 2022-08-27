@@ -24,7 +24,7 @@ class adminRelatedPostMiniList extends adminGenericList
             $pager->html_prev = $this->html_prev;
             $pager->html_next = $this->html_next;
             $pager->var_page = 'page';
-            
+
             $html_block =
             '<div class="table-outer clear">'.
             '<table><caption class="hidden">'.__('Entries list').'</caption><tr>'.
@@ -37,15 +37,15 @@ class adminRelatedPostMiniList extends adminGenericList
             '<th scope="col">'.__('Status').'</th>'.
             '<th scope="col">'.__('Actions').'</th>'.
             '</tr>%s</table></div>';
-            
+
             if ($enclose_block) {
                 $html_block = sprintf($enclose_block, $html_block);
             }
-            
+
             $blocks = explode('%s', $html_block);
-            
+
             echo $blocks[0];
-            
+
             while ($this->rs->fetch()) {
                 echo $this->postLine();
             }
@@ -53,18 +53,18 @@ class adminRelatedPostMiniList extends adminGenericList
             echo $blocks[1];
         }
     }
-    
+
     private function postLine()
     {
         $p_url	= 'plugin.php?p='.basename(dirname(__FILE__));
         $id = $_GET['id'];
-        
+
         if ($this->core->auth->check('categories', $this->core->blog->id)) {
             $cat_link = '<a href="category.php?id=%s">%s</a>';
         } else {
             $cat_link = '%2$s';
         }
-        
+
         if ($this->rs->cat_title) {
             $cat_title = sprintf(
                 $cat_link,
@@ -74,7 +74,7 @@ class adminRelatedPostMiniList extends adminGenericList
         } else {
             $cat_title = __('None');
         }
-        
+
         $img = '<img alt="%1$s" title="%1$s" src="images/%2$s" />';
         switch ($this->rs->post_status) {
             case 1:
@@ -90,29 +90,29 @@ class adminRelatedPostMiniList extends adminGenericList
                 $img_status = sprintf($img, __('pending'), 'check-wrn.png');
                 break;
         }
-        
+
         $protected = '';
         if ($this->rs->post_password) {
             $protected = sprintf($img, __('protected'), 'locker.png');
         }
-        
+
         $selected = '';
         if ($this->rs->post_selected) {
             $selected = sprintf($img, __('selected'), 'selected.png');
         }
-        
+
         $attach = '';
         $nb_media = $this->rs->countMedia();
         if ($nb_media > 0) {
             $attach_str = $nb_media == 1 ? __('%d attachment') : __('%d attachments');
             $attach = sprintf($img, sprintf($attach_str, $nb_media), 'attach.png');
         }
-        
+
         $res = '<tr class="line'.($this->rs->post_status != 1 ? ' offline' : '').'"'.
         ' id="p'.$this->rs->post_id.'">';
-        
+
         $res .=
-        
+
         '<td class="maximal"><a href="'.$this->core->getPostAdminURL($this->rs->post_type, $this->rs->post_id).'">'.
         html::escapeHTML($this->rs->post_title).'</a></td>'.
         '<td class="nowrap">'.dt::dt2str(__('%Y-%m-%d %H:%M'), $this->rs->post_dt).'</td>'.
@@ -123,7 +123,7 @@ class adminRelatedPostMiniList extends adminGenericList
         '<td class="nowrap status">'.$img_status.' '.$selected.' '.$protected.' '.$attach.'</td>'.
         '<td class="nowrap count"><a class="link-remove metaRemove" href="'.$p_url.'&amp;id='.$id.'&amp;r_id='.$this->rs->post_id.'" title="'.__('Delete this link').'"><img src="images/trash.png" alt="supprimer" /></a></td>'.
         '</tr>';
-        
+
         return $res;
     }
 }
