@@ -59,7 +59,7 @@ class adminRelatedPostMiniList extends adminGenericList
         $p_url	= 'plugin.php?p='.basename(dirname(__FILE__));
         $id = $_GET['id'];
 
-        if ($this->core->auth->check('categories', $this->core->blog->id)) {
+        if (dcCore::app()->auth->check('categories', dcCore::app()->blog->id)) {
             $cat_link = '<a href="category.php?id=%s">%s</a>';
         } else {
             $cat_link = '%2$s';
@@ -113,7 +113,7 @@ class adminRelatedPostMiniList extends adminGenericList
 
         $res .=
 
-        '<td class="maximal"><a href="'.$this->core->getPostAdminURL($this->rs->post_type, $this->rs->post_id).'">'.
+        '<td class="maximal"><a href="'.dcCore::app()->getPostAdminURL($this->rs->post_type, $this->rs->post_id).'">'.
         html::escapeHTML($this->rs->post_title).'</a></td>'.
         '<td class="nowrap">'.dt::dt2str(__('%Y-%m-%d %H:%M'), $this->rs->post_dt).'</td>'.
         '<td class="nowrap">'.$cat_title.'</td>'.

@@ -331,7 +331,7 @@ try {
             "AND META.meta_type = 'relatedEntries' ) ";
     $posts = dcCore::app()->blog->getPosts($params);
     $counter = dcCore::app()->blog->getPosts($params, true);
-    $post_list = new adminPostList(dcCore::app(), $posts, $counter->f(0));
+    $post_list = new adminPostList($posts, $counter->f(0));
 } catch (Exception $e) {
     dcCore::app()->error->add($e->getMessage());
 }
