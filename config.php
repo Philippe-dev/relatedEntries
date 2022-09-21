@@ -85,7 +85,7 @@ if (isset($_POST['entries'])) {
 
 // Image size combo
 $img_size_combo = [];
-$media = new dcMedia(dcCore::app());
+$media = new dcMedia();
 
 $img_size_combo[__('square')] = 'sq';
 $img_size_combo[__('thumbnail')] = 't';
