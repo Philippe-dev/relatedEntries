@@ -16,7 +16,7 @@ if (!defined('DC_RC_PATH')) {
 
 dcCore::app()->addBehavior('initWidgets', ['relatedEntriesWidgetBehaviors', 'initWidgets']);
 
-l10n::set(dirname(__FILE__) . '/locales/' . $_lang . '/main');
+l10n::set(dirname(__FILE__) . '/locales/' . dcCore::app()->lang . '/main');
 
 class relatedEntriesWidgetBehaviors
 {

@@ -14,7 +14,7 @@ if (!defined('DC_CONTEXT_ADMIN')) {
     return;
 }
 
-$_menu['Blog']->addItem(
+dcCore::app()->menu[dcAdmin::MENU_BLOG]->addItem(
     __('Related posts'),
     dcCore::app()->adminurl->get('admin.plugin.relatedEntries'),
     [dcPage::getPF('relatedEntries/icon.svg'), dcPage::getPF('relatedEntries/icon-dark.svg')],
@@ -60,7 +60,9 @@ require dirname(__FILE__) . '/_widget.php';
 dcCore::app()->addBehavior('adminPostHeaders', ['relatedEntriesPostBehaviors', 'postHeaders']);
 dcCore::app()->addBehavior('adminPostForm', ['relatedEntriesPostBehaviors', 'adminPostForm']);
 
-$__autoload['adminRelatedPostMiniList'] = dirname(__FILE__) . '/inc/class.relatedEntries.minilist.php';
+Clearbricks::lib()->autoload([
+    'adminRelatedPostMiniList' => __DIR__ . '/inc/class.relatedEntries.minilist.php',
+]);
 
 if (isset($_GET['id']) && isset($_GET['r_id'])) {
     try {

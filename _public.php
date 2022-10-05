@@ -20,7 +20,7 @@ dcCore::app()->addBehavior('publicEntryBeforeContent', ['relatedEntriesPublic', 
 dcCore::app()->addBehavior('publicEntryAfterContent', ['relatedEntriesPublic', 'publicEntryAfterContent']);
 dcCore::app()->addBehavior('publicHeadContent', ['relatedEntriesPublic', 'publicHeadContent']);
 
-l10n::set(dirname(__FILE__) . '/locales/' . $_lang . '/main');
+l10n::set(dirname(__FILE__) . '/locales/' . dcCore::app()->lang . '/main');
 
 class relatedEntriesWidget
 {
