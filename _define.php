@@ -15,15 +15,14 @@ if (!defined('DC_RC_PATH')) {
 }
 
 $this->registerModule(
-    'Related entries',							// Name
-    'Add links to other related posts',			// Description
-    'Philippe aka amalgame',					// Author
-    '2.9',                   					// Version
+    'Related entries',
+    'Add links to other related posts',
+    'Philippe aka amalgame',
     [
-        'requires' => [['core', '2.23']],   	// Dependencies
-        'permissions' => 'usage,contentadmin', 	// Permissions
-        'type' => 'plugin',             	    // Type
-        'priority' => 3000                 	    // Priority
+        'requires' => [['core', '2.23']],
+        'permissions' => dcCore::app()->auth->makePermissions([dcAuth::PERMISSION_CONTENT_ADMIN]), 	// Permissions
+        'type' => 'plugin',
+        'priority' => 3000
 
     ]
 );

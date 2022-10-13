@@ -19,7 +19,7 @@ dcCore::app()->menu[dcAdmin::MENU_BLOG]->addItem(
     dcCore::app()->adminurl->get('admin.plugin.relatedEntries'),
     [dcPage::getPF('relatedEntries/icon.svg'), dcPage::getPF('relatedEntries/icon-dark.svg')],
     preg_match('/' . preg_quote(dcCore::app()->adminurl->get('admin.plugin.relatedEntries')) . '(&.*)?$/', $_SERVER['REQUEST_URI']),
-    dcCore::app()->auth->check('usage,contentadmin', dcCore::app()->blog->id)
+    dcCore::app()->auth->check(dcCore::app()->auth->makePermissions([dcAuth::PERMISSION_CONTENT_ADMIN]), dcCore::app()->blog->id)
 );
 
 dcCore::app()->addBehavior(
@@ -30,7 +30,7 @@ dcCore::app()->addBehavior(
             'url' => dcCore::app()->adminurl->get('admin.plugin.relatedEntries'),
             'small-icon' => [dcPage::getPF('relatedEntries/icon.svg'), dcPage::getPF('relatedEntries/icon-dark.svg')],
             'large-icon' => [dcPage::getPF('relatedEntries/icon.svg'), dcPage::getPF('relatedEntries/icon-dark.svg')],
-            'permissions' => 'usage,contentadmin',
+            'permissions' => dcCore::app()->auth->makePermissions([dcAuth::PERMISSION_CONTENT_ADMIN]),
         ]);
     }
 );
