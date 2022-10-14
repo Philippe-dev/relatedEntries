@@ -18,9 +18,10 @@ $this->registerModule(
     'Related entries',
     'Add links to other related posts',
     'Philippe aka amalgame',
+    '2.9',
     [
         'requires' => [['core', '2.23']],
-        'permissions' => dcCore::app()->auth->makePermissions([dcAuth::PERMISSION_CONTENT_ADMIN]), 	// Permissions
+        'permissions' => dcCore::app()->auth->makePermissions([dcAuth::PERMISSION_CONTENT_ADMIN]),
         'type' => 'plugin',
         'priority' => 3000
 
