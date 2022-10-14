@@ -75,7 +75,7 @@ if (isset($_GET['id']) && isset($_GET['r_id'])) {
             $meta->delPostMeta($tag, 'relatedEntries', $id);
         }
 
-        http::redirect(DC_ADMIN_URL . 'post.php?id=' . $id . '&del=1#relatedEntries-area');
+        http::redirect(DC_ADMIN_URL . 'post.php?id=' . $id . '&del=1&upd=1');
     } catch (Exception $e) {
         dcCore::app()->error->add($e->getMessage());
     }
@@ -123,6 +123,7 @@ class relatedEntriesPostBehaviors
     {
         $s = dcCore::app()->blog->settings->relatedEntries;
         $p_url = 'plugin.php?p=' . basename(dirname(__FILE__));
+        
         $postTypes = ['post'];
 
         if (!$s->relatedEntries_enabled) {
@@ -143,7 +144,7 @@ class relatedEntriesPostBehaviors
                 '<p class="smart-title">' . __('Related posts') . '</p>' .
                 '<div id="relatedEntries-list" >' .
                 '<p>' . __('No related posts') . '</p>' .
-                '<p><a href="' . $p_url . '&amp;id=' . $id . '">' . __('Add links to related posts') . '</a></p>' .
+                '<p><a href="' . $p_url . '&amp;id=' . $id . '&upd=1">' . __('Add links to related posts') . '</a></p>' .
                 '</div>' .
                 '</div>';
         } else {
@@ -173,7 +174,7 @@ class relatedEntriesPostBehaviors
             echo
 
             '<p class="two-boxes"><a href="' . $p_url . '&amp;id=' . $id . '"><strong>' . __('Add links to related posts') . '</strong></a></p>' .
-            '<p class="two-boxes right"><a class="links-remove delete" href="' . $p_url . '&amp;id=' . $id . '&amp;r_id=' . $meta_rs . '">' . __('Remove all links to related posts') . '</a></p>' .
+            '<p class="two-boxes right"><a class="links-remove delete" href="' . $p_url . '&amp;id=' . $id . '&amp;r_id=' . $meta_rs . '&upd=1">' . __('Remove all links to related posts') . '</a></p>' .
 
             form::hidden(['relatedEntries'], $meta_rs) .
             '</div>' .

@@ -56,8 +56,10 @@ class adminRelatedPostMiniList extends adminGenericList
 
     private function postLine()
     {
-        $p_url	= 'plugin.php?p='.basename(dirname(__FILE__));
+       
         $id = $_GET['id'];
+
+        $p_url	= 'plugin.php?p='.basename(dirname(__FILE__));
 
         if (dcCore::app()->auth->check('categories', dcCore::app()->blog->id)) {
             $cat_link = '<a href="category.php?id=%s">%s</a>';

@@ -16,7 +16,7 @@ if (!defined('DC_CONTEXT_ADMIN')) {
 
 dcPage::check('usage,contentadmin');
 
-$p_url = 'plugin.php?p=' . basename(dirname(__FILE__));
+
 
 $s = dcCore::app()->blog->settings->relatedEntries;
 
@@ -249,7 +249,7 @@ if (isset($_POST['entries'])) {
             }
         }
 
-        http::redirect(DC_ADMIN_URL . 'post.php?id=' . $id . '&add=1#relatedEntries-area');
+        http::redirect(DC_ADMIN_URL . 'post.php?id=' . $id . '&add=1&upd=1');
     } catch (Exception $e) {
         dcCore::app()->error->add($e->getMessage());
     }
@@ -293,7 +293,7 @@ if (!dcCore::app()->error->flag()) {
     echo dcPage::breadcrumb(
         [
             html::escapeHTML(dcCore::app()->blog->name) => '',
-            __('Related posts') => $p_url,
+            __('Related posts') => dcCore::app()->admin->getPageURL(),
             $page_title => ''
         ]
     ) .
@@ -322,7 +322,7 @@ if (!dcCore::app()->error->flag()) {
     echo '</p>';
 
     echo
-    '<form action="' . $p_url . '" method="get" id="filters-form">' .
+    '<form action="' . dcCore::app()->admin->getPageURL() . '" method="get" id="filters-form">' .
     '<h3 class="out-of-screen-if-js">' . __('Filter posts list') . '</h3>' .
     '<div class="table">' .
     '<div class="cell">' .
@@ -369,7 +369,7 @@ if (!dcCore::app()->error->flag()) {
     $post_list->display(
         $page,
         $nb_per_page,
-        '<form action="' . $p_url . '" method="post" id="form-entries">' .
+        '<form action="' . dcCore::app()->admin->getPageURL() . '" method="post" id="form-entries">' .
 
     '%s' .
 
@@ -377,7 +377,7 @@ if (!dcCore::app()->error->flag()) {
     '<p class="col checkboxes-helpers"></p>' .
 
     '<p class="col right">' .
-    '<input type="submit" value="' . __('Add links to selected posts') . '" /> <a class="button reset" href="post.php?id=' . $id . '#relatedEntries-area">' . __('Cancel') . '</a></p>' .
+    '<input type="submit" value="' . __('Add links to selected posts') . '" /> <a class="button reset" href="post.php?id=' . $id . '&upd=1">' . __('Cancel') . '</a></p>' .
     '<p>' .
     '<input type="hidden" name="p" value="relatedEntries" />' .
     form::hidden(['id'], $id) .

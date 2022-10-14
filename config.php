@@ -22,7 +22,7 @@ if (!dcCore::app()->auth->check('admin', dcCore::app()->blog->id)) {
 $s = dcCore::app()->blog->settings->relatedEntries;
 
 // Init var
-$p_url = 'plugin.php?p=' . basename(dirname(__FILE__));
+
 
 $default_tab = isset($_GET['tab']) ? $_GET['tab'] : 'parameters';
 
@@ -52,7 +52,7 @@ if (isset($_POST['save'])) {
     $s->put('relatedEntries_images_options', serialize($opts));
 
     dcCore::app()->blog->triggerBlog();
-    http::redirect($p_url . '&upd=1');
+    http::redirect(dcCore::app()->admin->getPageURL() . '&upd=1');
 }
 //Remove related posts links
 
@@ -77,7 +77,7 @@ if (isset($_POST['entries'])) {
             }
         }
 
-        http::redirect($p_url . '&upd=2&tab=postslist');
+        http::redirect(dcCore::app()->admin->getPageURL() . '&upd=2&tab=postslist');
     } catch (Exception $e) {
         dcCore::app()->error->add($e->getMessage());
     }
@@ -391,7 +391,7 @@ $as = unserialize($s->relatedEntries_images_options);
 
 echo
 '<div class="multi-part" id="parameters" title="' . __('Parameters') . '">' .
-'<form action="' . $p_url . '" method="post" id="config-form">' .
+'<form action="' . dcCore::app()->admin->getPageURL() . '" method="post" id="config-form">' .
 '<div class="fieldset"><h3>' . __('Activation') . '</h3>' .
     '<p><label class="classic" for="relatedEntries_enabled">' .
     form::checkbox('relatedEntries_enabled', '1', $s->relatedEntries_enabled) .
@@ -512,7 +512,7 @@ echo
 '<div class="multi-part" id="postslist" title="' . __('Related posts list') . '">';
 
 echo
-    '<form action="' . $p_url . '" method="get" id="filters-form">' .
+    '<form action="' . dcCore::app()->admin->getPageURL() . '" method="get" id="filters-form">' .
     '<h3 class="out-of-screen-if-js">' . __('Filter posts list') . '</h3>' .
     '<div class="table">' .
     '<div class="cell">' .
@@ -562,7 +562,7 @@ if (!isset($post_list) || empty($post_list)) {
     $post_list->display(
         $page,
         $nb_per_page,
-        '<form action="' . $p_url . '" method="post" id="form-entries">' .
+        '<form action="' . dcCore::app()->admin->getPageURL() . '" method="post" id="form-entries">' .
 
         '%s' .
 
