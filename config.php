@@ -9,7 +9,6 @@
  *
  * @copyright GPL-2.0 [https://www.gnu.org/licenses/gpl-2.0.html]
  */
-
 if (!defined('DC_CONTEXT_ADMIN')) {
     return;
 }
@@ -23,8 +22,7 @@ $s = dcCore::app()->blog->settings->relatedEntries;
 
 // Init var
 
-
-$default_tab = isset($_GET['tab']) ? $_GET['tab'] : 'parameters';
+$default_tab = $_GET['tab'] ?? 'parameters';
 
 // Saving configurations
 if (isset($_POST['save'])) {
@@ -35,18 +33,18 @@ if (isset($_POST['save'])) {
     $s->put('relatedEntries_images', !empty($_POST['relatedEntries_images']));
 
     $opts = [
-        'size' => !empty($_POST['size']) ? $_POST['size'] : 't',
+        'size'     => !empty($_POST['size']) ? $_POST['size'] : 't',
         'html_tag' => !empty($_POST['html_tag']) ? $_POST['html_tag'] : 'div',
-        'link' => !empty($_POST['link']) ? $_POST['link'] : 'entry',
-        'exif' => 0,
-        'legend' => !empty($_POST['legend']) ? $_POST['legend'] : 'none',
-        'bubble' => !empty($_POST['bubble']) ? $_POST['bubble'] : 'image',
-        'from' => !empty($_POST['from']) ? $_POST['from'] : 'full',
-        'start' => !empty($_POST['start']) ? $_POST['start'] : 1,
-        'length' => !empty($_POST['length']) ? $_POST['length'] : 1,
-        'class' => !empty($_POST['class']) ? $_POST['class'] : '',
-        'alt' => !empty($_POST['alt']) ? $_POST['alt'] : 'inherit',
-        'img_dim' => !empty($_POST['img_dim']) ? $_POST['img_dim'] : 0,
+        'link'     => !empty($_POST['link']) ? $_POST['link'] : 'entry',
+        'exif'     => 0,
+        'legend'   => !empty($_POST['legend']) ? $_POST['legend'] : 'none',
+        'bubble'   => !empty($_POST['bubble']) ? $_POST['bubble'] : 'image',
+        'from'     => !empty($_POST['from']) ? $_POST['from'] : 'full',
+        'start'    => !empty($_POST['start']) ? $_POST['start'] : 1,
+        'length'   => !empty($_POST['length']) ? $_POST['length'] : 1,
+        'class'    => !empty($_POST['class']) ? $_POST['class'] : '',
+        'alt'      => !empty($_POST['alt']) ? $_POST['alt'] : 'inherit',
+        'img_dim'  => !empty($_POST['img_dim']) ? $_POST['img_dim'] : 0,
     ];
 
     $s->put('relatedEntries_images_options', serialize($opts));
@@ -66,7 +64,7 @@ if (isset($_POST['entries'])) {
             // Get tags for post
             $post_meta = $meta->getMetadata([
                 'meta_type' => 'relatedEntries',
-                'post_id' => $id]);
+                'post_id'   => $id, ]);
             $pm = [];
             while ($post_meta->fetch()) {
                 $pm[] = $post_meta->meta_id;
@@ -85,56 +83,56 @@ if (isset($_POST['entries'])) {
 
 // Image size combo
 $img_size_combo = [];
-$media = new dcMedia();
+$media          = new dcMedia();
 
-$img_size_combo[__('square')] = 'sq';
+$img_size_combo[__('square')]    = 'sq';
 $img_size_combo[__('thumbnail')] = 't';
-$img_size_combo[__('small')] = 's';
-$img_size_combo[__('medium')] = 'm';
-$img_size_combo[__('original')] = 'o';
+$img_size_combo[__('small')]     = 's';
+$img_size_combo[__('medium')]    = 'm';
+$img_size_combo[__('original')]  = 'o';
 foreach ($media->thumb_sizes as $code => $size) {
     $img_size_combo[__($size[2])] = $code;
 }
 
 // Html tag combo
 $html_tag_combo = [
-    __('div') => 'div',
-    __('li') => 'li',
-    __('no tag') => 'none'
+    __('div')    => 'div',
+    __('li')     => 'li',
+    __('no tag') => 'none',
 ];
 
 // Link combo
 $link_combo = [
-    __('related posts') => 'entry',
+    __('related posts')   => 'entry',
     __('original images') => 'image',
-    __('no link') => 'none'
+    __('no link')         => 'none',
 ];
 
 // Legend combo
 $legend_combo = [
     __('entry title') => 'entry',
     __('image title') => 'image',
-    __('no legend') => 'none'
+    __('no legend')   => 'none',
 ];
 
 // Bubble combo
 $bubble_combo = [
     __('entry title') => 'entry',
     __('image title') => 'image',
-    __('no bubble') => 'none'
+    __('no bubble')   => 'none',
 ];
 
 // From combo
 $from_combo = [
     __('post excerpt') => 'excerpt',
     __('post content') => 'content',
-    __('full post') => 'full'
+    __('full post')    => 'full',
 ];
 
 // Alt combo
 $alt_combo = [
     __('image title') => 'inherit',
-    __('no alt') => 'none'
+    __('no alt')      => 'none',
 ];
 
 // Getting categories
@@ -168,7 +166,7 @@ try {
 // Creating filter combo boxes
 if (!dcCore::app()->error->flag()) {
     // Filter form we'll put in html_block
-    $users_combo = $categories_combo = [];
+    $users_combo      = $categories_combo = [];
     $users_combo['-'] = $categories_combo['-'] = '';
     while ($users->fetch()) {
         $user_cn = dcUtils::getUserCN(
@@ -193,16 +191,16 @@ if (!dcCore::app()->error->flag()) {
     }
 
     $status_combo = [
-        '-' => ''
+        '-' => '',
     ];
     foreach (dcCore::app()->blog->getAllPostStatus() as $k => $v) {
         $status_combo[$v] = (string) $k;
     }
 
     $selected_combo = [
-        '-' => '',
-        __('selected') => '1',
-        __('not selected') => '0'
+        '-'                => '',
+        __('selected')     => '1',
+        __('not selected') => '0',
     ];
 
     // Months array
@@ -217,36 +215,36 @@ if (!dcCore::app()->error->flag()) {
     }
 
     $sortby_combo = [
-        __('Date') => 'post_dt',
-        __('Title') => 'post_title',
+        __('Date')     => 'post_dt',
+        __('Title')    => 'post_title',
         __('Category') => 'cat_title',
-        __('Author') => 'user_id',
-        __('Status') => 'post_status',
-        __('Selected') => 'post_selected'
+        __('Author')   => 'user_id',
+        __('Status')   => 'post_status',
+        __('Selected') => 'post_selected',
     ];
 
     $order_combo = [
         __('Descending') => 'desc',
-        __('Ascending') => 'asc'
+        __('Ascending')  => 'asc',
     ];
 }
 
 /* Get posts
 -------------------------------------------------------- */
-$id = !empty($_GET['id']) ? $_GET['id'] : '';
-$user_id = !empty($_GET['user_id']) ? $_GET['user_id'] : '';
-$cat_id = !empty($_GET['cat_id']) ? $_GET['cat_id'] : '';
-$status = isset($_GET['status']) ? $_GET['status'] : '';
-$selected = isset($_GET['selected']) ? $_GET['selected'] : '';
-$month = !empty($_GET['month']) ? $_GET['month'] : '';
-$entries = !empty($_GET['entries']) ? $_GET['entries'] : '';
-$lang = !empty($_GET['lang']) ? $_GET['lang'] : '';
-$sortby = !empty($_GET['sortby']) ? $_GET['sortby'] : 'post_dt';
-$order = !empty($_GET['order']) ? $_GET['order'] : 'desc';
+$id       = !empty($_GET['id']) ? $_GET['id'] : '';
+$user_id  = !empty($_GET['user_id']) ? $_GET['user_id'] : '';
+$cat_id   = !empty($_GET['cat_id']) ? $_GET['cat_id'] : '';
+$status   = $_GET['status']   ?? '';
+$selected = $_GET['selected'] ?? '';
+$month    = !empty($_GET['month']) ? $_GET['month'] : '';
+$entries  = !empty($_GET['entries']) ? $_GET['entries'] : '';
+$lang     = !empty($_GET['lang']) ? $_GET['lang'] : '';
+$sortby   = !empty($_GET['sortby']) ? $_GET['sortby'] : 'post_dt';
+$order    = !empty($_GET['order']) ? $_GET['order'] : 'desc';
 
 $show_filters = false;
 
-$page = !empty($_GET['page']) ? (int) $_GET['page'] : 1;
+$page        = !empty($_GET['page']) ? (int) $_GET['page'] : 1;
 $nb_per_page = 30;
 
 if (!empty($_GET['nb']) && (int) $_GET['nb'] > 0) {
@@ -256,13 +254,13 @@ if (!empty($_GET['nb']) && (int) $_GET['nb'] > 0) {
     $nb_per_page = (int) $_GET['nb'];
 }
 
-$params['limit'] = [(($page - 1) * $nb_per_page), $nb_per_page];
+$params['limit']      = [(($page - 1) * $nb_per_page), $nb_per_page];
 $params['no_content'] = true;
 
 // - User filter
 if ($user_id !== '' && in_array($user_id, $users_combo)) {
     $params['user_id'] = $user_id;
-    $show_filters = true;
+    $show_filters      = true;
 } else {
     $user_id = '';
 }
@@ -270,7 +268,7 @@ if ($user_id !== '' && in_array($user_id, $users_combo)) {
 // - Categories filter
 if ($cat_id !== '' && in_array($cat_id, $categories_combo)) {
     $params['cat_id'] = $cat_id;
-    $show_filters = true;
+    $show_filters     = true;
 } else {
     $cat_id = '';
 }
@@ -278,7 +276,7 @@ if ($cat_id !== '' && in_array($cat_id, $categories_combo)) {
 // - Status filter
 if ($status !== '' && in_array($status, $status_combo)) {
     $params['post_status'] = $status;
-    $show_filters = true;
+    $show_filters          = true;
 } else {
     $status = '';
 }
@@ -286,7 +284,7 @@ if ($status !== '' && in_array($status, $status_combo)) {
 // - Selected filter
 if ($selected !== '' && in_array($selected, $selected_combo)) {
     $params['post_selected'] = $selected;
-    $show_filters = true;
+    $show_filters            = true;
 } else {
     $selected = '';
 }
@@ -294,8 +292,8 @@ if ($selected !== '' && in_array($selected, $selected_combo)) {
 // - Month filter
 if ($month !== '' && in_array($month, $dt_m_combo)) {
     $params['post_month'] = substr($month, 4, 2);
-    $params['post_year'] = substr($month, 0, 4);
-    $show_filters = true;
+    $params['post_year']  = substr($month, 0, 4);
+    $show_filters         = true;
 } else {
     $month = '';
 }
@@ -303,7 +301,7 @@ if ($month !== '' && in_array($month, $dt_m_combo)) {
 // - Lang filter
 if ($lang !== '' && in_array($lang, $lang_combo)) {
     $params['post_lang'] = $lang;
-    $show_filters = true;
+    $show_filters        = true;
 } else {
     $lang = '';
 }
@@ -321,16 +319,16 @@ if ($sortby !== '' && in_array($sortby, $sortby_combo)) {
     }
 } else {
     $sortby = 'post_dt';
-    $order = 'desc';
+    $order  = 'desc';
 }
 
 // Get posts with related posts
 try {
     $params['no_content'] = true;
-    $params['sql'] = 'AND P.post_id IN (SELECT META.post_id FROM ' . dcCore::app()->prefix . 'meta META WHERE META.post_id = P.post_id ' .
+    $params['sql']        = 'AND P.post_id IN (SELECT META.post_id FROM ' . dcCore::app()->prefix . 'meta META WHERE META.post_id = P.post_id ' .
             "AND META.meta_type = 'relatedEntries' ) ";
-    $posts = dcCore::app()->blog->getPosts($params);
-    $counter = dcCore::app()->blog->getPosts($params, true);
+    $posts     = dcCore::app()->blog->getPosts($params);
+    $counter   = dcCore::app()->blog->getPosts($params, true);
     $post_list = new adminPostList($posts, $counter->f(0));
 } catch (Exception $e) {
     dcCore::app()->error->add($e->getMessage());
@@ -351,12 +349,11 @@ $page_title = __('Related posts');
 	
 	<?php
     $form_filter_title = __('Show filters and display options');
-$starting_script = dcPage::jsLoad('js/_posts_list.js');
+$starting_script       = dcPage::jsLoad('js/_posts_list.js');
 $starting_script .= dcPage::jsLoad(DC_ADMIN_URL . '?pf=relatedEntries/js/filter-controls.js');
 $starting_script .= dcPage::jsPageTabs($default_tab);
 $starting_script .= dcPage::jsConfirmClose('config-form');
-$starting_script .=
-'<script>' . "\n" .
+$starting_script .= '<script>' . "\n" .
 '//<![CDATA[' . "\n" .
 dcPage::jsVar('dotclear.msg.show_filters', $show_filters ? 'true' : 'false') . "\n" .
 dcPage::jsVar('dotclear.msg.filter_posts_list', $form_filter_title) . "\n" .
@@ -372,8 +369,8 @@ echo $starting_script;
 
 echo dcPage::breadcrumb(
     [
-        html::escapeHTML(dcCore::app()->blog->name) => '',
-        '<span class="page-title">' . $page_title . '</span>' => ''
+        html::escapeHTML(dcCore::app()->blog->name)           => '',
+        '<span class="page-title">' . $page_title . '</span>' => '',
     ]
 );
 

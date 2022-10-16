@@ -9,7 +9,6 @@
  *
  * @copyright GPL-2.0 [https://www.gnu.org/licenses/gpl-2.0.html]
  */
-
 if (!defined('DC_RC_PATH')) {
     return;
 }
@@ -39,21 +38,21 @@ class relatedEntriesWidget
         $id = dcCore::app()->ctx->posts->post_id;
 
         //current post
-        $params['post_id'] = $id;
+        $params['post_id']    = $id;
         $params['no_content'] = true;
-        $params['post_type'] = ['post'];
+        $params['post_type']  = ['post'];
 
         $rs = dcCore::app()->blog->getPosts($params);
 
-        $meta = dcCore::app()->meta;
+        $meta    = dcCore::app()->meta;
         $meta_rs = $meta->getMetaStr($rs->post_meta, 'relatedEntries');
         if ($meta_rs != '') {
             //related posts
-            $params['post_id'] = $meta->splitMetaValues($meta_rs);
+            $params['post_id']    = $meta->splitMetaValues($meta_rs);
             $params['no_content'] = false;
-            $params['post_type'] = ['post'];
-            $rs = dcCore::app()->blog->getPosts($params);
-            $ret = ($w->title ? $w->renderTitle(html::escapeHTML($w->title)) : '');
+            $params['post_type']  = ['post'];
+            $rs                   = dcCore::app()->blog->getPosts($params);
+            $ret                  = ($w->title ? $w->renderTitle(html::escapeHTML($w->title)) : '');
 
             if (!$w->relatedEntries_images || !dcCore::app()->plugins->moduleExists('listImages')) {
                 $ret .= '<ul>';
@@ -63,18 +62,18 @@ class relatedEntriesWidget
                 $ret .= '</ul>';
             } else {
                 // Récupération des options d'affichage des images
-                $size = $w->size;
+                $size     = $w->size;
                 $html_tag = $w->html_tag;
-                $link = $w->link;
-                $exif = 0;
-                $legend = $w->legend;
-                $bubble = $w->bubble;
-                $from = $w->from;
-                $start = abs((int) $w->start);
-                $length = abs((int) $w->length);
-                $class = $w->class;
-                $alt = $w->alt;
-                $img_dim = abs((int) $w->img_dim);
+                $link     = $w->link;
+                $exif     = 0;
+                $legend   = $w->legend;
+                $bubble   = $w->bubble;
+                $from     = $w->from;
+                $start    = abs((int) $w->start);
+                $length   = abs((int) $w->length);
+                $class    = $w->class;
+                $alt      = $w->alt;
+                $img_dim  = abs((int) $w->img_dim);
                 $def_size = 'o';
 
                 // Début d'affichage
@@ -115,12 +114,13 @@ class relatedEntriesPublic
 
     public static function thisPostrelatedEntries($id)
     {
-        $meta = dcCore::app()->meta;
-        $params['post_id'] = $id;
+        $meta                 = dcCore::app()->meta;
+        $params['post_id']    = $id;
         $params['no_content'] = false;
-        $params['post_type'] = ['post'];
+        $params['post_type']  = ['post'];
 
         $rs = dcCore::app()->blog->getPosts($params);
+
         return $meta->getMetaStr($rs->post_meta, 'relatedEntries');
     }
 
@@ -140,28 +140,28 @@ class relatedEntriesPublic
             //related entries
             $meta = dcCore::app()->meta;
 
-            $r_ids = self::thisPostrelatedEntries(dcCore::app()->ctx->posts->post_id);
+            $r_ids             = self::thisPostrelatedEntries(dcCore::app()->ctx->posts->post_id);
             $params['post_id'] = $meta->splitMetaValues($r_ids);
-            $rs = dcCore::app()->blog->getPosts($params);
+            $rs                = dcCore::app()->blog->getPosts($params);
 
             if (dcCore::app()->plugins->moduleExists('listImages') && $s->relatedEntries_images) {
                 //images display options
                 $img_options = unserialize($s->relatedEntries_images_options);
 
-                $size = $img_options['size'] ? $img_options['size'] : 't';
+                $size     = $img_options['size'] ? $img_options['size'] : 't';
                 $html_tag = $img_options['html_tag'] ? $img_options['html_tag'] : 'div';
-                $link = $img_options['link'] ? $img_options['link'] : 'entry';
-                $exif = $img_options['exif'] ? $img_options['exif'] : 0;
-                $legend = $img_options['legend'] ? $img_options['legend'] : 'none';
-                $bubble = $img_options['bubble'] ? $img_options['bubble'] : 'image';
-                $from = $img_options['from'] ? $img_options['from'] : 'full';
-                $start = $img_options['start'] ? $img_options['start'] : 1;
-                $length = $img_options['length'] ? $img_options['length'] : 1;
-                $class = $img_options['class'] ? $img_options['class'] : '';
-                $alt = $img_options['alt'] ? $img_options['alt'] : 'inherit';
-                $img_dim = $img_options['img_dim'] ? $img_options['img_dim'] : 0;
+                $link     = $img_options['link'] ? $img_options['link'] : 'entry';
+                $exif     = $img_options['exif'] ? $img_options['exif'] : 0;
+                $legend   = $img_options['legend'] ? $img_options['legend'] : 'none';
+                $bubble   = $img_options['bubble'] ? $img_options['bubble'] : 'image';
+                $from     = $img_options['from'] ? $img_options['from'] : 'full';
+                $start    = $img_options['start'] ? $img_options['start'] : 1;
+                $length   = $img_options['length'] ? $img_options['length'] : 1;
+                $class    = $img_options['class'] ? $img_options['class'] : '';
+                $alt      = $img_options['alt'] ? $img_options['alt'] : 'inherit';
+                $img_dim  = $img_options['img_dim'] ? $img_options['img_dim'] : 0;
                 $def_size = 'o';
-                $ret = $s->relatedEntries_title != '' ? '<h3>' . $s->relatedEntries_title . '</h3>' : '';
+                $ret      = $s->relatedEntries_title != '' ? '<h3>' . $s->relatedEntries_title . '</h3>' : '';
                 $ret .= '<' . ($html_tag == 'li' ? 'ul' : 'div') . ' class="relatedEntries">';
 
                 //listImages plugin comes here
@@ -202,28 +202,28 @@ class relatedEntriesPublic
             //related entries
             $meta = dcCore::app()->meta;
 
-            $r_ids = self::thisPostrelatedEntries(dcCore::app()->ctx->posts->post_id);
+            $r_ids             = self::thisPostrelatedEntries(dcCore::app()->ctx->posts->post_id);
             $params['post_id'] = $meta->splitMetaValues($r_ids);
-            $rs = dcCore::app()->blog->getPosts($params);
+            $rs                = dcCore::app()->blog->getPosts($params);
 
             if (dcCore::app()->plugins->moduleExists('listImages') && $s->relatedEntries_images) {
                 //images display options
                 $img_options = unserialize($s->relatedEntries_images_options);
 
-                $size = $img_options['size'] ? $img_options['size'] : 't';
+                $size     = $img_options['size'] ? $img_options['size'] : 't';
                 $html_tag = $img_options['html_tag'] ? $img_options['html_tag'] : 'div';
-                $link = $img_options['link'] ? $img_options['link'] : 'entry';
-                $exif = $img_options['exif'] ? $img_options['exif'] : 0;
-                $legend = $img_options['legend'] ? $img_options['legend'] : 'none';
-                $bubble = $img_options['bubble'] ? $img_options['bubble'] : 'image';
-                $from = $img_options['from'] ? $img_options['from'] : 'full';
-                $start = $img_options['start'] ? $img_options['start'] : 1;
-                $length = $img_options['length'] ? $img_options['length'] : 1;
-                $class = $img_options['class'] ? $img_options['class'] : '';
-                $alt = $img_options['alt'] ? $img_options['alt'] : 'inherit';
-                $img_dim = $img_options['img_dim'] ? $img_options['img_dim'] : 0;
+                $link     = $img_options['link'] ? $img_options['link'] : 'entry';
+                $exif     = $img_options['exif'] ? $img_options['exif'] : 0;
+                $legend   = $img_options['legend'] ? $img_options['legend'] : 'none';
+                $bubble   = $img_options['bubble'] ? $img_options['bubble'] : 'image';
+                $from     = $img_options['from'] ? $img_options['from'] : 'full';
+                $start    = $img_options['start'] ? $img_options['start'] : 1;
+                $length   = $img_options['length'] ? $img_options['length'] : 1;
+                $class    = $img_options['class'] ? $img_options['class'] : '';
+                $alt      = $img_options['alt'] ? $img_options['alt'] : 'inherit';
+                $img_dim  = $img_options['img_dim'] ? $img_options['img_dim'] : 0;
                 $def_size = 'o';
-                $ret = $s->relatedEntries_title != '' ? '<h3>' . $s->relatedEntries_title . '</h3>' : '';
+                $ret      = $s->relatedEntries_title != '' ? '<h3>' . $s->relatedEntries_title . '</h3>' : '';
                 $ret .= '<' . ($html_tag == 'li' ? 'ul' : 'div') . ' class="relatedEntries">';
 
                 //listImages plugin comes here

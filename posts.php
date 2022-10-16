@@ -9,14 +9,11 @@
  *
  * @copyright GPL-2.0 [https://www.gnu.org/licenses/gpl-2.0.html]
  */
-
 if (!defined('DC_CONTEXT_ADMIN')) {
     return;
 }
 
 dcPage::check('usage,contentadmin');
-
-
 
 $s = dcCore::app()->blog->settings->relatedEntries;
 
@@ -53,7 +50,7 @@ try {
 // Creating filter combo boxes
 if (!dcCore::app()->error->flag()) {
     // Filter form we'll put in html_block
-    $users_combo = $categories_combo = [];
+    $users_combo      = $categories_combo = [];
     $users_combo['-'] = $categories_combo['-'] = '';
     while ($users->fetch()) {
         $user_cn = dcUtils::getUserCN(
@@ -78,7 +75,7 @@ if (!dcCore::app()->error->flag()) {
     }
 
     $status_combo = [
-        '-' => ''
+        '-' => '',
     ];
     foreach (dcCore::app()->blog->getAllPostStatus() as $k => $v) {
         $status_combo[$v] = (string) $k;
@@ -86,9 +83,9 @@ if (!dcCore::app()->error->flag()) {
     $img_status_pattern = '<img class="img_select_option" alt="%1$s" title="%1$s" src="images/%2$s" />';
 
     $selected_combo = [
-        '-' => '',
-        __('selected') => '1',
-        __('not selected') => '0'
+        '-'                => '',
+        __('selected')     => '1',
+        __('not selected') => '0',
     ];
 
     // Months array
@@ -103,36 +100,36 @@ if (!dcCore::app()->error->flag()) {
     }
 
     $sortby_combo = [
-        __('Date') => 'post_dt',
-        __('Title') => 'post_title',
+        __('Date')     => 'post_dt',
+        __('Title')    => 'post_title',
         __('Category') => 'cat_title',
-        __('Author') => 'user_id',
-        __('Status') => 'post_status',
-        __('Selected') => 'post_selected'
+        __('Author')   => 'user_id',
+        __('Status')   => 'post_status',
+        __('Selected') => 'post_selected',
     ];
 
     $order_combo = [
         __('Descending') => 'desc',
-        __('Ascending') => 'asc'
+        __('Ascending')  => 'asc',
     ];
 }
 
 /* Get posts
 -------------------------------------------------------- */
-$id = !empty($_GET['id']) ? $_GET['id'] : '';
-$user_id = !empty($_GET['user_id']) ? $_GET['user_id'] : '';
-$cat_id = !empty($_GET['cat_id']) ? $_GET['cat_id'] : '';
-$status = isset($_GET['status']) ? $_GET['status'] : '';
-$selected = isset($_GET['selected']) ? $_GET['selected'] : '';
-$month = !empty($_GET['month']) ? $_GET['month'] : '';
-$entries = !empty($_GET['entries']) ? $_GET['entries'] : '';
-$lang = !empty($_GET['lang']) ? $_GET['lang'] : '';
-$sortby = !empty($_GET['sortby']) ? $_GET['sortby'] : 'post_dt';
-$order = !empty($_GET['order']) ? $_GET['order'] : 'desc';
+$id       = !empty($_GET['id']) ? $_GET['id'] : '';
+$user_id  = !empty($_GET['user_id']) ? $_GET['user_id'] : '';
+$cat_id   = !empty($_GET['cat_id']) ? $_GET['cat_id'] : '';
+$status   = $_GET['status']   ?? '';
+$selected = $_GET['selected'] ?? '';
+$month    = !empty($_GET['month']) ? $_GET['month'] : '';
+$entries  = !empty($_GET['entries']) ? $_GET['entries'] : '';
+$lang     = !empty($_GET['lang']) ? $_GET['lang'] : '';
+$sortby   = !empty($_GET['sortby']) ? $_GET['sortby'] : 'post_dt';
+$order    = !empty($_GET['order']) ? $_GET['order'] : 'desc';
 
 $show_filters = false;
 
-$page = !empty($_GET['page']) ? (int) $_GET['page'] : 1;
+$page        = !empty($_GET['page']) ? (int) $_GET['page'] : 1;
 $nb_per_page = 30;
 
 if (!empty($_GET['nb']) && (int) $_GET['nb'] > 0) {
@@ -142,13 +139,13 @@ if (!empty($_GET['nb']) && (int) $_GET['nb'] > 0) {
     $nb_per_page = (int) $_GET['nb'];
 }
 
-$params['limit'] = [(($page - 1) * $nb_per_page), $nb_per_page];
+$params['limit']      = [(($page - 1) * $nb_per_page), $nb_per_page];
 $params['no_content'] = true;
 
 // - User filter
 if ($user_id !== '' && in_array($user_id, $users_combo)) {
     $params['user_id'] = $user_id;
-    $show_filters = true;
+    $show_filters      = true;
 } else {
     $user_id = '';
 }
@@ -156,7 +153,7 @@ if ($user_id !== '' && in_array($user_id, $users_combo)) {
 // - Categories filter
 if ($cat_id !== '' && in_array($cat_id, $categories_combo)) {
     $params['cat_id'] = $cat_id;
-    $show_filters = true;
+    $show_filters     = true;
 } else {
     $cat_id = '';
 }
@@ -164,7 +161,7 @@ if ($cat_id !== '' && in_array($cat_id, $categories_combo)) {
 // - Status filter
 if ($status !== '' && in_array($status, $status_combo)) {
     $params['post_status'] = $status;
-    $show_filters = true;
+    $show_filters          = true;
 } else {
     $status = '';
 }
@@ -172,7 +169,7 @@ if ($status !== '' && in_array($status, $status_combo)) {
 // - Selected filter
 if ($selected !== '' && in_array($selected, $selected_combo)) {
     $params['post_selected'] = $selected;
-    $show_filters = true;
+    $show_filters            = true;
 } else {
     $selected = '';
 }
@@ -180,8 +177,8 @@ if ($selected !== '' && in_array($selected, $selected_combo)) {
 // - Month filter
 if ($month !== '' && in_array($month, $dt_m_combo)) {
     $params['post_month'] = substr($month, 4, 2);
-    $params['post_year'] = substr($month, 0, 4);
-    $show_filters = true;
+    $params['post_year']  = substr($month, 0, 4);
+    $show_filters         = true;
 } else {
     $month = '';
 }
@@ -189,7 +186,7 @@ if ($month !== '' && in_array($month, $dt_m_combo)) {
 // - Lang filter
 if ($lang !== '' && in_array($lang, $lang_combo)) {
     $params['post_lang'] = $lang;
-    $show_filters = true;
+    $show_filters        = true;
 } else {
     $lang = '';
 }
@@ -207,19 +204,19 @@ if ($sortby !== '' && in_array($sortby, $sortby_combo)) {
     }
 } else {
     $sortby = 'post_dt';
-    $order = 'desc';
+    $order  = 'desc';
 }
 
 // Get posts without current
 
 if (isset($_GET['id'])) {
     try {
-        $id = $_GET['id'];
-        $params['no_content'] = true;
+        $id                        = $_GET['id'];
+        $params['no_content']      = true;
         $params['exclude_post_id'] = $id;
-        $posts = dcCore::app()->blog->getPosts($params);
-        $counter = dcCore::app()->blog->getPosts($params, true);
-        $post_list = new adminPostList($posts, $counter->f(0));
+        $posts                     = dcCore::app()->blog->getPosts($params);
+        $counter                   = dcCore::app()->blog->getPosts($params, true);
+        $post_list                 = new adminPostList($posts, $counter->f(0));
     } catch (Exception $e) {
         dcCore::app()->error->add($e->getMessage());
     }
@@ -230,7 +227,7 @@ if (isset($_GET['id'])) {
 if (isset($_POST['entries'])) {
     try {
         $entries = implode(', ', $_POST['entries']);
-        $id = $_POST['id'];
+        $id      = $_POST['id'];
 
         $meta = dcCore::app()->meta;
 
@@ -263,10 +260,9 @@ if (isset($_POST['entries'])) {
 		<title><?php echo $page_title; ?></title>
 		<?php
         $form_filter_title = __('Show filters and display options');
-$starting_script = dcPage::jsLoad('js/_posts_list.js');
+$starting_script           = dcPage::jsLoad('js/_posts_list.js');
 $starting_script .= dcPage::jsLoad(DC_ADMIN_URL . '?pf=relatedEntries/js/posts-filter-controls.js');
-$starting_script .=
-'<script>' . "\n" .
+$starting_script .= '<script>' . "\n" .
 '//<![CDATA[' . "\n" .
 dcPage::jsVar('dotclear.msg.show_filters', $show_filters ? 'true' : 'false') . "\n" .
 dcPage::jsVar('dotclear.msg.filter_posts_list', $form_filter_title) . "\n" .
@@ -281,20 +277,20 @@ echo $starting_script;
 <?php
 
 if (!dcCore::app()->error->flag()) {
-    $id = (int) $_GET['id'];
-    $my_params['post_id'] = $id;
+    $id                      = (int) $_GET['id'];
+    $my_params['post_id']    = $id;
     $my_params['no_content'] = true;
-    $my_params['post_type'] = ['post'];
+    $my_params['post_type']  = ['post'];
 
-    $rs = dcCore::app()->blog->getPosts($my_params);
-    $post_title = $rs->post_title;
+    $rs          = dcCore::app()->blog->getPosts($my_params);
+    $post_title  = $rs->post_title;
     $post_status = $rs->post_status;
 
     echo dcPage::breadcrumb(
         [
             html::escapeHTML(dcCore::app()->blog->name) => '',
-            __('Related posts') => dcCore::app()->admin->getPageURL(),
-            $page_title => ''
+            __('Related posts')                         => dcCore::app()->admin->getPageURL(),
+            $page_title                                 => '',
         ]
     ) .
         '<p class="clear">' . __('Select posts related to entry:') . ' <a href="' . dcCore::app()->getPostAdminURL($rs->post_type, $rs->post_id) . '">' . $post_title . '</a>';
@@ -303,15 +299,19 @@ if (!dcCore::app()->error->flag()) {
         switch ($post_status) {
             case 1:
                 $img_status = sprintf($img_status_pattern, __('published'), 'check-on.png');
+
                 break;
             case 0:
                 $img_status = sprintf($img_status_pattern, __('unpublished'), 'check-off.png');
+
                 break;
             case -1:
                 $img_status = sprintf($img_status_pattern, __('scheduled'), 'scheduled.png');
+
                 break;
             case -2:
                 $img_status = sprintf($img_status_pattern, __('pending'), 'check-wrn.png');
+
                 break;
             default:
                 $img_status = '';

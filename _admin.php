@@ -9,7 +9,6 @@
  *
  * @copyright GPL-2.0 [https://www.gnu.org/licenses/gpl-2.0.html]
  */
-
 if (!defined('DC_CONTEXT_ADMIN')) {
     return;
 }
@@ -26,10 +25,10 @@ dcCore::app()->addBehavior(
     'adminDashboardFavorites',
     function ($core, $favs) {
         $favs->register('relatedEntries', [
-            'title' => __('Related posts'),
-            'url' => dcCore::app()->adminurl->get('admin.plugin.relatedEntries'),
-            'small-icon' => [dcPage::getPF('relatedEntries/icon.svg'), dcPage::getPF('relatedEntries/icon-dark.svg')],
-            'large-icon' => [dcPage::getPF('relatedEntries/icon.svg'), dcPage::getPF('relatedEntries/icon-dark.svg')],
+            'title'       => __('Related posts'),
+            'url'         => dcCore::app()->adminurl->get('admin.plugin.relatedEntries'),
+            'small-icon'  => [dcPage::getPF('relatedEntries/icon.svg'), dcPage::getPF('relatedEntries/icon-dark.svg')],
+            'large-icon'  => [dcPage::getPF('relatedEntries/icon.svg'), dcPage::getPF('relatedEntries/icon-dark.svg')],
             'permissions' => dcCore::app()->auth->makePermissions([dcAuth::PERMISSION_CONTENT_ADMIN]),
         ]);
     }
@@ -45,6 +44,7 @@ class relatedEntriesBehaviors
         foreach ($blocks as $block) {
             if ($block == 'core_post') {
                 $found = true;
+
                 break;
             }
         }
@@ -66,8 +66,8 @@ Clearbricks::lib()->autoload([
 
 if (isset($_GET['id']) && isset($_GET['r_id'])) {
     try {
-        $meta = dcCore::app()->meta;
-        $id = $_GET['id'];
+        $meta  = dcCore::app()->meta;
+        $id    = $_GET['id'];
         $r_ids = $_GET['r_id'];
 
         foreach ($meta->splitMetaValues($r_ids) as $tag) {
@@ -121,9 +121,9 @@ class relatedEntriesPostBehaviors
 
     public static function adminPostForm($post)
     {
-        $s = dcCore::app()->blog->settings->relatedEntries;
+        $s     = dcCore::app()->blog->settings->relatedEntries;
         $p_url = 'plugin.php?p=' . basename(dirname(__FILE__));
-        
+
         $postTypes = ['post'];
 
         if (!$s->relatedEntries_enabled) {
@@ -133,9 +133,9 @@ class relatedEntriesPostBehaviors
             return;
         }
 
-        $id = $post->post_id;
-        $type = $post->post_type;
-        $meta = dcCore::app()->meta;
+        $id      = $post->post_id;
+        $type    = $post->post_type;
+        $meta    = dcCore::app()->meta;
         $meta_rs = $meta->getMetaStr($post->post_meta, 'relatedEntries');
 
         if (!$meta_rs) {
@@ -155,16 +155,16 @@ class relatedEntriesPostBehaviors
 
             // Get related posts
             try {
-                $params['post_id'] = $meta->splitMetaValues($meta_rs);
+                $params['post_id']    = $meta->splitMetaValues($meta_rs);
                 $params['no_content'] = true;
-                $params['post_type'] = ['post'];
-                $posts = dcCore::app()->blog->getPosts($params);
-                $counter = dcCore::app()->blog->getPosts($params, true);
-                $post_list = new adminRelatedPostMiniList(dcCore::app(), $posts, $counter->f(0));
+                $params['post_type']  = ['post'];
+                $posts                = dcCore::app()->blog->getPosts($params);
+                $counter              = dcCore::app()->blog->getPosts($params, true);
+                $post_list            = new adminRelatedPostMiniList(dcCore::app(), $posts, $counter->f(0));
             } catch (Exception $e) {
                 dcCore::app()->error->add($e->getMessage());
             }
-            $page = '1';
+            $page        = '1';
             $nb_per_page = '50';
 
             echo

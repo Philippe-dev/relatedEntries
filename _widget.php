@@ -9,7 +9,6 @@
  *
  * @copyright GPL-2.0 [https://www.gnu.org/licenses/gpl-2.0.html]
  */
-
 if (!defined('DC_RC_PATH')) {
     return;
 }
@@ -107,7 +106,6 @@ class relatedEntriesWidgetBehaviors
                 [__('no bubble') => 'none', __('image title') => 'image', __('entry title') => 'entry']
             );
         }
-
 
         $w->relatedEntriesWidget->addContentOnly();
         $w->relatedEntriesWidget->addClass();

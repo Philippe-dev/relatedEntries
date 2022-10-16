@@ -9,7 +9,6 @@
  *
  * @copyright GPL-2.0 [https://www.gnu.org/licenses/gpl-2.0.html]
  */
-
 if (!defined('DC_CONTEXT_ADMIN')) {
     return;
 }
@@ -34,18 +33,18 @@ $s->put('relatedEntries_afterPost', true, 'boolean', 'Display related entries af
 $s->put('relatedEntries_title', __('Related posts'), 'string', 'Related entries block title', false, true);
 
 $opts = [
-    'size' => 't',
+    'size'     => 't',
     'html_tag' => 'div',
-    'link' => 'entry',
-    'exif' => 0,
-    'legend' => 'none',
-    'bubble' => 'image',
-    'from' => 'full',
-    'start' => 1,
-    'length' => 1,
-    'class' => '',
-    'alt' => 'inherit',
-    'img_dim' => 0
+    'link'     => 'entry',
+    'exif'     => 0,
+    'legend'   => 'none',
+    'bubble'   => 'image',
+    'from'     => 'full',
+    'start'    => 1,
+    'length'   => 1,
+    'class'    => '',
+    'alt'      => 'inherit',
+    'img_dim'  => 0,
 ];
 
 $s->put('relatedEntries_images_options', serialize($opts), 'string', 'Related entries images options', false, true);
