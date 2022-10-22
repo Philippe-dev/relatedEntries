@@ -21,18 +21,16 @@ dcCore::app()->menu[dcAdmin::MENU_BLOG]->addItem(
     dcCore::app()->auth->check(dcCore::app()->auth->makePermissions([dcAuth::PERMISSION_CONTENT_ADMIN]), dcCore::app()->blog->id)
 );
 
-dcCore::app()->addBehavior(
-    'adminDashboardFavorites',
-    function ($core, $favs) {
-        $favs->register('relatedEntries', [
-            'title'       => __('Related posts'),
-            'url'         => dcCore::app()->adminurl->get('admin.plugin.relatedEntries'),
-            'small-icon'  => [dcPage::getPF('relatedEntries/icon.svg'), dcPage::getPF('relatedEntries/icon-dark.svg')],
-            'large-icon'  => [dcPage::getPF('relatedEntries/icon.svg'), dcPage::getPF('relatedEntries/icon-dark.svg')],
-            'permissions' => dcCore::app()->auth->makePermissions([dcAuth::PERMISSION_CONTENT_ADMIN]),
-        ]);
-    }
-);
+/* Register favorite */
+dcCore::app()->addBehavior('adminDashboardFavoritesV2', function (dcFavorites $favs) {
+    $favs->register('relatedEntries', [
+        'title'       => __('Related posts'),
+        'url'         => dcCore::app()->adminurl->get('admin.plugin.relatedEntries'),
+        'small-icon'  => [dcPage::getPF('relatedEntries/icon.svg'), dcPage::getPF('relatedEntries/icon-dark.svg')],
+        'large-icon'  => [dcPage::getPF('relatedEntries/icon.svg'), dcPage::getPF('relatedEntries/icon-dark.svg')],
+        'permissions' => dcCore::app()->auth->makePermissions([dcAuth::PERMISSION_CONTENT_ADMIN]),
+    ]);
+});
 
 dcCore::app()->addBehavior('adminPageHelpBlock', ['relatedEntriesBehaviors', 'adminPageHelpBlock']);
 
