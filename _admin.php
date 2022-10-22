@@ -93,7 +93,7 @@ class relatedEntriesPostBehaviors
         '$(document).ready(function() {' . "\n" .
             '$(\'#relatedEntries-area label\').toggleWithLegend($(\'#relatedEntries-list\'), {' . "\n" .
                 'legend_click: true,' . "\n" .
-                'cookie: \'dcx_relatedEntries_detail\'' . "\n" .
+                'user_pref: \'dcx_relatedEntries_detail\'' . "\n" .
 
             '});' . "\n" .
             '$(\'a.link-remove\').click(function() {' . "\n" .
@@ -139,7 +139,7 @@ class relatedEntriesPostBehaviors
         if (!$meta_rs) {
             echo
                 '<div class="area" id="relatedEntries-area">' .
-                '<p class="smart-title">' . __('Related posts') . '</p>' .
+                '<label class="bold" for="relatedEntries-list">'.__('Related posts').'</label>'.
                 '<div id="relatedEntries-list" >' .
                 '<p>' . __('No related posts') . '</p>' .
                 '<p><a href="' . $p_url . '&amp;id=' . $id . '&upd=1">' . __('Add links to related posts') . '</a></p>' .
@@ -148,7 +148,7 @@ class relatedEntriesPostBehaviors
         } else {
             echo
                 '<div class="area" id="relatedEntries-area">' .
-                '<p class="smart-title">' . __('Links to related posts') . '</p>' .
+                '<label class="bold" for="relatedEntries-list">'.__('Links to related posts').'</label>'.
                 '<div id="relatedEntries-list" >';
 
             // Get related posts
