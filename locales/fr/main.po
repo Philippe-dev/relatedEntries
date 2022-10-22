@@ -58,8 +58,8 @@ msgstr "Ajouter des liens vers des billets connexes"
 msgid "Add links to selected posts"
 msgstr "Ajouter les liens vers les billets sélectionnés"
 
-msgid "Links to related posts"
-msgstr "Liens vers des billets connexes"
+msgid "Links to related posts:"
+msgstr "Liens vers des billets connexes :"
 
 msgid "Delete this link"
 msgstr "Supprimer ce lien"
