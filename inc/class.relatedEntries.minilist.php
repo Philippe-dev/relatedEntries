@@ -56,8 +56,6 @@ class adminRelatedPostMiniList extends adminGenericList
     {
         $id = $_GET['id'];
 
-        $p_url = 'plugin.php?p=' . basename(dirname(__FILE__));
-
         if (dcCore::app()->auth->check('categories', dcCore::app()->blog->id)) {
             $cat_link = '<a href="category.php?id=%s">%s</a>';
         } else {
@@ -122,7 +120,7 @@ class adminRelatedPostMiniList extends adminGenericList
         '<td class="nowrap count">' . $this->rs->nb_comment . '</td>' .
         '<td class="nowrap count">' . $this->rs->nb_trackback . '</td>' .
         '<td class="nowrap status">' . $img_status . ' ' . $selected . ' ' . $protected . ' ' . $attach . '</td>' .
-        '<td class="nowrap count"><a class="link-remove metaRemove" href="' . $p_url . '&amp;id=' . $id . '&amp;r_id=' . $this->rs->post_id . '" title="' . __('Delete this link') . '"><img src="images/trash.png" alt="supprimer" /></a></td>' .
+        '<td class="nowrap count"><a class="link-remove metaRemove" href="' . DC_ADMIN_URL . 'plugin.php?p=relatedEntries&amp;id=' . $id . '&amp;r_id=' . $this->rs->post_id . '" title="' . __('Delete this link') . '"><img src="images/trash.png" alt="supprimer" /></a></td>' .
         '</tr>';
 
         return $res;
