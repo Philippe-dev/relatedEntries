@@ -26,12 +26,9 @@ class adminRelatedPostMiniList extends adminGenericList
 
             $html_block = '<div class="table-outer clear">' .
             '<table><caption class="hidden">' . __('Entries list') . '</caption><tr>' .
-            '<th scope="col">' . __('Title') . '</th>' .
+            '<th class="first">' . __('Title') . '</th>' .
             '<th scope="col">' . __('Date') . '</th>' .
             '<th scope="col">' . __('Category') . '</th>' .
-            '<th scope="col">' . __('Author') . '</th>' .
-            '<th scope="col">' . __('Comments') . '</th>' .
-            '<th scope="col">' . __('Trackbacks') . '</th>' .
             '<th scope="col">' . __('Status') . '</th>' .
             '<th scope="col">' . __('Actions') . '</th>' .
             '</tr>%s</table></div>';
@@ -73,20 +70,20 @@ class adminRelatedPostMiniList extends adminGenericList
         }
 
         $img = '<img alt="%1$s" title="%1$s" src="images/%2$s" />';
-        switch ($this->rs->post_status) {
-            case 1:
+        switch ($rs->post_status) {
+            case dcBlog::POST_PUBLISHED:
                 $img_status = sprintf($img, __('published'), 'check-on.png');
 
                 break;
-            case 0:
+            case dcBlog::POST_UNPUBLISHED:
                 $img_status = sprintf($img, __('unpublished'), 'check-off.png');
 
                 break;
-            case -1:
+            case dcBlog::POST_SCHEDULED:
                 $img_status = sprintf($img, __('scheduled'), 'scheduled.png');
 
                 break;
-            case -2:
+            case dcBlog::POST_PENDING:
                 $img_status = sprintf($img, __('pending'), 'check-wrn.png');
 
                 break;
@@ -116,9 +113,6 @@ class adminRelatedPostMiniList extends adminGenericList
         html::escapeHTML($this->rs->post_title) . '</a></td>' .
         '<td class="nowrap">' . dt::dt2str(__('%Y-%m-%d %H:%M'), $this->rs->post_dt) . '</td>' .
         '<td class="nowrap">' . $cat_title . '</td>' .
-        '<td class="nowrap">' . $this->rs->user_id . '</td>' .
-        '<td class="nowrap count">' . $this->rs->nb_comment . '</td>' .
-        '<td class="nowrap count">' . $this->rs->nb_trackback . '</td>' .
         '<td class="nowrap status">' . $img_status . ' ' . $selected . ' ' . $protected . ' ' . $attach . '</td>' .
         '<td class="nowrap count"><a class="link-remove metaRemove" href="' . DC_ADMIN_URL . 'plugin.php?p=relatedEntries&amp;id=' . $id . '&amp;r_id=' . $this->rs->post_id . '" title="' . __('Delete this link') . '"><img src="images/trash.png" alt="supprimer" /></a></td>' .
         '</tr>';
