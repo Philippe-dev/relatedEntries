@@ -13,11 +13,11 @@ if (!defined('DC_CONTEXT_ADMIN')) {
     return;
 }
 
-$m_version = dcCore::app()->plugins->moduleInfo('relatedEntries', 'version');
+$new_version = dcCore::app()->plugins->moduleInfo('relatedEntries', 'version');
 
-$i_version = dcCore::app()->getVersion('relatedEntries');
+$old_version = dcCore::app()->getVersion('relatedEntries');
 
-if (version_compare($i_version, $m_version, '>=')) {
+if (version_compare((string) $old_version, $new_version, '>=')) {
     return;
 }
 
@@ -49,6 +49,6 @@ $opts = [
 
 $s->put('relatedEntries_images_options', serialize($opts), 'string', 'Related entries images options', false, true);
 
-dcCore::app()->setVersion('relatedEntries', $m_version);
+dcCore::app()->setVersion('relatedEntries', $new_version);
 
 return true;
