@@ -13,11 +13,10 @@ if (!defined('DC_CONTEXT_ADMIN')) {
     return;
 }
 
-$new_version = dcCore::app()->plugins->moduleInfo('relatedEntries', 'version');
+$new_version = (string) dcCore::app()->plugins->moduleInfo('relatedEntries', 'version');
+$old_version = (string) dcCore::app()->getVersion('relatedEntries');
 
-$old_version = dcCore::app()->getVersion('relatedEntries');
-
-if (version_compare((string) $old_version, $new_version, '>=')) {
+if (version_compare($old_version, $new_version, '>=')) {
     return;
 }
 
