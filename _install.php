@@ -13,41 +13,40 @@ if (!defined('DC_CONTEXT_ADMIN')) {
     return;
 }
 
-$new_version = (string) dcCore::app()->plugins->moduleInfo('relatedEntries', 'version');
-$old_version = (string) dcCore::app()->getVersion('relatedEntries');
-
-if (version_compare($old_version, $new_version, '>=')) {
+if (!dcCore::app()->newVersion(basename(__DIR__), dcCore::app()->plugins->moduleInfo(basename(__DIR__), 'version'))) {
     return;
 }
 
-// Settings
-dcCore::app()->blog->settings->addNamespace('relatedEntries');
+try {
+    dcCore::app()->blog->settings->addNamespace('relatedEntries');
+    $s = dcCore::app()->blog->settings->relatedEntries;
 
-$s = dcCore::app()->blog->settings->relatedEntries;
+    $s->put('relatedEntries_enabled', false, 'boolean', 'Enable related entries', false, true);
+    $s->put('relatedEntries_images', false, 'boolean', 'Display related entries links as images', false, true);
+    $s->put('relatedEntries_beforePost', false, 'boolean', 'Display related entries before post content', false, true);
+    $s->put('relatedEntries_afterPost', true, 'boolean', 'Display related entries after post content', false, true);
+    $s->put('relatedEntries_title', __('Related posts'), 'string', 'Related entries block title', false, true);
 
-$s->put('relatedEntries_enabled', false, 'boolean', 'Enable related entries', false, true);
-$s->put('relatedEntries_images', false, 'boolean', 'Display related entries links as images', false, true);
-$s->put('relatedEntries_beforePost', false, 'boolean', 'Display related entries before post content', false, true);
-$s->put('relatedEntries_afterPost', true, 'boolean', 'Display related entries after post content', false, true);
-$s->put('relatedEntries_title', __('Related posts'), 'string', 'Related entries block title', false, true);
+    $opts = [
+        'size'     => 't',
+        'html_tag' => 'div',
+        'link'     => 'entry',
+        'exif'     => 0,
+        'legend'   => 'none',
+        'bubble'   => 'image',
+        'from'     => 'full',
+        'start'    => 1,
+        'length'   => 1,
+        'class'    => '',
+        'alt'      => 'inherit',
+        'img_dim'  => 0,
+    ];
 
-$opts = [
-    'size'     => 't',
-    'html_tag' => 'div',
-    'link'     => 'entry',
-    'exif'     => 0,
-    'legend'   => 'none',
-    'bubble'   => 'image',
-    'from'     => 'full',
-    'start'    => 1,
-    'length'   => 1,
-    'class'    => '',
-    'alt'      => 'inherit',
-    'img_dim'  => 0,
-];
+    $s->put('relatedEntries_images_options', serialize($opts), 'string', 'Related entries images options', false, true);
 
-$s->put('relatedEntries_images_options', serialize($opts), 'string', 'Related entries images options', false, true);
+    return true;
+} catch (Exception $e) {
+    dcCore::app()->error->add($e->getMessage());
+}
 
-dcCore::app()->setVersion('relatedEntries', $new_version);
-
-return true;
+return false;
