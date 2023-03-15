@@ -64,6 +64,7 @@ class Backend extends dcNsProcess
         dcCore::app()->addBehavior('adminPageHelpBlock', [self::class,  'adminPageHelpBlock']);
         dcCore::app()->addBehavior('adminPostHeaders', [self::class,  'postHeaders']);
         dcCore::app()->addBehavior('adminPostForm', [self::class,  'adminPostForm']);
+        dcCore::app()->addBehavior('initWidgets', [Widgets::class, 'initWidgets']);
 
         if (isset($_GET['id']) && isset($_GET['r_id'])) {
             try {

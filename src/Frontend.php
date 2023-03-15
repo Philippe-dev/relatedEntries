@@ -39,6 +39,7 @@ class Frontend extends dcNsProcess
         dcCore::app()->addBehavior('publicEntryBeforeContent', [self::class,  'publicEntryBeforeContent']);
         dcCore::app()->addBehavior('publicEntryAfterContent', [self::class,  'publicEntryAfterContent']);
         dcCore::app()->addBehavior('publicHeadContent', [self::class,  'publicHeadContent']);
+        dcCore::app()->addBehavior('initWidgets', [Widgets::class, 'initWidgets']);
 
         l10n::set(dirname(__FILE__) . '/locales/' . dcCore::app()->lang . '/main');
 
