@@ -16,6 +16,7 @@ namespace Dotclear\Plugin\relatedEntries;
 use dcCore;
 use Dotclear\Plugin\widgets\WidgetsElement;
 use html;
+use tplEntryImages;
 
 class FrontendTemplate
 {

@@ -19,6 +19,7 @@ use dcNsProcess;
 use html;
 use path;
 use l10n;
+use tplEntryImages;
 
 class Frontend extends dcNsProcess
 {
