@@ -37,20 +37,20 @@ class Backend extends dcNsProcess
         }
 
         dcCore::app()->menu[dcAdmin::MENU_BLOG]->addItem(
-            __('Colorbox'),
-            dcCore::app()->adminurl->get('admin.plugin.colorbox'),
-            [dcPage::getPF('colorbox/icon.svg'), dcPage::getPF('colorbox/icon-dark.svg')],
-            preg_match('/' . preg_quote(dcCore::app()->adminurl->get('admin.plugin.colorbox')) . '(&.*)?$/', $_SERVER['REQUEST_URI']),
+            __('Related posts'),
+            dcCore::app()->adminurl->get('admin.plugin.relatedEntries'),
+            [dcPage::getPF('relatedEntries/icon.svg'), dcPage::getPF('relatedEntries/icon-dark.svg')],
+            preg_match('/' . preg_quote(dcCore::app()->adminurl->get('admin.plugin.relatedEntries')) . '(&.*)?$/', $_SERVER['REQUEST_URI']),
             dcCore::app()->auth->check(dcCore::app()->auth->makePermissions([dcAuth::PERMISSION_CONTENT_ADMIN]), dcCore::app()->blog->id)
         );
-
+        
         /* Register favorite */
         dcCore::app()->addBehavior('adminDashboardFavoritesV2', function (dcFavorites $favs) {
-            $favs->register('colorbox', [
-                'title'       => __('Colorbox'),
-                'url'         => dcCore::app()->adminurl->get('admin.plugin.colorbox'),
-                'small-icon'  => [dcPage::getPF('colorbox/icon.svg'), dcPage::getPF('colorbox/icon-dark.svg')],
-                'large-icon'  => [dcPage::getPF('colorbox/icon.svg'), dcPage::getPF('colorbox/icon-dark.svg')],
+            $favs->register('relatedEntries', [
+                'title'       => __('Related posts'),
+                'url'         => dcCore::app()->adminurl->get('admin.plugin.relatedEntries'),
+                'small-icon'  => [dcPage::getPF('relatedEntries/icon.svg'), dcPage::getPF('relatedEntries/icon-dark.svg')],
+                'large-icon'  => [dcPage::getPF('relatedEntries/icon.svg'), dcPage::getPF('relatedEntries/icon-dark.svg')],
                 'permissions' => dcCore::app()->auth->makePermissions([dcAuth::PERMISSION_CONTENT_ADMIN]),
             ]);
         });

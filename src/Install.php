@@ -35,53 +35,30 @@ class Install extends dcNsProcess
             return false;
         }
 
-        $s = dcCore::app()->blog->settings->colorbox;
+        $s = dcCore::app()->blog->settings->relatedEntries;
+
+        $s->put('relatedEntries_enabled', false, 'boolean', 'Enable related entries', false, true);
+        $s->put('relatedEntries_images', false, 'boolean', 'Display related entries links as images', false, true);
+        $s->put('relatedEntries_beforePost', false, 'boolean', 'Display related entries before post content', false, true);
+        $s->put('relatedEntries_afterPost', true, 'boolean', 'Display related entries after post content', false, true);
+        $s->put('relatedEntries_title', __('Related posts'), 'string', 'Related entries block title', false, true);
 
         $opts = [
-            'transition'     => 'elastic',
-            'speed'          => '350',
-            'title'          => '',
-            'width'          => '',
-            'height'         => '',
-            'innerWidth'     => '',
-            'innerHeight'    => '',
-            'initialWidth'   => '300',
-            'initialHeight'  => '100',
-            'maxWidth'       => '',
-            'maxHeight'      => '',
-            'scalePhotos'    => true,
-            'scrolling'      => true,
-            'iframe'         => false,
-            'opacity'        => '0.85',
-            'open'           => false,
-            'preloading'     => true,
-            'overlayClose'   => true,
-            'loop'           => true,
-            'slideshow'      => false,
-            'slideshowSpeed' => '2500',
-            'slideshowAuto'  => false,
-            'slideshowStart' => __('Start slideshow'),
-            'slideshowStop'  => __('Stop slideshow'),
-            'current'        => __('{current} of {total}'),
-            'previous'       => __('previous'),
-            'next'           => __('next'),
-            'close'          => __('close'),
-            'onOpen'         => '',
-            'onLoad'         => '',
-            'onComplete'     => '',
-            'onCleanup'      => '',
-            'onClosed'       => '',
+            'size'     => 't',
+            'html_tag' => 'div',
+            'link'     => 'entry',
+            'exif'     => 0,
+            'legend'   => 'none',
+            'bubble'   => 'image',
+            'from'     => 'full',
+            'start'    => 1,
+            'length'   => 1,
+            'class'    => '',
+            'alt'      => 'inherit',
+            'img_dim'  => 0,
         ];
 
-        $s->put('colorbox_enabled', false, 'boolean', 'Enable Colorbox plugin', false, true);
-        $s->put('colorbox_theme', '3', 'integer', 'Colorbox theme', false, true);
-        $s->put('colorbox_zoom_icon', false, 'boolean', 'Enable Colorbox zoom icon', false, true);
-        $s->put('colorbox_zoom_icon_permanent', false, 'boolean', 'Enable permanent Colorbox zoom icon', false, true);
-        $s->put('colorbox_position', false, 'boolean', 'Colorbox zoom icon position', false, true);
-        $s->put('colorbox_user_files', 'public', 'boolean', 'Colorbox user files', false, true);
-        $s->put('colorbox_selectors', '', 'string', 'Colorbox selectors', false, true);
-        $s->put('colorbox_legend', 'alt', 'string', 'Colorbox legend', false, true);
-        $s->put('colorbox_advanced', serialize($opts), 'string', 'Colorbox advanced options', false, true);
+        $s->put('relatedEntries_images_options', serialize($opts), 'string', 'Related entries images options', false, true);
 
         return true;
     }
