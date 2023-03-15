@@ -35,7 +35,6 @@ class Frontend extends dcNsProcess
             return false;
         }
 
-        // require dirname(__FILE__) . '/_widget.php';
         dcCore::app()->addBehavior('publicEntryBeforeContent', [self::class,  'publicEntryBeforeContent']);
         dcCore::app()->addBehavior('publicEntryAfterContent', [self::class,  'publicEntryAfterContent']);
         dcCore::app()->addBehavior('publicHeadContent', [self::class,  'publicHeadContent']);
