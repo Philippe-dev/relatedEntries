@@ -361,9 +361,9 @@ class Manage extends dcNsProcess
         /*
          * Posts list
          */
-        dcCore::app()->admin->post_list               = $post_list;
-        dcCore::app()->admin->page               = $page;
-        dcCore::app()->admin->nb_per_page               = $nb_per_page;
+        dcCore::app()->admin->post_list   = $post_list;
+        dcCore::app()->admin->page        = $page;
+        dcCore::app()->admin->nb_per_page = $nb_per_page;
 
         self::$init = true;
 
@@ -377,6 +377,10 @@ class Manage extends dcNsProcess
     {
         if (!self::$init) {
             return false;
+        }
+
+        if (isset($_GET['id']) || isset($_POST['id']) || isset($_GET['relatedEntries_filters'])) {
+            require_once dirname(__FILE__) . '/Posts.php';
         }
 
         // Saving configurations
