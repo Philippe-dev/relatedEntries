@@ -21,129 +21,339 @@ use dt;
 use html;
 use dcPager;
 use form;
+use dcUtils;
+use adminPostList;
 
 class BackendList extends adminGenericListV2
 {
     /**
-     * Display a list of pages
-     *
-     * @param      int     $page           The page
-     * @param      int     $nb_per_page    The number of per page
-     * @param      string  $enclose_block  The enclose block
+     * Initializes the page.
      */
-    public function display(int $page, int $nb_per_page, string $enclose_block = ''): void
+    public static function init(): bool
     {
-        if ($this->rs->isEmpty()) {
-            echo '<p><strong>' . __('No entry') . '</strong></p>';
-        } else {
-            $pager   = new dcPager($page, (int) $this->rs_count, $nb_per_page, 10);
-            $pager->html_prev = $this->html_prev;
-            $pager->html_next = $this->html_next;
-            $pager->var_page  = 'page';
-
-            $html_block = '<div class="table-outer clear">' .
-            '<table><caption class="hidden">' . __('Entries list') . '</caption><tr>' .
-            '<th class="first">' . __('Title') . '</th>' .
-            '<th scope="col">' . __('Date') . '</th>' .
-            '<th scope="col">' . __('Category') . '</th>' .
-            '<th scope="col">' . __('Status') . '</th>' .
-            '<th scope="col">' . __('Actions') . '</th>' .
-            '</tr>%s</table></div>';
-
-            if ($enclose_block) {
-                $html_block = sprintf($enclose_block, $html_block);
-            }
-
-            $blocks = explode('%s', $html_block);
-
-            echo $blocks[0];
-
-            $count = 0;
-            while ($this->rs->fetch()) {
-                echo $this->postLine($count, isset($entries[$this->rs->post_id]));
-                $count++;
-            }
-
-            echo $blocks[1];
+        // Getting categories
+        try {
+            $categories = dcCore::app()->blog->getCategories(['post_type' => 'post']);
+        } catch (Exception $e) {
+            dcCore::app()->error->add($e->getMessage());
         }
+
+        // Getting authors
+        try {
+            $users = dcCore::app()->blog->getPostsUsers();
+        } catch (Exception $e) {
+            dcCore::app()->error->add($e->getMessage());
+        }
+
+        // Getting dates
+        try {
+            $dates = dcCore::app()->blog->getDates(['type' => 'month']);
+        } catch (Exception $e) {
+            dcCore::app()->error->add($e->getMessage());
+        }
+
+        // Getting langs
+        try {
+            $langs = dcCore::app()->blog->getLangs();
+        } catch (Exception $e) {
+            dcCore::app()->error->add($e->getMessage());
+        }
+
+        // Creating filter combo boxes
+        if (!dcCore::app()->error->flag()) {
+            // Filter form we'll put in html_block
+            $users_combo      = $categories_combo = [];
+            $users_combo['-'] = $categories_combo['-'] = '';
+            while ($users->fetch()) {
+                $user_cn = dcUtils::getUserCN(
+                    $users->user_id,
+                    $users->user_name,
+                    $users->user_firstname,
+                    $users->user_displayname
+                );
+
+                if ($user_cn != $users->user_id) {
+                    $user_cn .= ' (' . $users->user_id . ')';
+                }
+
+                $users_combo[$user_cn] = $users->user_id;
+            }
+
+            $categories_combo[__('None')] = 'NULL';
+            while ($categories->fetch()) {
+                $categories_combo[str_repeat('&nbsp;&nbsp;', $categories->level - 1) . ($categories->level - 1 == 0 ? '' : '&bull; ') .
+                    html::escapeHTML($categories->cat_title) .
+                    ' (' . $categories->nb_post . ')'] = $categories->cat_id;
+            }
+
+            $status_combo = [
+                '-' => '',
+            ];
+            foreach (dcCore::app()->blog->getAllPostStatus() as $k => $v) {
+                $status_combo[$v] = (string) $k;
+            }
+
+            $selected_combo = [
+                '-'                => '',
+                __('selected')     => '1',
+                __('not selected') => '0',
+            ];
+
+            // Months array
+            $dt_m_combo['-'] = '';
+            while ($dates->fetch()) {
+                $dt_m_combo[dt::str('%B %Y', $dates->ts())] = $dates->year() . $dates->month();
+            }
+
+            $lang_combo['-'] = '';
+            while ($langs->fetch()) {
+                $lang_combo[$langs->post_lang] = $langs->post_lang;
+            }
+
+            $sortby_combo = [
+                __('Date')     => 'post_dt',
+                __('Title')    => 'post_title',
+                __('Category') => 'cat_title',
+                __('Author')   => 'user_id',
+                __('Status')   => 'post_status',
+                __('Selected') => 'post_selected',
+            ];
+
+            $order_combo = [
+                __('Descending') => 'desc',
+                __('Ascending')  => 'asc',
+            ];
+        }
+
+        /* Get posts
+        -------------------------------------------------------- */
+        $id       = !empty($_GET['id']) ? $_GET['id'] : '';
+        $user_id  = !empty($_GET['user_id']) ? $_GET['user_id'] : '';
+        $cat_id   = !empty($_GET['cat_id']) ? $_GET['cat_id'] : '';
+        $status   = $_GET['status']   ?? '';
+        $selected = $_GET['selected'] ?? '';
+        $month    = !empty($_GET['month']) ? $_GET['month'] : '';
+        $entries  = !empty($_GET['entries']) ? $_GET['entries'] : '';
+        $lang     = !empty($_GET['lang']) ? $_GET['lang'] : '';
+        $sortby   = !empty($_GET['sortby']) ? $_GET['sortby'] : 'post_dt';
+        $order    = !empty($_GET['order']) ? $_GET['order'] : 'desc';
+
+        $show_filters = false;
+
+        $page        = !empty($_GET['page']) ? (int) $_GET['page'] : 1;
+        $nb_per_page = 30;
+
+        if (!empty($_GET['nb']) && (int) $_GET['nb'] > 0) {
+            if ($nb_per_page != $_GET['nb']) {
+                $show_filters = true;
+            }
+            $nb_per_page = (int) $_GET['nb'];
+        }
+
+        $params['limit']      = [(($page - 1) * $nb_per_page), $nb_per_page];
+        $params['no_content'] = true;
+
+        // - User filter
+        if ($user_id !== '' && in_array($user_id, $users_combo)) {
+            $params['user_id'] = $user_id;
+            $show_filters      = true;
+        } else {
+            $user_id = '';
+        }
+
+        // - Categories filter
+        if ($cat_id !== '' && in_array($cat_id, $categories_combo)) {
+            $params['cat_id'] = $cat_id;
+            $show_filters     = true;
+        } else {
+            $cat_id = '';
+        }
+
+        // - Status filter
+        if ($status !== '' && in_array($status, $status_combo)) {
+            $params['post_status'] = $status;
+            $show_filters          = true;
+        } else {
+            $status = '';
+        }
+
+        // - Selected filter
+        if ($selected !== '' && in_array($selected, $selected_combo)) {
+            $params['post_selected'] = $selected;
+            $show_filters            = true;
+        } else {
+            $selected = '';
+        }
+
+        // - Month filter
+        if ($month !== '' && in_array($month, $dt_m_combo)) {
+            $params['post_month'] = substr($month, 4, 2);
+            $params['post_year']  = substr($month, 0, 4);
+            $show_filters         = true;
+        } else {
+            $month = '';
+        }
+
+        // - Lang filter
+        if ($lang !== '' && in_array($lang, $lang_combo)) {
+            $params['post_lang'] = $lang;
+            $show_filters        = true;
+        } else {
+            $lang = '';
+        }
+
+        // - Sortby and order filter
+        if ($sortby !== '' && in_array($sortby, $sortby_combo)) {
+            if ($order !== '' && in_array($order, $order_combo)) {
+                $params['order'] = $sortby . ' ' . $order;
+            } else {
+                $order = 'desc';
+            }
+
+            if ($sortby != 'post_dt' || $order != 'desc') {
+                $show_filters = true;
+            }
+        } else {
+            $sortby = 'post_dt';
+            $order  = 'desc';
+        }
+
+        // Get posts without current
+
+        if (isset($_GET['id'])) {
+            try {
+                $id                        = $_GET['id'];
+                $params['no_content']      = true;
+                $params['exclude_post_id'] = $id;
+                $posts                     = dcCore::app()->blog->getPosts($params);
+                $counter                   = dcCore::app()->blog->getPosts($params, true);
+                $post_list                 = new adminPostList($posts, $counter->f(0));
+            } catch (Exception $e) {
+                dcCore::app()->error->add($e->getMessage());
+            }
+        }
+
+        /*
+         * Filters
+         */
+        dcCore::app()->admin->users_combo      = $users_combo;
+        dcCore::app()->admin->user_id          = $user_id;
+        dcCore::app()->admin->categories_combo = $categories_combo;
+        dcCore::app()->admin->cat_id           = $cat_id;
+        dcCore::app()->admin->status_combo     = $status_combo;
+        dcCore::app()->admin->status           = $status;
+        dcCore::app()->admin->selected_combo   = $selected_combo;
+        dcCore::app()->admin->selected         = $selected;
+        dcCore::app()->admin->dt_m_combo       = $dt_m_combo;
+        dcCore::app()->admin->month            = $month;
+        dcCore::app()->admin->lang_combo       = $lang_combo;
+        dcCore::app()->admin->lang             = $lang;
+        dcCore::app()->admin->sortby_combo     = $sortby_combo;
+        dcCore::app()->admin->sortby           = $sortby;
+        dcCore::app()->admin->order_combo      = $order_combo;
+        dcCore::app()->admin->order            = $order;
+        dcCore::app()->admin->nb_per_page      = $nb_per_page;
+        dcCore::app()->admin->id               = $id;
+        /*
+         * Posts list
+         */
+        dcCore::app()->admin->post_list   = $post_list;
+        dcCore::app()->admin->page        = $page;
+        dcCore::app()->admin->nb_per_page = $nb_per_page;
+
+        self::$init = true;
+
+        return self::$init;
     }
 
     /**
-     * Return a page line.
-     *
-     * @param      int     $count    The count
-     * @param      bool    $checked  The checked
-     *
-     * @return     string
+     * Processes the request(s).
      */
-    private function postLine(int $count, bool $checked): string
+    public static function process(): bool
     {
-        $id = $_GET['id'];
-
-        if (dcCore::app()->auth->check('categories', dcCore::app()->blog->id)) {
-            $cat_link = '<a href="category.php?id=%s">%s</a>';
-        } else {
-            $cat_link = '%2$s';
+        if (!self::$init) {
+            return false;
         }
 
-        if ($this->rs->cat_title) {
-            $cat_title = sprintf(
-                $cat_link,
-                $this->rs->cat_id,
-                html::escapeHTML($this->rs->cat_title)
-            );
-        } else {
-            $cat_title = __('None');
+        // Save relatedEntries
+
+        if (isset($_POST['entries'])) {
+            try {
+                $entries = implode(', ', $_POST['entries']);
+                $id      = $_POST['id'];
+
+                $meta = dcCore::app()->meta;
+
+                foreach ($meta->splitMetaValues($entries) as $tag) {
+                    $meta->delPostMeta($id, 'relatedEntries', $tag);
+                    $meta->setPostMeta($id, 'relatedEntries', $tag);
+                }
+                foreach ($meta->splitMetaValues($entries) as $tag) {
+                    $r_tags = $meta->getMetaStr(serialize($tag), 'relatedEntries');
+                    $r_tags = explode(', ', $r_tags);
+                    array_push($r_tags, $id);
+                    $r_tags = implode(', ', $r_tags);
+                    foreach ($meta->splitMetaValues($r_tags) as $tags) {
+                        $meta->delPostMeta($tag, 'relatedEntries', $tags);
+                        $meta->setPostMeta($tag, 'relatedEntries', $tags);
+                    }
+                }
+
+                http::redirect(DC_ADMIN_URL . 'post.php?id=' . $id . '&add=1&upd=1');
+            } catch (Exception $e) {
+                dcCore::app()->error->add($e->getMessage());
+            }
         }
 
-        $img = '<img alt="%1$s" title="%1$s" src="images/%2$s" />';
-        switch ($this->rs->post_status) {
-            case dcBlog::POST_PUBLISHED:
-                $img_status = sprintf($img, __('published'), 'check-on.png');
+        return true;
+    }
 
-                break;
-            case dcBlog::POST_UNPUBLISHED:
-                $img_status = sprintf($img, __('unpublished'), 'check-off.png');
-
-                break;
-            case dcBlog::POST_SCHEDULED:
-                $img_status = sprintf($img, __('scheduled'), 'scheduled.png');
-
-                break;
-            case dcBlog::POST_PENDING:
-                $img_status = sprintf($img, __('pending'), 'check-wrn.png');
-
-                break;
+    /**
+     * Renders the page.
+     */
+    public static function render(): void
+    {
+        if (!self::$init) {
+            return;
         }
 
-        $protected = '';
-        if ($this->rs->post_password) {
-            $protected = sprintf($img, __('protected'), 'locker.png');
-        }
+        echo
+        '<html>' .
+        '<head>' ;
 
-        $selected = '';
-        if ($this->rs->post_selected) {
-            $selected = sprintf($img, __('selected'), 'selected.png');
-        }
+        $form_filter_title = __('Show filters and display options');
+        $starting_script   = dcPage::jsLoad('js/_posts_list.js');
+        $starting_script .= dcPage::jsLoad(DC_ADMIN_URL . '?pf=relatedEntries/js/filter-controls.js');
+        $starting_script .= dcPage::jsPageTabs(dcCore::app()->admin->default_tab);
+        $starting_script .= dcPage::jsConfirmClose('config-form');
+        $starting_script .= '<script>' . "\n" .
+        '//<![CDATA[' . "\n" .
+        dcPage::jsVar('dotclear.msg.show_filters', dcCore::app()->admin->show_filters ? 'true' : 'false') . "\n" .
+        dcPage::jsVar('dotclear.msg.filter_posts_list', $form_filter_title) . "\n" .
+        dcPage::jsVar('dotclear.msg.cancel_the_filter', __('Cancel filters and display options')) . "\n" .
+        '//]]>' .
+        '</script>';
+        echo $starting_script;
 
-        $attach   = '';
-        $nb_media = $this->rs->countMedia();
-        if ($nb_media > 0) {
-            $attach_str = $nb_media == 1 ? __('%d attachment') : __('%d attachments');
-            $attach     = sprintf($img, sprintf($attach_str, $nb_media), 'attach.png');
-        }
+        echo
+        '<title>' . __('Related posts') . '</title>' .
+        '</head>' .
+        '<body>';
 
-        $res = '<tr class="line' . ($this->rs->post_status != 1 ? ' offline' : '') . '"' .
-        ' id="p' . $this->rs->post_id . '">';
+        echo dcPage::breadcrumb(
+            [
+                html::escapeHTML(dcCore::app()->blog->name) => '',
+                __('Related posts')                         => dcCore::app()->admin->getPageURL(),
+                $page_title                                 => '',
+            ]
+        ) .
+            '<p class="clear">' . __('Select posts related to entry:') . ' <a href="' . dcCore::app()->getPostAdminURL($rs->post_type, $rs->post_id) . '">' . $post_title . '</a>';
 
-        $res .= '<td class="maximal"><a href="' . dcCore::app()->getPostAdminURL($this->rs->post_type, $this->rs->post_id) . '">' .
-        html::escapeHTML($this->rs->post_title) . '</a></td>' .
-        '<td class="nowrap">' . dt::dt2str(__('%Y-%m-%d %H:%M'), $this->rs->post_dt) . '</td>' .
-        '<td class="nowrap">' . $cat_title . '</td>' .
-        '<td class="nowrap status">' . $img_status . ' ' . $selected . ' ' . $protected . ' ' . $attach . '</td>' .
-        '<td class="nowrap count"><a class="link-remove metaRemove" href="' . DC_ADMIN_URL . 'plugin.php?p=relatedEntries&amp;id=' . $id . '&amp;r_id=' . $this->rs->post_id . '" title="' . __('Delete this link') . '"><img src="images/trash.png" alt="supprimer" /></a></td>' .
-        '</tr>';
-
-        return $res;
+        
+        
+        dcPage::helpBlock('relatedEntries');
+        echo
+        '</body>' .
+        '</html>';
     }
 }

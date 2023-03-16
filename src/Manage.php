@@ -33,6 +33,8 @@ class Manage extends dcNsProcess
      */
     public static function init(): bool
     {
+        
+
         $s = dcCore::app()->blog->settings->relatedEntries;
 
         if (is_null(dcCore::app()->blog->settings->relatedEntries->relatedEntries_enabled)) {
@@ -322,7 +324,7 @@ class Manage extends dcNsProcess
             dcCore::app()->error->add($e->getMessage());
         }
 
-                $default_tab = $_GET['tab'] ?? 'parameters';
+        $default_tab = $_GET['tab'] ?? 'parameters';
 
         /*
          * Admin page params.
@@ -379,8 +381,8 @@ class Manage extends dcNsProcess
             return false;
         }
 
-        if (isset($_GET['id']) || isset($_POST['id']) || isset($_GET['relatedEntries_filters'])) {
-            require_once dirname(__FILE__) . '/Posts.php';
+        if (isset($_GET['addlinks']) && $_GET['addlinks'] == 1) {
+            return BackendList::init();
         }
 
         // Saving configurations
@@ -478,7 +480,7 @@ class Manage extends dcNsProcess
         echo dcPage::breadcrumb(
             [
                 html::escapeHTML(dcCore::app()->blog->name) => '',
-                __('Colorbox')                              => '',
+                __('Related posts')                         => '',
             ]
         );
 
@@ -491,7 +493,7 @@ class Manage extends dcNsProcess
         $as = unserialize(dcCore::app()->admin->s->relatedEntries_images_options);
 
         //Parameters tab
-
+        
         echo
         '<div class="multi-part" id="parameters" title="' . __('Parameters') . '">' .
         '<form action="' . dcCore::app()->admin->getPageURL() . '" method="post" id="config-form">' .

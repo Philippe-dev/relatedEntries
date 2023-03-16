@@ -179,7 +179,7 @@ class Backend extends dcNsProcess
                 $posts                = dcCore::app()->blog->getPosts($params);
                 $counter              = dcCore::app()->blog->getPosts($params, true);
                 //$post_list            = new adminRelatedPostMiniList(dcCore::app(), $posts, $counter->f(0));
-                dcCore::app()->admin->post_list = new BackendList($posts, $counter->f(0));
+                dcCore::app()->admin->post_list = new BackendMiniList($posts, $counter->f(0));
             } catch (Exception $e) {
                 dcCore::app()->error->add($e->getMessage());
             }
@@ -192,7 +192,7 @@ class Backend extends dcNsProcess
                 '</div>';
             echo
 
-            '<p class="two-boxes"><a href="' . DC_ADMIN_URL . 'plugin.php?p=relatedEntries&amp;id=' . $id . '"><strong>' . __('Add links to related posts') . '</strong></a></p>' .
+            '<p class="two-boxes"><a href="' . DC_ADMIN_URL . 'plugin.php?p=relatedEntries&amp;id=' . $id . ' &addlinks=1"><strong>' . __('Add links to related posts') . '</strong></a></p>' .
             '<p class="two-boxes right"><a class="links-remove delete" href="' . DC_ADMIN_URL . 'plugin.php?p=relatedEntries&amp;id=' . $id . '&amp;r_id=' . $meta_rs . '&upd=1">' . __('Remove all links to related posts') . '</a></p>' .
 
             form::hidden(['relatedEntries'], $meta_rs) .
