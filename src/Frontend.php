@@ -56,7 +56,7 @@ class Frontend extends dcNsProcess
             return;
         }
 
-        $url = dcCore::app()->blog->getQmarkURL() . 'pf=' . basename(dirname(__FILE__));
+        $url = dcCore::app()->blog->getQmarkURL() . 'pf=relatedEntries';
 
         echo
         '<link rel="stylesheet" type="text/css" href="' . $url . '/css/style.css" />' . "\n";
