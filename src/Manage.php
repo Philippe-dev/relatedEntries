@@ -21,6 +21,10 @@ use Exception;
 use form;
 use html;
 use http;
+use dcMedia;
+use dcUtils;
+use dt;
+use adminPostList;
 
 class Manage extends dcNsProcess
 {
@@ -29,56 +33,34 @@ class Manage extends dcNsProcess
      */
     public static function init(): bool
     {
-        if (is_null(dcCore::app()->blog->settings->colorbox->colorbox_enabled)) {
+        $s = dcCore::app()->blog->settings->relatedEntries;
+
+        if (is_null(dcCore::app()->blog->settings->relatedEntries->relatedEntries_enabled)) {
             try {
                 // Add default settings values if necessary
-                $s = dcCore::app()->blog->settings->colorbox;
+
+                $s->put('relatedEntries_enabled', false, 'boolean', 'Enable related entries', false, true);
+                $s->put('relatedEntries_images', false, 'boolean', 'Display related entries links as images', false, true);
+                $s->put('relatedEntries_beforePost', false, 'boolean', 'Display related entries before post content', false, true);
+                $s->put('relatedEntries_afterPost', true, 'boolean', 'Display related entries after post content', false, true);
+                $s->put('relatedEntries_title', __('Related posts'), 'string', 'Related entries block title', false, true);
 
                 $opts = [
-                    'transition'     => 'elastic',
-                    'speed'          => '350',
-                    'title'          => '',
-                    'width'          => '',
-                    'height'         => '',
-                    'innerWidth'     => '',
-                    'innerHeight'    => '',
-                    'initialWidth'   => '300',
-                    'initialHeight'  => '100',
-                    'maxWidth'       => '',
-                    'maxHeight'      => '',
-                    'scalePhotos'    => true,
-                    'scrolling'      => true,
-                    'iframe'         => false,
-                    'opacity'        => '0.85',
-                    'open'           => false,
-                    'preloading'     => true,
-                    'overlayClose'   => true,
-                    'loop'           => true,
-                    'slideshow'      => false,
-                    'slideshowSpeed' => '2500',
-                    'slideshowAuto'  => false,
-                    'slideshowStart' => __('Start slideshow'),
-                    'slideshowStop'  => __('Stop slideshow'),
-                    'current'        => __('{current} of {total}'),
-                    'previous'       => __('previous'),
-                    'next'           => __('next'),
-                    'close'          => __('close'),
-                    'onOpen'         => '',
-                    'onLoad'         => '',
-                    'onComplete'     => '',
-                    'onCleanup'      => '',
-                    'onClosed'       => '',
+                    'size'     => 't',
+                    'html_tag' => 'div',
+                    'link'     => 'entry',
+                    'exif'     => 0,
+                    'legend'   => 'none',
+                    'bubble'   => 'image',
+                    'from'     => 'full',
+                    'start'    => 1,
+                    'length'   => 1,
+                    'class'    => '',
+                    'alt'      => 'inherit',
+                    'img_dim'  => 0,
                 ];
 
-                $s->put('colorbox_enabled', false, 'boolean', 'Enable Colorbox plugin', false, true);
-                $s->put('colorbox_theme', '3', 'integer', 'Colorbox theme', false, true);
-                $s->put('colorbox_zoom_icon', false, 'boolean', 'Enable Colorbox zoom icon', false, true);
-                $s->put('colorbox_zoom_icon_permanent', false, 'boolean', 'Enable permanent Colorbox zoom icon', false, true);
-                $s->put('colorbox_position', false, 'boolean', 'Colorbox zoom icon position', false, true);
-                $s->put('colorbox_user_files', 'public', 'boolean', 'Colorbox user files', false, true);
-                $s->put('colorbox_selectors', '', 'string', 'Colorbox selectors', false, true);
-                $s->put('colorbox_legend', 'alt', 'string', 'Colorbox legend', false, true);
-                $s->put('colorbox_advanced', serialize($opts), 'string', 'Colorbox advanced options', false, true);
+                $s->put('relatedEntries_images_options', serialize($opts), 'string', 'Related entries images options', false, true);
 
                 dcCore::app()->blog->triggerBlog();
                 http::redirect(dcCore::app()->admin->getPageURL());
@@ -87,22 +69,301 @@ class Manage extends dcNsProcess
             }
         }
 
-        $default_tab = $_GET['tab'] ?? 'modal';
+        // Image size combo
+        $img_size_combo = [];
+        $media          = new dcMedia();
 
-        $themes = [
-            '1' => __('Dark Mac'),
-            '2' => __('Simple White'),
-            '3' => __('Lightbox Classic'),
-            '4' => __('White Mac'),
-            '5' => __('Thick Grey'),
-            '6' => __('Vintage Lightbox'),
+        $img_size_combo[__('square')]    = 'sq';
+        $img_size_combo[__('thumbnail')] = 't';
+        $img_size_combo[__('small')]     = 's';
+        $img_size_combo[__('medium')]    = 'm';
+        $img_size_combo[__('original')]  = 'o';
+        foreach ($media->thumb_sizes as $code => $size) {
+            $img_size_combo[__($size[2])] = $code;
+        }
+
+        // Html tag combo
+        $html_tag_combo = [
+            __('div')    => 'div',
+            __('li')     => 'li',
+            __('no tag') => 'none',
         ];
 
-        $s = dcCore::app()->blog->settings->colorbox;
+        // Link combo
+        $link_combo = [
+            __('related posts')   => 'entry',
+            __('original images') => 'image',
+            __('no link')         => 'none',
+        ];
 
-        dcCore::app()->admin->default_tab = $default_tab;
-        dcCore::app()->admin->themes      = $themes;
-        dcCore::app()->admin->s           = $s;
+        // Legend combo
+        $legend_combo = [
+            __('entry title') => 'entry',
+            __('image title') => 'image',
+            __('no legend')   => 'none',
+        ];
+
+        // Bubble combo
+        $bubble_combo = [
+            __('entry title') => 'entry',
+            __('image title') => 'image',
+            __('no bubble')   => 'none',
+        ];
+
+        // From combo
+        $from_combo = [
+            __('post excerpt') => 'excerpt',
+            __('post content') => 'content',
+            __('full post')    => 'full',
+        ];
+
+        // Alt combo
+        $alt_combo = [
+            __('image title') => 'inherit',
+            __('no alt')      => 'none',
+        ];
+
+        // Getting categories
+        try {
+            $categories = dcCore::app()->blog->getCategories(['post_type' => 'post']);
+        } catch (Exception $e) {
+            dcCore::app()->error->add($e->getMessage());
+        }
+
+        // Getting authors
+        try {
+            $users = dcCore::app()->blog->getPostsUsers();
+        } catch (Exception $e) {
+            dcCore::app()->error->add($e->getMessage());
+        }
+
+        // Getting dates
+        try {
+            $dates = dcCore::app()->blog->getDates(['type' => 'month']);
+        } catch (Exception $e) {
+            dcCore::app()->error->add($e->getMessage());
+        }
+
+        // Getting langs
+        try {
+            $langs = dcCore::app()->blog->getLangs();
+        } catch (Exception $e) {
+            dcCore::app()->error->add($e->getMessage());
+        }
+
+        // Creating filter combo boxes
+        if (!dcCore::app()->error->flag()) {
+            // Filter form we'll put in html_block
+            $users_combo      = $categories_combo = [];
+            $users_combo['-'] = $categories_combo['-'] = '';
+            while ($users->fetch()) {
+                $user_cn = dcUtils::getUserCN(
+                    $users->user_id,
+                    $users->user_name,
+                    $users->user_firstname,
+                    $users->user_displayname
+                );
+
+                if ($user_cn != $users->user_id) {
+                    $user_cn .= ' (' . $users->user_id . ')';
+                }
+
+                $users_combo[$user_cn] = $users->user_id;
+            }
+
+            $categories_combo[__('None')] = 'NULL';
+            while ($categories->fetch()) {
+                $categories_combo[str_repeat('&nbsp;&nbsp;', $categories->level - 1) . ($categories->level - 1 == 0 ? '' : '&bull; ') .
+                    html::escapeHTML($categories->cat_title) .
+                    ' (' . $categories->nb_post . ')'] = $categories->cat_id;
+            }
+
+            $status_combo = [
+                '-' => '',
+            ];
+            foreach (dcCore::app()->blog->getAllPostStatus() as $k => $v) {
+                $status_combo[$v] = (string) $k;
+            }
+
+            $selected_combo = [
+                '-'                => '',
+                __('selected')     => '1',
+                __('not selected') => '0',
+            ];
+
+            // Months array
+            $dt_m_combo['-'] = '';
+            while ($dates->fetch()) {
+                $dt_m_combo[dt::str('%B %Y', $dates->ts())] = $dates->year() . $dates->month();
+            }
+
+            $lang_combo['-'] = '';
+            while ($langs->fetch()) {
+                $lang_combo[$langs->post_lang] = $langs->post_lang;
+            }
+
+            $sortby_combo = [
+                __('Date')     => 'post_dt',
+                __('Title')    => 'post_title',
+                __('Category') => 'cat_title',
+                __('Author')   => 'user_id',
+                __('Status')   => 'post_status',
+                __('Selected') => 'post_selected',
+            ];
+
+            $order_combo = [
+                __('Descending') => 'desc',
+                __('Ascending')  => 'asc',
+            ];
+        }
+
+        /* Get posts
+        -------------------------------------------------------- */
+        $id       = !empty($_GET['id']) ? $_GET['id'] : '';
+        $user_id  = !empty($_GET['user_id']) ? $_GET['user_id'] : '';
+        $cat_id   = !empty($_GET['cat_id']) ? $_GET['cat_id'] : '';
+        $status   = $_GET['status']   ?? '';
+        $selected = $_GET['selected'] ?? '';
+        $month    = !empty($_GET['month']) ? $_GET['month'] : '';
+        $entries  = !empty($_GET['entries']) ? $_GET['entries'] : '';
+        $lang     = !empty($_GET['lang']) ? $_GET['lang'] : '';
+        $sortby   = !empty($_GET['sortby']) ? $_GET['sortby'] : 'post_dt';
+        $order    = !empty($_GET['order']) ? $_GET['order'] : 'desc';
+
+        $show_filters = false;
+
+        $page        = !empty($_GET['page']) ? (int) $_GET['page'] : 1;
+        $nb_per_page = 30;
+
+        if (!empty($_GET['nb']) && (int) $_GET['nb'] > 0) {
+            if ($nb_per_page != $_GET['nb']) {
+                $show_filters = true;
+            }
+            $nb_per_page = (int) $_GET['nb'];
+        }
+
+        $params['limit']      = [(($page - 1) * $nb_per_page), $nb_per_page];
+        $params['no_content'] = true;
+
+        // - User filter
+        if ($user_id !== '' && in_array($user_id, $users_combo)) {
+            $params['user_id'] = $user_id;
+            $show_filters      = true;
+        } else {
+            $user_id = '';
+        }
+
+        // - Categories filter
+        if ($cat_id !== '' && in_array($cat_id, $categories_combo)) {
+            $params['cat_id'] = $cat_id;
+            $show_filters     = true;
+        } else {
+            $cat_id = '';
+        }
+
+        // - Status filter
+        if ($status !== '' && in_array($status, $status_combo)) {
+            $params['post_status'] = $status;
+            $show_filters          = true;
+        } else {
+            $status = '';
+        }
+
+        // - Selected filter
+        if ($selected !== '' && in_array($selected, $selected_combo)) {
+            $params['post_selected'] = $selected;
+            $show_filters            = true;
+        } else {
+            $selected = '';
+        }
+
+        // - Month filter
+        if ($month !== '' && in_array($month, $dt_m_combo)) {
+            $params['post_month'] = substr($month, 4, 2);
+            $params['post_year']  = substr($month, 0, 4);
+            $show_filters         = true;
+        } else {
+            $month = '';
+        }
+
+        // - Lang filter
+        if ($lang !== '' && in_array($lang, $lang_combo)) {
+            $params['post_lang'] = $lang;
+            $show_filters        = true;
+        } else {
+            $lang = '';
+        }
+
+        // - Sortby and order filter
+        if ($sortby !== '' && in_array($sortby, $sortby_combo)) {
+            if ($order !== '' && in_array($order, $order_combo)) {
+                $params['order'] = $sortby . ' ' . $order;
+            } else {
+                $order = 'desc';
+            }
+
+            if ($sortby != 'post_dt' || $order != 'desc') {
+                $show_filters = true;
+            }
+        } else {
+            $sortby = 'post_dt';
+            $order  = 'desc';
+        }
+
+        // Get posts with related posts
+        try {
+            $params['no_content'] = true;
+            $params['sql']        = 'AND P.post_id IN (SELECT META.post_id FROM ' . dcCore::app()->prefix . 'meta META WHERE META.post_id = P.post_id ' .
+                    "AND META.meta_type = 'relatedEntries' ) ";
+            $posts     = dcCore::app()->blog->getPosts($params);
+            $counter   = dcCore::app()->blog->getPosts($params, true);
+            $post_list = new adminPostList($posts, $counter->f(0));
+        } catch (Exception $e) {
+            dcCore::app()->error->add($e->getMessage());
+        }
+
+                $default_tab = $_GET['tab'] ?? 'parameters';
+
+        /*
+         * Admin page params.
+         */
+        dcCore::app()->admin->default_tab    = $default_tab;
+        dcCore::app()->admin->show_filters   = $show_filters;
+        dcCore::app()->admin->from_combo     = $from_combo;
+        dcCore::app()->admin->img_size_combo = $img_size_combo;
+        dcCore::app()->admin->alt_combo      = $alt_combo;
+        dcCore::app()->admin->legend_combo   = $legend_combo;
+        dcCore::app()->admin->html_tag_combo = $html_tag_combo;
+        dcCore::app()->admin->link_combo     = $link_combo;
+        dcCore::app()->admin->bubble_combo   = $bubble_combo;
+        dcCore::app()->admin->s              = $s;
+        /*
+         * Filters
+         */
+        dcCore::app()->admin->users_combo      = $users_combo;
+        dcCore::app()->admin->user_id          = $user_id;
+        dcCore::app()->admin->categories_combo = $categories_combo;
+        dcCore::app()->admin->cat_id           = $cat_id;
+        dcCore::app()->admin->status_combo     = $status_combo;
+        dcCore::app()->admin->status           = $status;
+        dcCore::app()->admin->selected_combo   = $selected_combo;
+        dcCore::app()->admin->selected         = $selected;
+        dcCore::app()->admin->dt_m_combo       = $dt_m_combo;
+        dcCore::app()->admin->month            = $month;
+        dcCore::app()->admin->lang_combo       = $lang_combo;
+        dcCore::app()->admin->lang             = $lang;
+        dcCore::app()->admin->sortby_combo     = $sortby_combo;
+        dcCore::app()->admin->sortby           = $sortby;
+        dcCore::app()->admin->order_combo      = $order_combo;
+        dcCore::app()->admin->order            = $order;
+        dcCore::app()->admin->nb_per_page      = $nb_per_page;
+        dcCore::app()->admin->id               = $id;
+        /*
+         * Posts list
+         */
+        dcCore::app()->admin->post_list               = $post_list;
+        dcCore::app()->admin->page               = $page;
+        dcCore::app()->admin->nb_per_page               = $nb_per_page;
 
         self::$init = true;
 
@@ -118,72 +379,58 @@ class Manage extends dcNsProcess
             return false;
         }
 
-        if (!empty($_POST)) {
+        // Saving configurations
+        if (isset($_POST['save'])) {
+            dcCore::app()->admin->s->put('relatedEntries_enabled', !empty($_POST['relatedEntries_enabled']));
+            dcCore::app()->admin->s->put('relatedEntries_title', html::escapeHTML($_POST['relatedEntries_title']));
+            dcCore::app()->admin->s->put('relatedEntries_beforePost', !empty($_POST['relatedEntries_beforePost']));
+            dcCore::app()->admin->s->put('relatedEntries_afterPost', !empty($_POST['relatedEntries_afterPost']));
+            dcCore::app()->admin->s->put('relatedEntries_images', !empty($_POST['relatedEntries_images']));
+
+            $opts = [
+                'size'     => !empty($_POST['size']) ? $_POST['size'] : 't',
+                'html_tag' => !empty($_POST['html_tag']) ? $_POST['html_tag'] : 'div',
+                'link'     => !empty($_POST['link']) ? $_POST['link'] : 'entry',
+                'exif'     => 0,
+                'legend'   => !empty($_POST['legend']) ? $_POST['legend'] : 'none',
+                'bubble'   => !empty($_POST['bubble']) ? $_POST['bubble'] : 'image',
+                'from'     => !empty($_POST['from']) ? $_POST['from'] : 'full',
+                'start'    => !empty($_POST['start']) ? $_POST['start'] : 1,
+                'length'   => !empty($_POST['length']) ? $_POST['length'] : 1,
+                'class'    => !empty($_POST['class']) ? $_POST['class'] : '',
+                'alt'      => !empty($_POST['alt']) ? $_POST['alt'] : 'inherit',
+                'img_dim'  => !empty($_POST['img_dim']) ? $_POST['img_dim'] : 0,
+            ];
+
+            dcCore::app()->admin->s->put('relatedEntries_images_options', serialize($opts));
+
+            dcCore::app()->blog->triggerBlog();
+            http::redirect(dcCore::app()->admin->getPageURL() . '&upd=1');
+        }
+        //Remove related posts links
+
+        if (isset($_POST['entries'])) {
+            $meta = dcCore::app()->meta;
+
             try {
-                $type = $_POST['type'];
+                $tags = [];
 
-                dcCore::app()->blog->triggerBlog();
-
-                if ($type === 'modal') {
-                    dcCore::app()->admin->s->put('colorbox_enabled', !empty($_POST['colorbox_enabled']));
-
-                    if (isset($_POST['colorbox_theme'])) {
-                        dcCore::app()->admin->s->put('colorbox_theme', $_POST['colorbox_theme']);
+                foreach ($_POST['entries'] as $id) {
+                    // Get tags for post
+                    $post_meta = $meta->getMetadata([
+                        'meta_type' => 'relatedEntries',
+                        'post_id'   => $id, ]);
+                    $pm = [];
+                    while ($post_meta->fetch()) {
+                        $pm[] = $post_meta->meta_id;
                     }
-
-                    http::redirect(dcCore::app()->admin->getPageURL() . '&upd=1');
-                } elseif ($type === 'zoom') {
-                    dcCore::app()->admin->s->put('colorbox_zoom_icon', !empty($_POST['colorbox_zoom_icon']));
-                    dcCore::app()->admin->s->put('colorbox_zoom_icon_permanent', !empty($_POST['colorbox_zoom_icon_permanent']));
-                    dcCore::app()->admin->s->put('colorbox_position', !empty($_POST['colorbox_position']));
-
-                    http::redirect(dcCore::app()->admin->getPageURL() . '&tab=zoom&upd=2');
-                } elseif ($type === 'advanced') {
-                    $opts = [
-                        'transition'     => $_POST['transition'],
-                        'speed'          => !empty($_POST['speed']) ? $_POST['speed'] : '350',
-                        'title'          => $_POST['title'],
-                        'width'          => $_POST['width'],
-                        'height'         => $_POST['height'],
-                        'innerWidth'     => $_POST['innerWidth'],
-                        'innerHeight'    => $_POST['innerHeight'],
-                        'initialWidth'   => !empty($_POST['initialWidth']) ? $_POST['initialWidth'] : '300',
-                        'initialHeight'  => !empty($_POST['initialHeight']) ? $_POST['initialHeight'] : '100',
-                        'maxWidth'       => $_POST['maxWidth'],
-                        'maxHeight'      => $_POST['maxHeight'],
-                        'scalePhotos'    => !empty($_POST['scalePhotos']),
-                        'scrolling'      => !empty($_POST['scrolling']),
-                        'iframe'         => !empty($_POST['iframe']),
-                        'opacity'        => !empty($_POST['opacity']) ? $_POST['opacity'] : '0.85',
-                        'open'           => !empty($_POST['open']),
-                        'preloading'     => !empty($_POST['preloading']),
-                        'overlayClose'   => !empty($_POST['overlayClose']),
-                        'loop'           => !empty($_POST['loop']),
-                        'slideshow'      => !empty($_POST['slideshow']),
-                        'slideshowSpeed' => !empty($_POST['slideshowSpeed']) ? $_POST['slideshowSpeed'] : '2500',
-                        'slideshowAuto'  => !empty($_POST['slideshowAuto']),
-                        'slideshowStart' => $_POST['slideshowStart'],
-                        'slideshowStop'  => $_POST['slideshowStop'],
-                        'current'        => $_POST['current'],
-                        'previous'       => $_POST['previous'],
-                        'next'           => $_POST['next'],
-                        'close'          => $_POST['close'],
-                        'onOpen'         => $_POST['onOpen'],
-                        'onLoad'         => $_POST['onLoad'],
-                        'onComplete'     => $_POST['onComplete'],
-                        'onCleanup'      => $_POST['onCleanup'],
-                        'onClosed'       => $_POST['onClosed'],
-                    ];
-
-                    dcCore::app()->admin->s->put('colorbox_advanced', serialize($opts));
-                    dcCore::app()->admin->s->put('colorbox_selectors', $_POST['colorbox_selectors']);
-                    dcCore::app()->admin->s->put('colorbox_user_files', $_POST['colorbox_user_files']);
-                    dcCore::app()->admin->s->put('colorbox_legend', $_POST['colorbox_legend']);
-
-                    dcCore::app()->blog->triggerBlog();
-
-                    http::redirect(dcCore::app()->admin->getPageURL() . '&tab=advanced&upd=3');
+                    foreach ($pm as $tag) {
+                        $meta->delPostMeta($id, 'relatedEntries', $tag);
+                        $meta->delPostMeta($tag, 'relatedEntries', $id);
+                    }
                 }
+
+                http::redirect(dcCore::app()->admin->getPageURL() . '&upd=2&tab=postslist');
             } catch (Exception $e) {
                 dcCore::app()->error->add($e->getMessage());
             }
@@ -205,33 +452,22 @@ class Manage extends dcNsProcess
         '<html>' .
         '<head>' ;
 
-        echo
-        '<script>' .
-        '$(document).ready(function() {' .
-            '$("input[type=radio][name=colorbox_theme]").click(function() {' .
-                'var p = $(this).attr("value");' .
-                '$("img#thumbnail").attr("src","index.php?pf=colorbox/themes/"+p+"/images/thumbnail.jpg");' .
-            '});' .
-            '$("#colorbox_zoom_icon").click(function() {' .
-                'if (!$("#colorbox_zoom_icon").is(":checked")) {' .
-                    '$("#colorbox_zoom_icon_permanent").attr("checked", false);' .
-                '}' .
-            '});' .
-        '});' .
+        $form_filter_title = __('Show filters and display options');
+        $starting_script   = dcPage::jsLoad('js/_posts_list.js');
+        $starting_script .= dcPage::jsLoad(DC_ADMIN_URL . '?pf=relatedEntries/js/filter-controls.js');
+        $starting_script .= dcPage::jsPageTabs(dcCore::app()->admin->default_tab);
+        $starting_script .= dcPage::jsConfirmClose('config-form');
+        $starting_script .= '<script>' . "\n" .
+        '//<![CDATA[' . "\n" .
+        dcPage::jsVar('dotclear.msg.show_filters', dcCore::app()->admin->show_filters ? 'true' : 'false') . "\n" .
+        dcPage::jsVar('dotclear.msg.filter_posts_list', $form_filter_title) . "\n" .
+        dcPage::jsVar('dotclear.msg.cancel_the_filter', __('Cancel filters and display options')) . "\n" .
+        '//]]>' .
         '</script>';
-
-        echo dcPage::jsPageTabs(dcCore::app()->admin->default_tab) .
-        dcPage::jsConfirmClose('modal-form') .
-        dcPage::jsConfirmClose('zoom-form') .
-        dcPage::jsConfirmClose('advanced-form');
+        echo $starting_script;
 
         echo
-        '<style type="text/css">' .
-            '#thumbnail { border: 1px solid #ccc; }' .
-        '</style>';
-
-        echo
-        '<title>' . __('Colorbox') . '</title>' .
+        '<title>' . __('Related posts') . '</title>' .
         '</head>' .
         '<body>';
 
@@ -242,245 +478,210 @@ class Manage extends dcNsProcess
             ]
         );
 
-        if (isset($_GET['upd'])) {
-            $a_msg = [
-                __('Modal window configuration successfully saved'),
-                __('Zoom icon configuration successfully saved'),
-                __('Advanced configuration successfully saved'),
-            ];
-
-            $k = (int) $_GET['upd'] - 1;
-
-            if (array_key_exists($k, $a_msg)) {
-                dcPage::message($a_msg[$k]);
-            }
+        if (isset($_GET['upd']) && $_GET['upd'] == 1) {
+            dcPage::message(__('Configuration successfully saved'));
+        } elseif (isset($_GET['upd']) && $_GET['upd'] == 2) {
+            dcPage::message(__('Links have been successfully removed'));
         }
 
-        // Activation and theme tab
-        $theme_choice = '';
-        foreach (dcCore::app()->admin->themes as $k => $v) {
-            $theme_choice .= '<p><label class="classic" for="colorbox_theme-' . $k . '">' .
-            form::radio(['colorbox_theme', 'colorbox_theme-' . $k], $k, dcCore::app()->admin->s->colorbox_theme == $k) .
-            ' ' . $v . '</label></p>';
-        }
-        $thumb_url = 'index.php?pf=colorbox/themes/' . dcCore::app()->admin->s->colorbox_theme . '/images/thumbnail.jpg';
+        $as = unserialize(dcCore::app()->admin->s->relatedEntries_images_options);
+
+        //Parameters tab
 
         echo
-        '<div class="multi-part" id="modal" title="' . __('Modal Window') . '">' .
-            '<form action="' . dcCore::app()->admin->getPageURL() . '" method="post" id="modal-form">' .
-            '<div class="fieldset"><h3>' . __('Activation') . '</h3>' .
-                '<p><label class="classic" for="colorbox_enabled">' .
-                form::checkbox('colorbox_enabled', '1', dcCore::app()->admin->s->colorbox_enabled) .
-                __('Enable Colorbox on this blog') . '</label></p>' .
+        '<div class="multi-part" id="parameters" title="' . __('Parameters') . '">' .
+        '<form action="' . dcCore::app()->admin->getPageURL() . '" method="post" id="config-form">' .
+        '<div class="fieldset"><h3>' . __('Activation') . '</h3>' .
+            '<p><label class="classic" for="relatedEntries_enabled">' .
+            form::checkbox('relatedEntries_enabled', '1', dcCore::app()->admin->s->relatedEntries_enabled) .
+            __('Enable related posts on this blog') . '</label></p>' .
+        '</div>' .
+        '<div class="fieldset"><h3>' . __('Display options') . '</h3>' .
+            '<p class="field"><label class="maximal" for="relatedEntries_title">' . __('Block title:') . '&nbsp;' .
+            form::field('relatedEntries_title', 40, 255, html::escapeHTML(dcCore::app()->admin->s->relatedEntries_title)) .
+            '</label></p>' .
+            '<p><label class="classic" for="relatedEntries_beforePost">' .
+            form::checkbox('relatedEntries_beforePost', '1', dcCore::app()->admin->s->relatedEntries_beforePost) .
+            __('Display block before post content') . '</label></p>' .
+            '<p><label class="classic" for="relatedEntries_afterPost">' .
+            form::checkbox('relatedEntries_afterPost', '1', dcCore::app()->admin->s->relatedEntries_afterPost) .
+            __('Display block after post content') . '</label></p>' .
+            '<p class="form-note info clear">' . __('Uncheck both boxes to use only the presentation widget.') . '</p>' .
+        '</div>' .
+        '<div class="fieldset"><h3>' . __('Images extracting options') . '</h3>';
+
+        if (dcCore::app()->plugins->moduleExists('listImages')) {
+            echo
+            '<p><label class="classic" for="relatedEntries_images">' .
+            form::checkbox('relatedEntries_images', '1', dcCore::app()->admin->s->relatedEntries_images) .
+            __('Extract images from related posts') . '</label></p>' .
+
+            '<div class="two-boxes odd">' .
+
+            '<p><label for="from">' . __('Images origin:') . '</label>' .
+            form::combo(
+                'from',
+                dcCore::app()->admin->from_combo,
+                ($as['from'] != '' ? $as['from'] : 'image')
+            ) .
+            '</p>' .
+
+            '<p><label for="size">' . __('Image size:') . '</label>' .
+            form::combo(
+                'size',
+                dcCore::app()->admin->img_size_combo,
+                ($as['size'] != '' ? $as['size'] : 't')
+            ) .
+            '</p>' .
+
+            '<p><label for="img_dim">' .
+            form::checkbox('img_dim', '1', $as['img_dim']) .
+            __('Include images dimensions') . '</label></p>' .
+
+            '<p><label for="alt">' . __('Images alt attribute:') . '</label>' .
+            form::combo(
+                'alt',
+                dcCore::app()->admin->alt_combo,
+                ($as['alt'] != '' ? $as['alt'] : 'inherit')
+            ) .
+            '</p>' .
+
+            '<p><label for="start">' . __('First image to extract:') . '</label>' .
+                form::field('start', 3, 3, $as['start']) .
+            '</p>' .
+
+            '<p><label for="length">' . __('Number of images to extract:') . '</label>' .
+                form::field('length', 3, 3, $as['length']) .
+            '</p>' .
+
+            '</div><div class="two-boxes even">' .
+
+            '<p><label for="legend">' . __('Legend:') . '</label>' .
+            form::combo(
+                'legend',
+                dcCore::app()->admin->legend_combo,
+                ($as['legend'] != '' ? $as['legend'] : 'none')
+            ) .
+            '</p>' .
+
+            '<p><label for="html_tag">' . __('HTML tag around image:') . '</label>' .
+            form::combo(
+                'html_tag',
+                dcCore::app()->admin->html_tag_combo,
+                ($as['html_tag'] != '' ? $as['html_tag'] : 'div')
+            ) .
+            '</p>' .
+
+            '<p><label for="class">' . __('CSS class on images:') . '</label>' .
+                form::field('class', 10, 10, $as['class']) .
+            '</p>' .
+
+            '<p><label for="link">' . __('Links destination:') . '</label>' .
+            form::combo(
+                'link',
+                dcCore::app()->admin->link_combo,
+                ($as['link'] != '' ? $as['link'] : 'entry')
+            ) .
+            '</p>' .
+
+            '<p><label for="bubble">' . __('Bubble:') . '</label>' .
+            form::combo(
+                'bubble',
+                dcCore::app()->admin->bubble_combo,
+                ($as['bubble'] != '' ? $as['bubble'] : 'image')
+            ) .
+            '</p>' .
+
             '</div>' .
-            '<div class="fieldset"><h3>' . __('Theme') . '</h3>' .
 
-                '<div class="two-cols clearfix">' .
-                    '<div class="col">' .
-                        '<p class="classic">' . __('Choose your theme for Colorbox:') . '</p>' .
-                        $theme_choice .
+            '</div>';
+        } else {
+            echo
+            '<p class="form-note info clear">' . __('Install or activate listImages plugin to be able to display links to related entries as images') . '</p>' .
+            '</div>';
+        }
 
-                    '</div>' .
-                    '<div class="col">' .
-                        '<p><img id="thumbnail" src="' . $thumb_url . '" alt="' . __('Preview') . '" title="' . __('Preview') . '" width="400" height="204" /></p>' .
-                    '</div>' .
-
-                '</div>' .
-                '<p class="form-note info maximal">' . __('All themes may be customized, see <em>Personal files</em> help section.') . '</p>' .
-            '</div>' .
-            '<p>' . form::hidden(['type'], 'modal') . '</p>' .
-            '<p class="clear"><input type="submit" name="save" value="' . __('Save configuration') . '" />' . dcCore::app()->formNonce() . '</p>' .
+        echo
+        '<p class="clear"><input type="submit" name="save" value="' . __('Save configuration') . '" />' . dcCore::app()->formNonce() . '</p>' .
         '</form>' .
-        '</div>';
+        '</div>' .
 
-        // Zoom icon tab
+        //Related posts list tab
+
+        '<div class="multi-part" id="postslist" title="' . __('Related posts list') . '">';
 
         echo
-        '<div class="multi-part" id="zoom" title="' . __('Zoom Icon') . '">' .
-            '<form action="' . dcCore::app()->admin->getPageURL() . '" method="post"  id="zoom-form">' .
+            '<form action="' . dcCore::app()->admin->getPageURL() . '" method="get" id="filters-form">' .
+            '<h3 class="out-of-screen-if-js">' . __('Filter posts list') . '</h3>' .
+            '<div class="table">' .
+            '<div class="cell">' .
+            '<h4>' . __('Filters') . '</h4>' .
+            '<p><label for="user_id" class="ib">' . __('Author:') . '</label> ' .
+                form::combo('user_id', dcCore::app()->admin->users_combo, dcCore::app()->admin->user_id) . '</p>' .
+                '<p><label for="cat_id" class="ib">' . __('Category:') . '</label> ' .
+                form::combo('cat_id', dcCore::app()->admin->categories_combo, dcCore::app()->admin->cat_id) . '</p>' .
+                '<p><label for="status" class="ib">' . __('Status:') . '</label> ' .
+                form::combo('status', dcCore::app()->admin->status_combo, dcCore::app()->admin->status) . '</p> ' .
+            '</div>' .
 
-                '<div class="fieldset"><h3>' . __('Behaviour') . '</h3>' .
-                    '<p><label class="classic" for="colorbox_zoom_icon">' .
-                    form::checkbox('colorbox_zoom_icon', '1', dcCore::app()->admin->s->colorbox_zoom_icon) .
-                    __('Enable zoom icon on hovered thumbnails') . '</label></p>' .
-                    '<p><label class="classic" for="colorbox_zoom_icon_permanent">' .
-                    form::checkbox('colorbox_zoom_icon_permanent', '1', dcCore::app()->admin->s->colorbox_zoom_icon_permanent) .
-                    __('Always show zoom icon on thumbnails') . '</label></p>' .
+            '<div class="cell filters-sibling-cell">' .
+                '<p><label for="selected" class="ib">' . __('Selected:') . '</label> ' .
+                form::combo('selected', dcCore::app()->admin->selected_combo, dcCore::app()->admin->selected) . '</p>' .
+                '<p><label for="month" class="ib">' . __('Month:') . '</label> ' .
+                form::combo('month', dcCore::app()->admin->dt_m_combo, dcCore::app()->admin->month) . '</p>' .
+                '<p><label for="lang" class="ib">' . __('Lang:') . '</label> ' .
+                form::combo('lang', dcCore::app()->admin->lang_combo, dcCore::app()->admin->lang) . '</p> ' .
+            '</div>' .
+
+            '<div class="cell filters-options">' .
+                '<h4>' . __('Display options') . '</h4>' .
+                '<p><label for="sortby" class="ib">' . __('Order by:') . '</label> ' .
+                form::combo('sortby', dcCore::app()->admin->sortby_combo, dcCore::app()->admin->sortby) . '</p>' .
+                '<p><label for="order" class="ib">' . __('Sort:') . '</label> ' .
+                form::combo('order', dcCore::app()->admin->order_combo, dcCore::app()->admin->order) . '</p>' .
+                '<p><span class="label ib">' . __('Show') . '</span> <label for="nb" class="classic">' .
+                form::field('nb', 3, 3, dcCore::app()->admin->nb_per_page) . ' ' .
+                __('entries per page') . '</label></p>' .
+            '</div>' .
+            '</div>' .
+            '<p>' . dcCore::app()->formNonce() . '</p>' .
+            '<p><input type="submit" value="' . __('Apply filters and display options') . '" />' .
+                '<br class="clear" /></p>' . //Opera sucks
+            '<p>' . form::hidden(['relatedEntries_filters_config'], 'relatedEntries') .
+            '<input type="hidden" name="p" value="relatedEntries" />' .
+            form::hidden(['id'], dcCore::app()->admin->id) .
+            form::hidden(['tab'], 'postslist') .
+            '</p>' .
+            '</form>';
+
+        if (!isset(dcCore::app()->admin->post_list) || empty(dcCore::app()->admin->post_list)) {
+            echo '<p><strong>' . __('No related posts') . '</strong></p>';
+        } else {
+            // Show posts
+            dcCore::app()->admin->post_list->display(
+                dcCore::app()->admin->page,
+                dcCore::app()->admin->nb_per_page,
+                '<form action="' . dcCore::app()->admin->getPageURL() . '" method="post" id="form-entries">' .
+
+                '%s' .
+
+                '<div class="two-cols">' .
+                '<p class="col checkboxes-helpers"></p>' .
+
+                '<p class="col right">' .
+                '<input type="submit" class="delete" value="' . __('Remove all links from selected posts') . '" /></p>' .
+                '<p>' .
+                '<input type="hidden" name="p" value="relatedEntries" />' .
+                form::hidden(['tab'], 'postslist') .
+                form::hidden(['id'], 'fake') .
+                dcCore::app()->formNonce() . '</p>' .
                 '</div>' .
-                '<div class="fieldset"><h3>' . __('Icon position') . '</h3>' .
-                    '<p><label class="classic" for="colorbox_position-1">' .
-                    form::radio(['colorbox_position', 'colorbox_position-1'], true, dcCore::app()->admin->s->colorbox_position) .
-                    __('on the left') . '</label></p>' .
-                    '<p><label class="classic" for="colorbox_position-2">' .
-                    form::radio(['colorbox_position', 'colorbox_position-2'], false, !dcCore::app()->admin->s->colorbox_position) .
-                    __('on the right') . '</label></p>' .
-                '</div>' .
-                '<p>' . form::hidden(['type'], 'zoom') . '</p>' .
-                '<p class="clear"><input type="submit" name="save" value="' . __('Save configuration') . '" />' . dcCore::app()->formNonce() . '</p>' .
-            '</form>' .
-        '</div>';
+                '</form>',
+                dcCore::app()->admin->show_filters
+            );
+        }
 
-        // Advanced tab
-
-        $effects = [
-            __('Elastic')       => 'elastic',
-            __('Fade')          => 'fade',
-            __('No transition') => 'none',
-        ];
-
-        $colorbox_legend = [
-            __('Image alt attribute')  => 'alt',
-            __('Link title attribute') => 'title',
-            __('No legend')            => 'none',
-        ];
-
-        $as = unserialize(dcCore::app()->admin->s->colorbox_advanced);
         echo
-        '<div class="multi-part" id="advanced" title="' . __('Advanced configuration') . '">' .
-            '<form action="' . dcCore::app()->admin->getPageURL() . '" method="post"  id="advanced-form">' .
-                '<div class="fieldset"><h3>' . __('Personnal files') . '</h3>' .
-                    '<p>' . __('Store personnal CSS and image files in:') . '</p>' .
-                    '<p><label for="colorbox_user_files-1">' .
-                    form::radio(['colorbox_user_files', 'colorbox_user_files-1'], true, dcCore::app()->admin->s->colorbox_user_files) .
-                    __('public folder') . '</label></p>' .
-                    '<p><label for="colorbox_user_files-2">' .
-                    form::radio(['colorbox_user_files', 'colorbox_user_files-2'], false, !dcCore::app()->admin->s->colorbox_user_files) .
-                    __('theme folder') . '</label></p>' .
-
-                '</div>' .
-                '<div class="fieldset"><h3>' . __('Selectors') . '</h3>' .
-                    '<p><label class="maximal" for="colorbox_selectors">' . __('Apply Colorbox to the following supplementary selectors (ex: #sidebar,#pictures):') .
-                    '<br />' . form::field('colorbox_selectors', 80, 255, dcCore::app()->admin->s->colorbox_selectors) .
-                    '</label></p>' .
-                    '<p class="info">' . __('Leave blank to default: (.post)') . '</p>' .
-                '</div>' .
-                '<div class="fieldset"><h3>' . __('Effects') . '</h3>' .
-                '<div class="two-cols clearfix"><div class="col">' .
-                    '<p class="field"><label for="transition">' . __('Transition type') . '&nbsp;' .
-                    form::combo('transition', $effects, $as['transition']) .
-                    '</label></p>' .
-                    '<p class="field"><label for="speed">' . __('Transition speed') . '&nbsp;' .
-                    form::field('speed', 30, 10, $as['speed']) .
-                    '</label></p>' .
-                    '<p class="field"><label for="opacity">' . __('Opacity') . '&nbsp;' .
-                    form::field('opacity', 30, 10, $as['opacity']) .
-                    '</label></p>' .
-                    '<p><label for="open">' .
-                    form::checkbox('open', 1, $as['open']) .
-                    __('Auto open Colorbox') . '</label></p>' .
-                    '<p><label for="preloading">' .
-                    form::checkbox('preloading', 1, $as['preloading']) .
-                    __('Enable preloading for photo group') . '</label></p>' .
-                    '<p><label for="overlayClose">' .
-                    form::checkbox('overlayClose', 1, $as['overlayClose']) .
-                    __('Enable close by clicking on overlay') . '</label></p>' .
-                '</div><div class="col">' .
-                    '<p><label for="slideshow">' .
-                    form::checkbox('slideshow', 1, $as['slideshow']) .
-                    __('Enable slideshow') . '</label></p>' .
-                    '<p><label for="slideshowAuto">' .
-                    form::checkbox('slideshowAuto', 1, $as['slideshowAuto']) .
-                    __('Auto start slideshow') . '</label></p>' .
-                    '<p class="field"><label for="slideshowSpeed">' . __('Slideshow speed') . '&nbsp;' .
-                    form::field('slideshowSpeed', 30, 10, $as['slideshowSpeed']) .
-                    '</label></p>' .
-                    '<p class="field"><label for="slideshowStart">' . __('Slideshow start display text') . '&nbsp;' .
-                    form::field('slideshowStart', 30, 255, $as['slideshowStart']) .
-                    '</label></p>' .
-                    '<p class="field"><label for="slideshowStop">' . __('Slideshow stop display text') . '&nbsp;' .
-                    form::field('slideshowStop', 30, 255, $as['slideshowStop']) .
-                    '</label></p>' .
-                '</div></div>' .
-                '</div>' .
-                '<div class="fieldset"><h3>' . __('Modal window') . '</h3>' .
-                '<div class="two-cols clearfix"><div class="col">' .
-
-                    '<p class="field"><label for="colorbox_legend">' . __('Images legend') . '&nbsp;' .
-                    form::combo('colorbox_legend', $colorbox_legend, dcCore::app()->admin->s->colorbox_legend) .
-                    '</label></p>' .
-                    '<p class="field"><label for="title">' . __('Default legend') . '&nbsp;' .
-                    form::field('title', 30, 255, $as['title']) .
-                    '</label></p>' .
-                    '<p><label for="loop">' .
-                    form::checkbox('loop', 1, $as['loop']) .
-                    __('Loop on slideshow images') . '</label></p>' .
-                    '<p><label for="iframe">' .
-                    form::checkbox('iframe', 1, $as['iframe']) .
-                    __('Display content in  an iframe') . '</label></p>' .
-
-                '</div><div class="col">' .
-                    '<p class="field"><label for="current">' . __('Current text') . '&nbsp;' .
-                    form::field('current', 30, 255, $as['current']) .
-                    '</label></p>' .
-                    '<p class="field"><label for="previous">' . __('Previous text') . '&nbsp;' .
-                    form::field('previous', 30, 255, $as['previous']) .
-                    '</label></p>' .
-                    '<p class="field"><label for="next">' . __('Next text') . '&nbsp;' .
-                    form::field('next', 30, 255, $as['next']) .
-                    '</label></p>' .
-                    '<p class="field"><label for="close">' . __('Close text') . '&nbsp;' .
-                    form::field('close', 30, 255, $as['close']) .
-                    '</label></p>' .
-                '</div></div>' .
-                '</div>' .
-                '<div class="fieldset"><h3>' . __('Dimensions') . '</h3>' .
-                '<div class="two-cols clearfix"><div class="col">' .
-                    '<p class="field"><label for="width">' . __('Fixed width') . '&nbsp;' .
-                    form::field('width', 30, 10, $as['width']) .
-                    '</label></p>' .
-                    '<p class="field"><label for="height">' . __('Fixed height') . '&nbsp;' .
-                    form::field('height', 30, 10, $as['height']) .
-                    '</label></p>' .
-                    '<p class="field"><label for="innerWidth">' . __('Fixed inner width') . '&nbsp;' .
-                    form::field('innerWidth', 30, 10, $as['innerWidth']) .
-                    '</label></p>' .
-                    '<p class="field"><label for="innerHeight">' . __('Fixed inner height') . '&nbsp;' .
-                    form::field('innerHeight', 30, 10, $as['innerHeight']) .
-                    '</label></p>' .
-                    '<p><label for="scalePhotos">' .
-                    form::checkbox('scalePhotos', 1, $as['scalePhotos']) .
-                    __('Scale photos') . '</label></p>' .
-                    '<p><label class="classic" for="scrolling">' .
-                    form::checkbox('scrolling', 1, $as['scrolling']) .
-                    __('Show overflowing content') . '</label></p>' .
-                '</div><div class="col">' .
-                    '<p class="field"><label for="initialWidth">' . __('Initial width') . '&nbsp;' .
-                    form::field('initialWidth', 30, 10, $as['initialWidth']) .
-                    '</label></p>' .
-                    '<p class="field"><label for="initialHeight">' . __('Initial height') . '&nbsp;' .
-                    form::field('initialHeight', 30, 10, $as['initialHeight']) .
-                    '</label></p>' .
-                    '<p class="field"><label for="maxWidth">' . __('Max width') . '&nbsp;' .
-                    form::field('maxWidth', 30, 10, $as['maxWidth']) .
-                    '</label></p>' .
-                    '<p class="field"><label for="maxHeight">' . __('Max height') . '&nbsp;' .
-                    form::field('maxHeight', 30, 10, $as['maxHeight']) .
-                    '</label></p>' .
-                '</div></div>' .
-                '</div>' .
-                '<div class="fieldset"><h3>' . __('Javascript') . '</h3>' .
-                '<div class="two-cols clearfix"><div class="col">' .
-                    '<p class="field"><label for="onOpen">' . __('onOpen callback') . '&nbsp;' .
-                    form::field('onOpen', 80, 255, $as['onOpen'], 'maximal') .
-                    '</label></p>' .
-                    '<p class="field"><label for="onLoad">' . __('onLoad callback') . '&nbsp;' .
-                    form::field('onLoad', 80, 255, $as['onLoad'], 'maximal') .
-                    '</label></p>' .
-                    '<p class="field"><label for="onComplete">' . __('onComplete callback') . '&nbsp;' .
-                    form::field('onComplete', 80, 255, $as['onComplete'], 'maximal') .
-                    '</label></p>' .
-                '</div><div class="col">' .
-                    '<p class="field"><label for="onCleanup">' . __('onCleanup callback') . '&nbsp;' .
-                    form::field('onCleanup', 80, 255, $as['onCleanup'], 'maximal') .
-                    '</label></p>' .
-                    '<p class="field"><label for="onClosed">' . __('onClosed callback') . '&nbsp;' .
-                    form::field('onClosed', 80, 255, $as['onClosed'], 'maximal') .
-                    '</label></p>' .
-                '</div></div>' .
-                '</div>' .
-                '<p>' . form::hidden(['type'], 'advanced') . '</p>' .
-                '<p class="clear"><input type="submit" name="save" value="' . __('Save configuration') . '" />' . dcCore::app()->formNonce() . '</p>' .
-            '</form>' .
         '</div>';
 
         dcPage::helpBlock('colorbox');
