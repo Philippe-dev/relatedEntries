@@ -684,7 +684,7 @@ class Manage extends dcNsProcess
         echo
         '</div>';
 
-        dcPage::helpBlock('colorbox');
+        dcPage::helpBlock('relatedEntries');
         echo
         '</body>' .
         '</html>';
