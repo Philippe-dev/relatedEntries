@@ -178,7 +178,7 @@ class Backend extends dcNsProcess
                 $params['post_type']  = ['post'];
                 $posts                = dcCore::app()->blog->getPosts($params);
                 $counter              = dcCore::app()->blog->getPosts($params, true);
-                dcCore::app()->admin->post_list = new PostsMiniList($posts, $counter->f(0));
+                dcCore::app()->admin->post_list = new BackendMiniList($posts, $counter->f(0));
             } catch (Exception $e) {
                 dcCore::app()->error->add($e->getMessage());
             }

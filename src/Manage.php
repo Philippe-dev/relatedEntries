@@ -16,6 +16,7 @@ namespace Dotclear\Plugin\relatedEntries;
 
 use dcCore;
 use dcNsProcess;
+use dcBlog;
 use dcPage;
 use Exception;
 use form;
@@ -33,10 +34,6 @@ class Manage extends dcNsProcess
      */
     public static function init(): bool
     {
-        if (isset($_GET['addlinks']) && $_GET['addlinks'] == 1) {
-            return Posts::render();
-        }
-        
         $s = dcCore::app()->blog->settings->relatedEntries;
 
         if (is_null(dcCore::app()->blog->settings->relatedEntries->relatedEntries_enabled)) {
@@ -314,18 +311,6 @@ class Manage extends dcNsProcess
             $order  = 'desc';
         }
 
-        // Get posts with related posts
-        try {
-            $params['no_content'] = true;
-            $params['sql']        = 'AND P.post_id IN (SELECT META.post_id FROM ' . dcCore::app()->prefix . 'meta META WHERE META.post_id = P.post_id ' .
-                    "AND META.meta_type = 'relatedEntries' ) ";
-            $posts     = dcCore::app()->blog->getPosts($params);
-            $counter   = dcCore::app()->blog->getPosts($params, true);
-            $posts_list = new adminPostList($posts, $counter->f(0));
-        } catch (Exception $e) {
-            dcCore::app()->error->add($e->getMessage());
-        }
-
         $default_tab = $_GET['tab'] ?? 'parameters';
 
         /*
@@ -365,7 +350,6 @@ class Manage extends dcNsProcess
         /*
          * Posts list
          */
-        dcCore::app()->admin->posts_list   = $posts_list;
         dcCore::app()->admin->page        = $page;
         dcCore::app()->admin->nb_per_page = $nb_per_page;
 
@@ -381,6 +365,36 @@ class Manage extends dcNsProcess
     {
         if (!self::$init) {
             return false;
+        }
+
+        // Save Post relatedEntries
+
+        if (isset($_POST['entries'])) {
+            try {
+                $entries = implode(', ', $_POST['entries']);
+                $id      = $_POST['id'];
+
+                $meta = dcCore::app()->meta;
+
+                foreach ($meta->splitMetaValues($entries) as $tag) {
+                    $meta->delPostMeta($id, 'relatedEntries', $tag);
+                    $meta->setPostMeta($id, 'relatedEntries', $tag);
+                }
+                foreach ($meta->splitMetaValues($entries) as $tag) {
+                    $r_tags = $meta->getMetaStr(serialize($tag), 'relatedEntries');
+                    $r_tags = explode(', ', $r_tags);
+                    array_push($r_tags, $id);
+                    $r_tags = implode(', ', $r_tags);
+                    foreach ($meta->splitMetaValues($r_tags) as $tags) {
+                        $meta->delPostMeta($tag, 'relatedEntries', $tags);
+                        $meta->setPostMeta($tag, 'relatedEntries', $tags);
+                    }
+                }
+
+                http::redirect(DC_ADMIN_URL . 'post.php?id=' . $id . '&add=1&upd=1');
+            } catch (Exception $e) {
+                dcCore::app()->error->add($e->getMessage());
+            }
         }
 
         // Saving configurations
@@ -452,243 +466,416 @@ class Manage extends dcNsProcess
             return;
         }
 
-        echo
-        '<html>' .
-        '<head>' ;
+        if (isset($_GET['addlinks']) && $_GET['addlinks'] == 1) {
+            try {
+                $id                      = (int) $_GET['id'];
+                $my_params['post_id']    = $id;
+                $my_params['no_content'] = true;
+                $my_params['post_type']  = ['post'];
 
-        $form_filter_title = __('Show filters and display options');
-        $starting_script   = dcPage::jsLoad('js/_posts_list.js');
-        $starting_script .= dcPage::jsLoad(DC_ADMIN_URL . '?pf=relatedEntries/js/filter-controls.js');
-        $starting_script .= dcPage::jsPageTabs(dcCore::app()->admin->default_tab);
-        $starting_script .= dcPage::jsConfirmClose('config-form');
-        $starting_script .= '<script>' . "\n" .
-        '//<![CDATA[' . "\n" .
-        dcPage::jsVar('dotclear.msg.show_filters', dcCore::app()->admin->show_filters ? 'true' : 'false') . "\n" .
-        dcPage::jsVar('dotclear.msg.filter_posts_list', $form_filter_title) . "\n" .
-        dcPage::jsVar('dotclear.msg.cancel_the_filter', __('Cancel filters and display options')) . "\n" .
-        '//]]>' .
-        '</script>';
-        echo $starting_script;
+                $rs         = dcCore::app()->blog->getPosts($my_params);
+                $post_title = $rs->post_title;
+                $post_type  = $rs->post_type;
+                $post_id    = $rs->post_id;
+            } catch (Exception $e) {
+                dcCore::app()->error->add($e->getMessage());
+            }
 
-        echo
-        '<title>' . __('Related posts') . '</title>' .
-        '</head>' .
-        '<body>';
+            // Get posts without current
 
-        echo dcPage::breadcrumb(
-            [
-                html::escapeHTML(dcCore::app()->blog->name) => '',
-                __('Related posts')                         => '',
-            ]
-        );
+            if (isset($_GET['id'])) {
+                try {
+                    $id                              = $_GET['id'];
+                    $params['no_content']            = true;
+                    $params['exclude_post_id']       = $id;
+                    $posts                           = dcCore::app()->blog->getPosts($params);
+                    $counter                         = dcCore::app()->blog->getPosts($params, true);
+                    dcCore::app()->admin->posts_list = new AdminPostList($posts, $counter->f(0));
+                } catch (Exception $e) {
+                    dcCore::app()->error->add($e->getMessage());
+                }
+            }
 
-        if (isset($_GET['upd']) && $_GET['upd'] == 1) {
-            dcPage::message(__('Configuration successfully saved'));
-        } elseif (isset($_GET['upd']) && $_GET['upd'] == 2) {
-            dcPage::message(__('Links have been successfully removed'));
-        }
-
-        $as = unserialize(dcCore::app()->admin->s->relatedEntries_images_options);
-
-        //Parameters tab
-        
-        echo
-        '<div class="multi-part" id="parameters" title="' . __('Parameters') . '">' .
-        '<form action="' . dcCore::app()->admin->getPageURL() . '" method="post" id="config-form">' .
-        '<div class="fieldset"><h3>' . __('Activation') . '</h3>' .
-            '<p><label class="classic" for="relatedEntries_enabled">' .
-            form::checkbox('relatedEntries_enabled', '1', dcCore::app()->admin->s->relatedEntries_enabled) .
-            __('Enable related posts on this blog') . '</label></p>' .
-        '</div>' .
-        '<div class="fieldset"><h3>' . __('Display options') . '</h3>' .
-            '<p class="field"><label class="maximal" for="relatedEntries_title">' . __('Block title:') . '&nbsp;' .
-            form::field('relatedEntries_title', 40, 255, html::escapeHTML(dcCore::app()->admin->s->relatedEntries_title)) .
-            '</label></p>' .
-            '<p><label class="classic" for="relatedEntries_beforePost">' .
-            form::checkbox('relatedEntries_beforePost', '1', dcCore::app()->admin->s->relatedEntries_beforePost) .
-            __('Display block before post content') . '</label></p>' .
-            '<p><label class="classic" for="relatedEntries_afterPost">' .
-            form::checkbox('relatedEntries_afterPost', '1', dcCore::app()->admin->s->relatedEntries_afterPost) .
-            __('Display block after post content') . '</label></p>' .
-            '<p class="form-note info clear">' . __('Uncheck both boxes to use only the presentation widget.') . '</p>' .
-        '</div>' .
-        '<div class="fieldset"><h3>' . __('Images extracting options') . '</h3>';
-
-        if (dcCore::app()->plugins->moduleExists('listImages')) {
             echo
-            '<p><label class="classic" for="relatedEntries_images">' .
-            form::checkbox('relatedEntries_images', '1', dcCore::app()->admin->s->relatedEntries_images) .
-            __('Extract images from related posts') . '</label></p>' .
+            '<html>' .
+            '<head>' ;
 
-            '<div class="two-boxes odd">' .
+            $form_filter_title = __('Show filters and display options');
+            $starting_script   = dcPage::jsLoad('js/_posts_list.js');
+            $starting_script .= dcPage::jsLoad(DC_ADMIN_URL . '?pf=relatedEntries/js/filter-controls.js');
+            $starting_script .= dcPage::jsPageTabs(dcCore::app()->admin->default_tab);
+            $starting_script .= dcPage::jsConfirmClose('config-form');
+            $starting_script .= '<script>' . "\n" .
+            '//<![CDATA[' . "\n" .
+            dcPage::jsVar('dotclear.msg.show_filters', dcCore::app()->admin->show_filters ? 'true' : 'false') . "\n" .
+            dcPage::jsVar('dotclear.msg.filter_posts_list', $form_filter_title) . "\n" .
+            dcPage::jsVar('dotclear.msg.cancel_the_filter', __('Cancel filters and display options')) . "\n" .
+            '//]]>' .
+            '</script>';
+            echo $starting_script;
 
-            '<p><label for="from">' . __('Images origin:') . '</label>' .
-            form::combo(
-                'from',
-                dcCore::app()->admin->from_combo,
-                ($as['from'] != '' ? $as['from'] : 'image')
-            ) .
-            '</p>' .
-
-            '<p><label for="size">' . __('Image size:') . '</label>' .
-            form::combo(
-                'size',
-                dcCore::app()->admin->img_size_combo,
-                ($as['size'] != '' ? $as['size'] : 't')
-            ) .
-            '</p>' .
-
-            '<p><label for="img_dim">' .
-            form::checkbox('img_dim', '1', $as['img_dim']) .
-            __('Include images dimensions') . '</label></p>' .
-
-            '<p><label for="alt">' . __('Images alt attribute:') . '</label>' .
-            form::combo(
-                'alt',
-                dcCore::app()->admin->alt_combo,
-                ($as['alt'] != '' ? $as['alt'] : 'inherit')
-            ) .
-            '</p>' .
-
-            '<p><label for="start">' . __('First image to extract:') . '</label>' .
-                form::field('start', 3, 3, $as['start']) .
-            '</p>' .
-
-            '<p><label for="length">' . __('Number of images to extract:') . '</label>' .
-                form::field('length', 3, 3, $as['length']) .
-            '</p>' .
-
-            '</div><div class="two-boxes even">' .
-
-            '<p><label for="legend">' . __('Legend:') . '</label>' .
-            form::combo(
-                'legend',
-                dcCore::app()->admin->legend_combo,
-                ($as['legend'] != '' ? $as['legend'] : 'none')
-            ) .
-            '</p>' .
-
-            '<p><label for="html_tag">' . __('HTML tag around image:') . '</label>' .
-            form::combo(
-                'html_tag',
-                dcCore::app()->admin->html_tag_combo,
-                ($as['html_tag'] != '' ? $as['html_tag'] : 'div')
-            ) .
-            '</p>' .
-
-            '<p><label for="class">' . __('CSS class on images:') . '</label>' .
-                form::field('class', 10, 10, $as['class']) .
-            '</p>' .
-
-            '<p><label for="link">' . __('Links destination:') . '</label>' .
-            form::combo(
-                'link',
-                dcCore::app()->admin->link_combo,
-                ($as['link'] != '' ? $as['link'] : 'entry')
-            ) .
-            '</p>' .
-
-            '<p><label for="bubble">' . __('Bubble:') . '</label>' .
-            form::combo(
-                'bubble',
-                dcCore::app()->admin->bubble_combo,
-                ($as['bubble'] != '' ? $as['bubble'] : 'image')
-            ) .
-            '</p>' .
-
-            '</div>' .
-
-            '</div>';
-        } else {
             echo
-            '<p class="form-note info clear">' . __('Install or activate listImages plugin to be able to display links to related entries as images') . '</p>' .
-            '</div>';
-        }
+            '<title>' . __('Related posts') . '</title>' .
+            '</head>' .
+            '<body>';
 
-        echo
-        '<p class="clear"><input type="submit" name="save" value="' . __('Save configuration') . '" />' . dcCore::app()->formNonce() . '</p>' .
-        '</form>' .
-        '</div>' .
+            if (!dcCore::app()->error->flag()) {
+                if (dcCore::app()->admin->id) {
+                    switch (dcCore::app()->admin->status) {
+                        case dcBlog::POST_PUBLISHED:
+                            $img_status = sprintf((string) dcCore::app()->admin->img_status_pattern, __('Published'), 'check-on.png');
 
-        //Related posts list tab
+                            break;
+                        case dcBlog::POST_UNPUBLISHED:
+                            $img_status = sprintf((string) dcCore::app()->admin->img_status_pattern, __('Unpublished'), 'check-off.png');
 
-        '<div class="multi-part" id="postslist" title="' . __('Related posts list') . '">';
+                            break;
+                        case dcBlog::POST_SCHEDULED:
+                            $img_status = sprintf((string) dcCore::app()->admin->img_status_pattern, __('Scheduled'), 'scheduled.png');
 
-        echo
-            '<form action="' . dcCore::app()->admin->getPageURL() . '" method="get" id="filters-form">' .
-            '<h3 class="out-of-screen-if-js">' . __('Filter posts list') . '</h3>' .
-            '<div class="table">' .
-            '<div class="cell">' .
-            '<h4>' . __('Filters') . '</h4>' .
-            '<p><label for="user_id" class="ib">' . __('Author:') . '</label> ' .
-                form::combo('user_id', dcCore::app()->admin->users_combo, dcCore::app()->admin->user_id) . '</p>' .
-                '<p><label for="cat_id" class="ib">' . __('Category:') . '</label> ' .
-                form::combo('cat_id', dcCore::app()->admin->categories_combo, dcCore::app()->admin->cat_id) . '</p>' .
-                '<p><label for="status" class="ib">' . __('Status:') . '</label> ' .
-                form::combo('status', dcCore::app()->admin->status_combo, dcCore::app()->admin->status) . '</p> ' .
-            '</div>' .
+                            break;
+                        case dcBlog::POST_PENDING:
+                            $img_status = sprintf((string) dcCore::app()->admin->img_status_pattern, __('Pending'), 'check-wrn.png');
 
-            '<div class="cell filters-sibling-cell">' .
-                '<p><label for="selected" class="ib">' . __('Selected:') . '</label> ' .
-                form::combo('selected', dcCore::app()->admin->selected_combo, dcCore::app()->admin->selected) . '</p>' .
-                '<p><label for="month" class="ib">' . __('Month:') . '</label> ' .
-                form::combo('month', dcCore::app()->admin->dt_m_combo, dcCore::app()->admin->month) . '</p>' .
-                '<p><label for="lang" class="ib">' . __('Lang:') . '</label> ' .
-                form::combo('lang', dcCore::app()->admin->lang_combo, dcCore::app()->admin->lang) . '</p> ' .
-            '</div>' .
+                            break;
+                        default:
+                            $img_status = '';
+                    }
+                    echo '&nbsp;&nbsp;&nbsp;' . $img_status;
+                }
 
-            '<div class="cell filters-options">' .
-                '<h4>' . __('Display options') . '</h4>' .
-                '<p><label for="sortby" class="ib">' . __('Order by:') . '</label> ' .
-                form::combo('sortby', dcCore::app()->admin->sortby_combo, dcCore::app()->admin->sortby) . '</p>' .
-                '<p><label for="order" class="ib">' . __('Sort:') . '</label> ' .
-                form::combo('order', dcCore::app()->admin->order_combo, dcCore::app()->admin->order) . '</p>' .
-                '<p><span class="label ib">' . __('Show') . '</span> <label for="nb" class="classic">' .
-                form::field('nb', 3, 3, dcCore::app()->admin->nb_per_page) . ' ' .
-                __('entries per page') . '</label></p>' .
-            '</div>' .
-            '</div>' .
-            '<p>' . dcCore::app()->formNonce() . '</p>' .
-            '<p><input type="submit" value="' . __('Apply filters and display options') . '" />' .
-                '<br class="clear" /></p>' . //Opera sucks
-            '<p>' . form::hidden(['relatedEntries_filters_config'], 'relatedEntries') .
-            '<input type="hidden" name="p" value="relatedEntries" />' .
-            form::hidden(['id'], dcCore::app()->admin->id) .
-            form::hidden(['tab'], 'postslist') .
-            '</p>' .
-            '</form>';
+                echo dcPage::breadcrumb(
+                    [
+                        html::escapeHTML(dcCore::app()->blog->name) => '',
+                        __('Related posts')                         => dcCore::app()->admin->getPageURL(),
+                        dcCore::app()->admin->page_title            => '',
+                    ]
+                ) .
+                    '<h3>' . __('Select posts related to entry:') . ' <a href="' . dcCore::app()->getPostAdminURL($post_type, $post_id) . '">' . $post_title . '</a></h3>';
 
-        if (!isset(dcCore::app()->admin->posts_list) || empty(dcCore::app()->admin->posts_list)) {
-            echo '<p><strong>' . __('No related posts') . '</strong></p>';
-        } else {
-            // Show posts
-            dcCore::app()->admin->posts_list->display(
-                dcCore::app()->admin->page,
-                dcCore::app()->admin->nb_per_page,
-                '<form action="' . dcCore::app()->admin->getPageURL() . '" method="post" id="form-entries">' .
-
-                '%s' .
-
-                '<div class="two-cols">' .
-                '<p class="col checkboxes-helpers"></p>' .
-
-                '<p class="col right">' .
-                '<input type="submit" class="delete" value="' . __('Remove all links from selected posts') . '" /></p>' .
-                '<p>' .
-                '<input type="hidden" name="p" value="relatedEntries" />' .
-                form::hidden(['tab'], 'postslist') .
-                form::hidden(['id'], 'fake') .
-                dcCore::app()->formNonce() . '</p>' .
+                echo
+                '<form action="' . dcCore::app()->admin->getPageURL() . '" method="get" id="filters-form">' .
+                '<h3 class="out-of-screen-if-js">' . __('Filter posts list') . '</h3>' .
+                '<div class="table">' .
+                '<div class="cell">' .
+                '<h4>' . __('Filters') . '</h4>' .
+                '<p><label for="user_id" class="ib">' . __('Author:') . '</label> ' .
+                    form::combo('user_id', dcCore::app()->admin->users_combo, dcCore::app()->admin->user_id) . '</p>' .
+                    '<p><label for="cat_id" class="ib">' . __('Category:') . '</label> ' .
+                    form::combo('cat_id', dcCore::app()->admin->categories_combo, dcCore::app()->admin->cat_id) . '</p>' .
+                    '<p><label for="status" class="ib">' . __('Status:') . '</label> ' .
+                    form::combo('status', dcCore::app()->admin->status_combo, dcCore::app()->admin->status) . '</p> ' .
                 '</div>' .
-                '</form>',
-                dcCore::app()->admin->show_filters
+
+                '<div class="cell filters-sibling-cell">' .
+                    '<p><label for="selected" class="ib">' . __('Selected:') . '</label> ' .
+                    form::combo('selected', dcCore::app()->admin->selected_combo, dcCore::app()->admin->selected) . '</p>' .
+                    '<p><label for="month" class="ib">' . __('Month:') . '</label> ' .
+                    form::combo('month', dcCore::app()->admin->dt_m_combo, dcCore::app()->admin->month) . '</p>' .
+                    '<p><label for="lang" class="ib">' . __('Lang:') . '</label> ' .
+                    form::combo('lang', dcCore::app()->admin->lang_combo, dcCore::app()->admin->lang) . '</p> ' .
+                '</div>' .
+
+                '<div class="cell filters-options">' .
+                    '<h4>' . __('Display options') . '</h4>' .
+                    '<p><label for="sortby" class="ib">' . __('Order by:') . '</label> ' .
+                    form::combo('sortby', dcCore::app()->admin->sortby_combo, dcCore::app()->admin->sortby) . '</p>' .
+                    '<p><label for="order" class="ib">' . __('Sort:') . '</label> ' .
+                    form::combo('order', dcCore::app()->admin->order_combo, dcCore::app()->admin->order) . '</p>' .
+                    '<p><span class="label ib">' . __('Show') . '</span> <label for="nb" class="classic">' .
+                    form::field('nb', 3, 3, dcCore::app()->admin->nb_per_page) . ' ' .
+                    __('entries per page') . '</label></p>' .
+                '</div>' .
+                '</div>' .
+
+                '<p><input type="submit" value="' . __('Apply filters and display options') . '" />' .
+                    '<br class="clear" /></p>' . //Opera sucks
+                '<p>' . form::hidden(['relatedEntries_filters'], 'relatedEntries') .
+                '<input type="hidden" name="p" value="relatedEntries" />' .
+                form::hidden(['id'], dcCore::app()->admin->id) .
+                dcCore::app()->formNonce() .
+                '</p>' .
+                '</form>';
+
+                // Show posts
+                if (!isset(dcCore::app()->admin->posts_list) || empty(dcCore::app()->admin->posts_list)) {
+                    echo '<p><strong>' . __('No related posts') . '</strong></p>';
+                } else {
+                    dcCore::app()->admin->posts_list->display(
+                        dcCore::app()->admin->page,
+                        dcCore::app()->admin->nb_per_page,
+                        '<form action="' . dcCore::app()->admin->getPageURL() . '" method="post" id="form-entries">' .
+
+                        '%s' .
+
+                        '<div class="two-cols">' .
+                        '<p class="col checkboxes-helpers"></p>' .
+
+                        '<p class="col right">' .
+                        '<input type="submit" value="' . __('Add links to selected posts') . '" /> <a class="button reset" href="post.php?id=' . dcCore::app()->admin->id . '&upd=1">' . __('Cancel') . '</a></p>' .
+                        '<p>' .
+                        '<input type="hidden" name="p" value="relatedEntries" />' .
+                        form::hidden(['id'], dcCore::app()->admin->id) .
+                        dcCore::app()->formNonce() . '</p>' .
+                        '</div>' .
+                        '</form>',
+                        dcCore::app()->admin->show_filters
+                    );
+                }
+            }
+            dcPage::helpBlock('relatedEntriesposts');
+        } else {
+            // Get posts with related posts
+            try {
+                $params['no_content'] = true;
+                $params['sql']        = 'AND P.post_id IN (SELECT META.post_id FROM ' . dcCore::app()->prefix . 'meta META WHERE META.post_id = P.post_id ' .
+                        "AND META.meta_type = 'relatedEntries' ) ";
+                $posts                           = dcCore::app()->blog->getPosts($params);
+                $counter                         = dcCore::app()->blog->getPosts($params, true);
+                dcCore::app()->admin->posts_list = new adminPostList($posts, $counter->f(0));
+            } catch (Exception $e) {
+                dcCore::app()->error->add($e->getMessage());
+            }
+
+            echo
+            '<html>' .
+            '<head>' ;
+
+            $form_filter_title = __('Show filters and display options');
+            $starting_script   = dcPage::jsLoad('js/_posts_list.js');
+            $starting_script .= dcPage::jsLoad(DC_ADMIN_URL . '?pf=relatedEntries/js/filter-controls.js');
+            $starting_script .= dcPage::jsPageTabs(dcCore::app()->admin->default_tab);
+            $starting_script .= dcPage::jsConfirmClose('config-form');
+            $starting_script .= '<script>' . "\n" .
+            '//<![CDATA[' . "\n" .
+            dcPage::jsVar('dotclear.msg.show_filters', dcCore::app()->admin->show_filters ? 'true' : 'false') . "\n" .
+            dcPage::jsVar('dotclear.msg.filter_posts_list', $form_filter_title) . "\n" .
+            dcPage::jsVar('dotclear.msg.cancel_the_filter', __('Cancel filters and display options')) . "\n" .
+            '//]]>' .
+            '</script>';
+            echo $starting_script;
+
+            echo
+            '<title>' . __('Related posts') . '</title>' .
+            '</head>' .
+            '<body>';
+
+            echo dcPage::breadcrumb(
+                [
+                    html::escapeHTML(dcCore::app()->blog->name) => '',
+                    __('Related posts')                         => '',
+                ]
             );
+
+            if (isset($_GET['upd']) && $_GET['upd'] == 1) {
+                dcPage::message(__('Configuration successfully saved'));
+            } elseif (isset($_GET['upd']) && $_GET['upd'] == 2) {
+                dcPage::message(__('Links have been successfully removed'));
+            }
+
+            $as = unserialize(dcCore::app()->admin->s->relatedEntries_images_options);
+
+            //Parameters tab
+
+            echo
+            '<div class="multi-part" id="parameters" title="' . __('Parameters') . '">' .
+            '<form action="' . dcCore::app()->admin->getPageURL() . '" method="post" id="config-form">' .
+            '<div class="fieldset"><h3>' . __('Activation') . '</h3>' .
+                '<p><label class="classic" for="relatedEntries_enabled">' .
+                form::checkbox('relatedEntries_enabled', '1', dcCore::app()->admin->s->relatedEntries_enabled) .
+                __('Enable related posts on this blog') . '</label></p>' .
+            '</div>' .
+            '<div class="fieldset"><h3>' . __('Display options') . '</h3>' .
+                '<p class="field"><label class="maximal" for="relatedEntries_title">' . __('Block title:') . '&nbsp;' .
+                form::field('relatedEntries_title', 40, 255, html::escapeHTML(dcCore::app()->admin->s->relatedEntries_title)) .
+                '</label></p>' .
+                '<p><label class="classic" for="relatedEntries_beforePost">' .
+                form::checkbox('relatedEntries_beforePost', '1', dcCore::app()->admin->s->relatedEntries_beforePost) .
+                __('Display block before post content') . '</label></p>' .
+                '<p><label class="classic" for="relatedEntries_afterPost">' .
+                form::checkbox('relatedEntries_afterPost', '1', dcCore::app()->admin->s->relatedEntries_afterPost) .
+                __('Display block after post content') . '</label></p>' .
+                '<p class="form-note info clear">' . __('Uncheck both boxes to use only the presentation widget.') . '</p>' .
+            '</div>' .
+            '<div class="fieldset"><h3>' . __('Images extracting options') . '</h3>';
+
+            if (dcCore::app()->plugins->moduleExists('listImages')) {
+                echo
+                '<p><label class="classic" for="relatedEntries_images">' .
+                form::checkbox('relatedEntries_images', '1', dcCore::app()->admin->s->relatedEntries_images) .
+                __('Extract images from related posts') . '</label></p>' .
+
+                '<div class="two-boxes odd">' .
+
+                '<p><label for="from">' . __('Images origin:') . '</label>' .
+                form::combo(
+                    'from',
+                    dcCore::app()->admin->from_combo,
+                    ($as['from'] != '' ? $as['from'] : 'image')
+                ) .
+                '</p>' .
+
+                '<p><label for="size">' . __('Image size:') . '</label>' .
+                form::combo(
+                    'size',
+                    dcCore::app()->admin->img_size_combo,
+                    ($as['size'] != '' ? $as['size'] : 't')
+                ) .
+                '</p>' .
+
+                '<p><label for="img_dim">' .
+                form::checkbox('img_dim', '1', $as['img_dim']) .
+                __('Include images dimensions') . '</label></p>' .
+
+                '<p><label for="alt">' . __('Images alt attribute:') . '</label>' .
+                form::combo(
+                    'alt',
+                    dcCore::app()->admin->alt_combo,
+                    ($as['alt'] != '' ? $as['alt'] : 'inherit')
+                ) .
+                '</p>' .
+
+                '<p><label for="start">' . __('First image to extract:') . '</label>' .
+                    form::field('start', 3, 3, $as['start']) .
+                '</p>' .
+
+                '<p><label for="length">' . __('Number of images to extract:') . '</label>' .
+                    form::field('length', 3, 3, $as['length']) .
+                '</p>' .
+
+                '</div><div class="two-boxes even">' .
+
+                '<p><label for="legend">' . __('Legend:') . '</label>' .
+                form::combo(
+                    'legend',
+                    dcCore::app()->admin->legend_combo,
+                    ($as['legend'] != '' ? $as['legend'] : 'none')
+                ) .
+                '</p>' .
+
+                '<p><label for="html_tag">' . __('HTML tag around image:') . '</label>' .
+                form::combo(
+                    'html_tag',
+                    dcCore::app()->admin->html_tag_combo,
+                    ($as['html_tag'] != '' ? $as['html_tag'] : 'div')
+                ) .
+                '</p>' .
+
+                '<p><label for="class">' . __('CSS class on images:') . '</label>' .
+                    form::field('class', 10, 10, $as['class']) .
+                '</p>' .
+
+                '<p><label for="link">' . __('Links destination:') . '</label>' .
+                form::combo(
+                    'link',
+                    dcCore::app()->admin->link_combo,
+                    ($as['link'] != '' ? $as['link'] : 'entry')
+                ) .
+                '</p>' .
+
+                '<p><label for="bubble">' . __('Bubble:') . '</label>' .
+                form::combo(
+                    'bubble',
+                    dcCore::app()->admin->bubble_combo,
+                    ($as['bubble'] != '' ? $as['bubble'] : 'image')
+                ) .
+                '</p>' .
+
+                '</div>' .
+
+                '</div>';
+            } else {
+                echo
+                '<p class="form-note info clear">' . __('Install or activate listImages plugin to be able to display links to related entries as images') . '</p>' .
+                '</div>';
+            }
+
+            echo
+            '<p class="clear"><input type="submit" name="save" value="' . __('Save configuration') . '" />' . dcCore::app()->formNonce() . '</p>' .
+            '</form>' .
+            '</div>' .
+
+            //Related posts list tab
+
+            '<div class="multi-part" id="postslist" title="' . __('Related posts list') . '">';
+
+            echo
+                '<form action="' . dcCore::app()->admin->getPageURL() . '" method="get" id="filters-form">' .
+                '<h3 class="out-of-screen-if-js">' . __('Filter posts list') . '</h3>' .
+                '<div class="table">' .
+                '<div class="cell">' .
+                '<h4>' . __('Filters') . '</h4>' .
+                '<p><label for="user_id" class="ib">' . __('Author:') . '</label> ' .
+                    form::combo('user_id', dcCore::app()->admin->users_combo, dcCore::app()->admin->user_id) . '</p>' .
+                    '<p><label for="cat_id" class="ib">' . __('Category:') . '</label> ' .
+                    form::combo('cat_id', dcCore::app()->admin->categories_combo, dcCore::app()->admin->cat_id) . '</p>' .
+                    '<p><label for="status" class="ib">' . __('Status:') . '</label> ' .
+                    form::combo('status', dcCore::app()->admin->status_combo, dcCore::app()->admin->status) . '</p> ' .
+                '</div>' .
+
+                '<div class="cell filters-sibling-cell">' .
+                    '<p><label for="selected" class="ib">' . __('Selected:') . '</label> ' .
+                    form::combo('selected', dcCore::app()->admin->selected_combo, dcCore::app()->admin->selected) . '</p>' .
+                    '<p><label for="month" class="ib">' . __('Month:') . '</label> ' .
+                    form::combo('month', dcCore::app()->admin->dt_m_combo, dcCore::app()->admin->month) . '</p>' .
+                    '<p><label for="lang" class="ib">' . __('Lang:') . '</label> ' .
+                    form::combo('lang', dcCore::app()->admin->lang_combo, dcCore::app()->admin->lang) . '</p> ' .
+                '</div>' .
+
+                '<div class="cell filters-options">' .
+                    '<h4>' . __('Display options') . '</h4>' .
+                    '<p><label for="sortby" class="ib">' . __('Order by:') . '</label> ' .
+                    form::combo('sortby', dcCore::app()->admin->sortby_combo, dcCore::app()->admin->sortby) . '</p>' .
+                    '<p><label for="order" class="ib">' . __('Sort:') . '</label> ' .
+                    form::combo('order', dcCore::app()->admin->order_combo, dcCore::app()->admin->order) . '</p>' .
+                    '<p><span class="label ib">' . __('Show') . '</span> <label for="nb" class="classic">' .
+                    form::field('nb', 3, 3, dcCore::app()->admin->nb_per_page) . ' ' .
+                    __('entries per page') . '</label></p>' .
+                '</div>' .
+                '</div>' .
+                '<p>' . dcCore::app()->formNonce() . '</p>' .
+                '<p><input type="submit" value="' . __('Apply filters and display options') . '" />' .
+                    '<br class="clear" /></p>' . //Opera sucks
+                '<p>' . form::hidden(['relatedEntries_filters_config'], 'relatedEntries') .
+                '<input type="hidden" name="p" value="relatedEntries" />' .
+                form::hidden(['id'], dcCore::app()->admin->id) .
+                form::hidden(['tab'], 'postslist') .
+                '</p>' .
+                '</form>';
+
+            if (!isset(dcCore::app()->admin->posts_list) || empty(dcCore::app()->admin->posts_list)) {
+                echo '<p><strong>' . __('No related posts') . '</strong></p>';
+            } else {
+                // Show posts
+                dcCore::app()->admin->posts_list->display(
+                    dcCore::app()->admin->page,
+                    dcCore::app()->admin->nb_per_page,
+                    '<form action="' . dcCore::app()->admin->getPageURL() . '" method="post" id="form-entries">' .
+
+                    '%s' .
+
+                    '<div class="two-cols">' .
+                    '<p class="col checkboxes-helpers"></p>' .
+
+                    '<p class="col right">' .
+                    '<input type="submit" class="delete" value="' . __('Remove all links from selected posts') . '" /></p>' .
+                    '<p>' .
+                    '<input type="hidden" name="p" value="relatedEntries" />' .
+                    form::hidden(['tab'], 'postslist') .
+                    form::hidden(['id'], 'fake') .
+                    dcCore::app()->formNonce() . '</p>' .
+                    '</div>' .
+                    '</form>',
+                    dcCore::app()->admin->show_filters
+                );
+            }
+
+            echo
+            '</div>';
+
+            dcPage::helpBlock('relatedEntries');
         }
 
-        echo
-        '</div>';
-
-        dcPage::helpBlock('relatedEntries');
         echo
         '</body>' .
         '</html>';
