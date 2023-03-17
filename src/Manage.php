@@ -34,6 +34,20 @@ class Manage extends dcNsProcess
      */
     public static function init(): bool
     {
+        self::$init = true;
+
+        return self::$init;
+    }
+
+    /**
+     * Processes the request(s).
+     */
+    public static function process(): bool
+    {
+        if (!self::$init) {
+            return false;
+        }
+
         $s = dcCore::app()->blog->settings->relatedEntries;
 
         if (is_null(dcCore::app()->blog->settings->relatedEntries->relatedEntries_enabled)) {
@@ -352,20 +366,6 @@ class Manage extends dcNsProcess
          */
         dcCore::app()->admin->page        = $page;
         dcCore::app()->admin->nb_per_page = $nb_per_page;
-
-        self::$init = true;
-
-        return self::$init;
-    }
-
-    /**
-     * Processes the request(s).
-     */
-    public static function process(): bool
-    {
-        if (!self::$init) {
-            return false;
-        }
 
         // Save Post relatedEntries
 
