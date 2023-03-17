@@ -22,7 +22,7 @@ use html;
 use dcPager;
 use form;
 
-class BackendMiniList extends adminGenericListV2
+class PostsList extends adminGenericListV2
 {
     /**
      * Display a list of pages

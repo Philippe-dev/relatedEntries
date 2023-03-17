@@ -33,8 +33,10 @@ class Manage extends dcNsProcess
      */
     public static function init(): bool
     {
+        if (isset($_GET['addlinks']) && $_GET['addlinks'] == 1) {
+            return Posts::render();
+        }
         
-
         $s = dcCore::app()->blog->settings->relatedEntries;
 
         if (is_null(dcCore::app()->blog->settings->relatedEntries->relatedEntries_enabled)) {
@@ -379,10 +381,6 @@ class Manage extends dcNsProcess
     {
         if (!self::$init) {
             return false;
-        }
-
-        if (isset($_GET['addlinks']) && $_GET['addlinks'] == 1) {
-            return BackendList::init();
         }
 
         // Saving configurations

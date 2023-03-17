@@ -14,23 +14,26 @@ declare(strict_types=1);
 
 namespace Dotclear\Plugin\relatedEntries;
 
-use adminGenericListV2;
-use dcBlog;
 use dcCore;
-use dt;
-use html;
-use dcPager;
+use dcBlog;
+use dcNsProcess;
+use dcPage;
+use Exception;
 use form;
+use html;
+use http;
 use dcUtils;
-use adminPostList;
+use dt;
 
-class BackendList extends adminGenericListV2
+class Posts extends dcNsProcess
 {
     /**
      * Initializes the page.
      */
     public static function init(): bool
     {
+        $page_title = __('Add related posts links to entry');
+
         // Getting categories
         try {
             $categories = dcCore::app()->blog->getCategories(['post_type' => 'post']);
@@ -92,6 +95,8 @@ class BackendList extends adminGenericListV2
             foreach (dcCore::app()->blog->getAllPostStatus() as $k => $v) {
                 $status_combo[$v] = (string) $k;
             }
+
+            $img_status_pattern = '<img class="img_select_option" alt="%1$s" title="%1$s" src="images/%2$s" />';
 
             $selected_combo = [
                 '-'                => '',
@@ -227,11 +232,19 @@ class BackendList extends adminGenericListV2
                 $params['exclude_post_id'] = $id;
                 $posts                     = dcCore::app()->blog->getPosts($params);
                 $counter                   = dcCore::app()->blog->getPosts($params, true);
-                $post_list                 = new adminPostList($posts, $counter->f(0));
+                $posts_list                = new PostsList($posts, $counter->f(0));
             } catch (Exception $e) {
                 dcCore::app()->error->add($e->getMessage());
             }
         }
+
+        $default_tab = $_GET['tab'] ?? 'parameters';
+
+        /*
+         * Admin page params.
+         */
+        dcCore::app()->admin->default_tab  = $default_tab;
+        dcCore::app()->admin->show_filters = $show_filters;
 
         /*
          * Filters
@@ -252,14 +265,16 @@ class BackendList extends adminGenericListV2
         dcCore::app()->admin->sortby           = $sortby;
         dcCore::app()->admin->order_combo      = $order_combo;
         dcCore::app()->admin->order            = $order;
-        dcCore::app()->admin->nb_per_page      = $nb_per_page;
         dcCore::app()->admin->id               = $id;
         /*
          * Posts list
          */
-        dcCore::app()->admin->post_list   = $post_list;
-        dcCore::app()->admin->page        = $page;
-        dcCore::app()->admin->nb_per_page = $nb_per_page;
+        dcCore::app()->admin->posts              = $posts;
+        dcCore::app()->admin->posts_list         = $posts_list;
+        dcCore::app()->admin->page_title         = $page_title;
+        dcCore::app()->admin->img_status_pattern = $img_status_pattern;
+        dcCore::app()->admin->page               = $page;
+        dcCore::app()->admin->nb_per_page        = $nb_per_page;
 
         self::$init = true;
 
@@ -317,6 +332,20 @@ class BackendList extends adminGenericListV2
             return;
         }
 
+        try {
+            $id                      = (int) $_GET['id'];
+            $my_params['post_id']    = $id;
+            $my_params['no_content'] = true;
+            $my_params['post_type']  = ['post'];
+
+            $rs         = dcCore::app()->blog->getPosts($my_params);
+            $post_title = $rs->post_title;
+            $post_type  = $rs->post_type;
+            $post_id    = $rs->post_id;
+        } catch (Exception $e) {
+            dcCore::app()->error->add($e->getMessage());
+        }
+
         echo
         '<html>' .
         '<head>' ;
@@ -340,18 +369,108 @@ class BackendList extends adminGenericListV2
         '</head>' .
         '<body>';
 
-        echo dcPage::breadcrumb(
-            [
-                html::escapeHTML(dcCore::app()->blog->name) => '',
-                __('Related posts')                         => dcCore::app()->admin->getPageURL(),
-                $page_title                                 => '',
-            ]
-        ) .
-            '<p class="clear">' . __('Select posts related to entry:') . ' <a href="' . dcCore::app()->getPostAdminURL($rs->post_type, $rs->post_id) . '">' . $post_title . '</a>';
+        if (!dcCore::app()->error->flag()) {
+            if (dcCore::app()->admin->id) {
+                switch (dcCore::app()->admin->status) {
+                    case dcBlog::POST_PUBLISHED:
+                        $img_status = sprintf((string) dcCore::app()->admin->img_status_pattern, __('Published'), 'check-on.png');
 
-        
-        
-        dcPage::helpBlock('relatedEntries');
+                        break;
+                    case dcBlog::POST_UNPUBLISHED:
+                        $img_status = sprintf((string) dcCore::app()->admin->img_status_pattern, __('Unpublished'), 'check-off.png');
+
+                        break;
+                    case dcBlog::POST_SCHEDULED:
+                        $img_status = sprintf((string) dcCore::app()->admin->img_status_pattern, __('Scheduled'), 'scheduled.png');
+
+                        break;
+                    case dcBlog::POST_PENDING:
+                        $img_status = sprintf((string) dcCore::app()->admin->img_status_pattern, __('Pending'), 'check-wrn.png');
+
+                        break;
+                    default:
+                        $img_status = '';
+                }
+                echo '&nbsp;&nbsp;&nbsp;' . $img_status;
+            }
+
+            echo dcPage::breadcrumb(
+                [
+                    html::escapeHTML(dcCore::app()->blog->name) => '',
+                    __('Related posts')                         => dcCore::app()->admin->getPageURL(),
+                    dcCore::app()->admin->page_title            => '',
+                ]
+            ) .
+                '<p class="clear">' . __('Select posts related to entry:') . ' <a href="' . dcCore::app()->getPostAdminURL($post_type, $post_id) . '">' . $post_title . '</a>';
+
+            echo
+            '<form action="' . dcCore::app()->admin->getPageURL() . '" method="get" id="filters-form">' .
+            '<h3 class="out-of-screen-if-js">' . __('Filter posts list') . '</h3>' .
+            '<div class="table">' .
+            '<div class="cell">' .
+            '<h4>' . __('Filters') . '</h4>' .
+            '<p><label for="user_id" class="ib">' . __('Author:') . '</label> ' .
+                form::combo('user_id', dcCore::app()->admin->users_combo, dcCore::app()->admin->user_id) . '</p>' .
+                '<p><label for="cat_id" class="ib">' . __('Category:') . '</label> ' .
+                form::combo('cat_id', dcCore::app()->admin->categories_combo, dcCore::app()->admin->cat_id) . '</p>' .
+                '<p><label for="status" class="ib">' . __('Status:') . '</label> ' .
+                form::combo('status', dcCore::app()->admin->status_combo, dcCore::app()->admin->status) . '</p> ' .
+            '</div>' .
+
+            '<div class="cell filters-sibling-cell">' .
+                '<p><label for="selected" class="ib">' . __('Selected:') . '</label> ' .
+                form::combo('selected', dcCore::app()->admin->selected_combo, dcCore::app()->admin->selected) . '</p>' .
+                '<p><label for="month" class="ib">' . __('Month:') . '</label> ' .
+                form::combo('month', dcCore::app()->admin->dt_m_combo, dcCore::app()->admin->month) . '</p>' .
+                '<p><label for="lang" class="ib">' . __('Lang:') . '</label> ' .
+                form::combo('lang', dcCore::app()->admin->lang_combo, dcCore::app()->admin->lang) . '</p> ' .
+            '</div>' .
+
+            '<div class="cell filters-options">' .
+                '<h4>' . __('Display options') . '</h4>' .
+                '<p><label for="sortby" class="ib">' . __('Order by:') . '</label> ' .
+                form::combo('sortby', dcCore::app()->admin->sortby_combo, dcCore::app()->admin->sortby) . '</p>' .
+                '<p><label for="order" class="ib">' . __('Sort:') . '</label> ' .
+                form::combo('order', dcCore::app()->admin->order_combo, dcCore::app()->admin->order) . '</p>' .
+                '<p><span class="label ib">' . __('Show') . '</span> <label for="nb" class="classic">' .
+                form::field('nb', 3, 3, dcCore::app()->admin->nb_per_page) . ' ' .
+                __('entries per page') . '</label></p>' .
+            '</div>' .
+            '</div>' .
+
+            '<p><input type="submit" value="' . __('Apply filters and display options') . '" />' .
+                '<br class="clear" /></p>' . //Opera sucks
+            '<p>' . form::hidden(['relatedEntries_filters'], 'relatedEntries') .
+            '<input type="hidden" name="p" value="relatedEntries" />' .
+            form::hidden(['id'], dcCore::app()->admin->id) .
+            dcCore::app()->formNonce() .
+            '</p>' .
+            '</form>';
+
+            // Show posts
+            dcCore::app()->admin->posts_list->display(
+                dcCore::app()->admin->page,
+                dcCore::app()->admin->nb_per_page,
+                '<form action="' . dcCore::app()->admin->getPageURL() . '" method="post" id="form-entries">' .
+
+                '%s' .
+
+                '<div class="two-cols">' .
+                '<p class="col checkboxes-helpers"></p>' .
+
+                '<p class="col right">' .
+                '<input type="submit" value="' . __('Add links to selected posts') . '" /> <a class="button reset" href="post.php?id=' . dcCore::app()->admin->id . '&upd=1">' . __('Cancel') . '</a></p>' .
+                '<p>' .
+                '<input type="hidden" name="p" value="relatedEntries" />' .
+                form::hidden(['id'], dcCore::app()->admin->id) .
+                dcCore::app()->formNonce() . '</p>' .
+                '</div>' .
+                '</form>',
+                dcCore::app()->admin->show_filters
+            );
+            
+        }
+        dcPage::helpBlock('relatedEntriesposts');
         echo
         '</body>' .
         '</html>';
