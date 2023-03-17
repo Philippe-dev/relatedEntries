@@ -321,7 +321,7 @@ class Manage extends dcNsProcess
                     "AND META.meta_type = 'relatedEntries' ) ";
             $posts     = dcCore::app()->blog->getPosts($params);
             $counter   = dcCore::app()->blog->getPosts($params, true);
-            $post_list = new adminPostList($posts, $counter->f(0));
+            $posts_list = new adminPostList($posts, $counter->f(0));
         } catch (Exception $e) {
             dcCore::app()->error->add($e->getMessage());
         }
@@ -365,7 +365,7 @@ class Manage extends dcNsProcess
         /*
          * Posts list
          */
-        dcCore::app()->admin->post_list   = $post_list;
+        dcCore::app()->admin->posts_list   = $posts_list;
         dcCore::app()->admin->page        = $page;
         dcCore::app()->admin->nb_per_page = $nb_per_page;
 
@@ -658,11 +658,11 @@ class Manage extends dcNsProcess
             '</p>' .
             '</form>';
 
-        if (!isset(dcCore::app()->admin->post_list) || empty(dcCore::app()->admin->post_list)) {
+        if (!isset(dcCore::app()->admin->posts_list) || empty(dcCore::app()->admin->posts_list)) {
             echo '<p><strong>' . __('No related posts') . '</strong></p>';
         } else {
             // Show posts
-            dcCore::app()->admin->post_list->display(
+            dcCore::app()->admin->posts_list->display(
                 dcCore::app()->admin->page,
                 dcCore::app()->admin->nb_per_page,
                 '<form action="' . dcCore::app()->admin->getPageURL() . '" method="post" id="form-entries">' .

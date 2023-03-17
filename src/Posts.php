@@ -448,27 +448,30 @@ class Posts extends dcNsProcess
             '</form>';
 
             // Show posts
-            dcCore::app()->admin->posts_list->display(
-                dcCore::app()->admin->page,
-                dcCore::app()->admin->nb_per_page,
-                '<form action="' . dcCore::app()->admin->getPageURL() . '" method="post" id="form-entries">' .
+            if (!isset(dcCore::app()->admin->posts_list) || empty(dcCore::app()->admin->posts_list)) {
+                echo '<p><strong>' . __('No related posts') . '</strong></p>';
+            } else {
+                dcCore::app()->admin->posts_list->display(
+                    dcCore::app()->admin->page,
+                    dcCore::app()->admin->nb_per_page,
+                    '<form action="' . dcCore::app()->admin->getPageURL() . '" method="post" id="form-entries">' .
 
-                '%s' .
+                    '%s' .
 
-                '<div class="two-cols">' .
-                '<p class="col checkboxes-helpers"></p>' .
+                    '<div class="two-cols">' .
+                    '<p class="col checkboxes-helpers"></p>' .
 
-                '<p class="col right">' .
-                '<input type="submit" value="' . __('Add links to selected posts') . '" /> <a class="button reset" href="post.php?id=' . dcCore::app()->admin->id . '&upd=1">' . __('Cancel') . '</a></p>' .
-                '<p>' .
-                '<input type="hidden" name="p" value="relatedEntries" />' .
-                form::hidden(['id'], dcCore::app()->admin->id) .
-                dcCore::app()->formNonce() . '</p>' .
-                '</div>' .
-                '</form>',
-                dcCore::app()->admin->show_filters
-            );
-            
+                    '<p class="col right">' .
+                    '<input type="submit" value="' . __('Add links to selected posts') . '" /> <a class="button reset" href="post.php?id=' . dcCore::app()->admin->id . '&upd=1">' . __('Cancel') . '</a></p>' .
+                    '<p>' .
+                    '<input type="hidden" name="p" value="relatedEntries" />' .
+                    form::hidden(['id'], dcCore::app()->admin->id) .
+                    dcCore::app()->formNonce() . '</p>' .
+                    '</div>' .
+                    '</form>',
+                    dcCore::app()->admin->show_filters
+                );
+            }
         }
         dcPage::helpBlock('relatedEntriesposts');
         echo
