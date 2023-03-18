@@ -20,7 +20,7 @@ class BackendBehaviors
 {
     public static function adminColumnsLists($cols)
     {
-        $cols['posts'][1]['Lnks'] = [true, __('Links')];
+        $cols['posts'][1]['Links'] = [true, __('Links')];
     }
 
     private static function adminEntryListHeader($core, $rs, $cols)
@@ -41,7 +41,7 @@ class BackendBehaviors
     public static function adminEntryListValue($core, $rs, $cols)
     {
         $count         = dcCore::app()->meta->getMetaRecordset($rs->post_meta, 'relatedEntries')->count();
-        $cols['links'] = '<td class="nowrap">' . $count . '</td>';
+        $cols['Links'] = '<td class="nowrap">' . $count . '</td>';
     }
 
     public static function adminPostListValue($rs, $cols)
@@ -56,6 +56,6 @@ class BackendBehaviors
 
     public static function adminPostsSortbyCombo($container)
     {
-        $container[1][__('Links')] = 'post_id';
+        $container[0][__('Links')] = 'post_id';
     }
 }
