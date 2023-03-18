@@ -14,34 +14,21 @@
 
  namespace Dotclear\Plugin\relatedEntries;
 
-use ArrayObject;
-use cursor;
-use dcAuth;
+
 use dcCore;
-use dcFavorites;
 use dcMeta;
-use dcPage;
-use dcPostsActions;
-use dcRecord;
-use Exception;
-use form;
-use html;
 use dt;
 
 class BackendBehaviors
 {
     public static function adminColumnsLists($cols)
     {
-        $cols['posts'][1]['upddt']  = [true, __('Updated')];
-        $cols['posts'][2]['creadt'] = [true, __('Created')];
-        $cols['pages'][1]['upddt']  = [true, __('Updated')];
-        $cols['pages'][2]['creadt'] = [true, __('Created')];
+        $cols['posts'][1]['links']  = [true, __('Links')];
     }
 
     private static function adminEntryListHeader($core, $rs, $cols)
     {
-        $cols['upddt']  = '<th scope="col">' . __('Updated') . '</th>';
-        $cols['creadt'] = '<th scope="col">' . __('Created') . '</th>';
+        $cols['links']  = '<th scope="col">' . __('Links') . '</th>';
     }
 
     public static function adminPostListHeader($rs, $cols)
@@ -56,8 +43,7 @@ class BackendBehaviors
 
     public static function adminEntryListValue($core, $rs, $cols)
     {
-        $cols['upddt']  = '<td class="nowrap">' . dt::dt2str(__('%Y-%m-%d %H:%M'), $rs->post_upddt) . '</td>';
-        $cols['creadt'] = '<td class="nowrap">' . dt::dt2str(__('%Y-%m-%d %H:%M'), $rs->post_creadt) . '</td>';
+        $cols['links']  = '<td class="nowrap">' . $rs->post_id . '</td>';
     }
 
     public static function adminPostListValue($rs, $cols)
@@ -72,7 +58,6 @@ class BackendBehaviors
 
     public static function adminPostsSortbyCombo($container)
     {
-        $container[0][__('Creation date')] = 'post_creadt';
-        $container[0][__('Update date')]   = 'post_upddt';
+        $container[1][__('ID')] = 'post_id';
     }
 }
