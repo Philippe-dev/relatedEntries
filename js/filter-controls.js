@@ -1,7 +1,7 @@
 $(function () {
 
   $filtersform = $('#filters-form');
-  $filtersform.before(`<p><a id="filter-control" class="form-control" href="plugin.php?p=relatedEntries#postslist" style="display:inline">${dotclear.msg.filter_posts_list}</a></p>`)
+  $filtersform.before(`<p><a id="filter-control" class="form-control" href="plugin.php?p=relatedEntries&amp;addlinks=1#postslist" style="display:inline">${dotclear.msg.filter_posts_list}</a></p>`)
 
   if (dotclear.msg.show_filters == 'false') {
     $filtersform.hide();
