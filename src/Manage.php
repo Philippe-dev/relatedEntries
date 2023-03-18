@@ -27,6 +27,7 @@ use dcMedia;
 use dcUtils;
 use dt;
 use adminPostList;
+use adminPostFilter;
 
 class Manage extends dcNsProcess
 {
@@ -364,8 +365,8 @@ class Manage extends dcNsProcess
         /*
          * Posts list
          */
-        //dcCore::app()->admin->page        = $page;
-        //dcCore::app()->admin->nb_per_page = $nb_per_page;
+        dcCore::app()->admin->page        = $page;
+        dcCore::app()->admin->nb_per_page = $nb_per_page;
 
         // Save Post relatedEntries
 
@@ -466,7 +467,7 @@ class Manage extends dcNsProcess
             return;
         }
 
-        if ((isset($_GET['id']) || isset($_POST['id'])) && isset($_GET['addlinks']) && $_GET['addlinks'] == 1) {
+        if (isset($_GET['id']) && isset($_GET['addlinks']) && $_GET['addlinks'] == 1 || isset($_GET['relatedEntries_filters'])) {
             try {
                 $id                      = (int) $_GET['id'];
                 $my_params['post_id']    = $id;
@@ -480,6 +481,11 @@ class Manage extends dcNsProcess
             } catch (Exception $e) {
                 dcCore::app()->error->add($e->getMessage());
             }
+
+            dcCore::app()->admin->post_filter = new adminPostFilter();
+
+            // get list params
+            $params = dcCore::app()->admin->post_filter->params();
 
             dcCore::app()->admin->posts      = null;
             dcCore::app()->admin->posts_list = null;
@@ -508,7 +514,7 @@ class Manage extends dcNsProcess
 
             $form_filter_title = __('Show filters and display options');
             $starting_script   = dcPage::jsLoad('js/_posts_list.js');
-            $starting_script .= dcPage::jsLoad(DC_ADMIN_URL . '?pf=relatedEntries/js/filter-controls.js');
+            $starting_script .= dcPage::jsLoad(DC_ADMIN_URL . '?pf=relatedEntries/js/posts-filter-controls.js');
             $starting_script .= dcPage::jsPageTabs(dcCore::app()->admin->default_tab);
             $starting_script .= dcPage::jsConfirmClose('config-form');
             $starting_script .= '<script>' . "\n" .
@@ -516,6 +522,7 @@ class Manage extends dcNsProcess
             dcPage::jsVar('dotclear.msg.show_filters', dcCore::app()->admin->show_filters ? 'true' : 'false') . "\n" .
             dcPage::jsVar('dotclear.msg.filter_posts_list', $form_filter_title) . "\n" .
             dcPage::jsVar('dotclear.msg.cancel_the_filter', __('Cancel filters and display options')) . "\n" .
+            dcPage::jsVar('id', $id) . "\n" .
             '//]]>' .
             '</script>';
             echo $starting_script;
@@ -589,7 +596,7 @@ class Manage extends dcNsProcess
                     '<p><label for="order" class="ib">' . __('Sort:') . '</label> ' .
                     form::combo('order', dcCore::app()->admin->order_combo, dcCore::app()->admin->order) . '</p>' .
                     '<p><span class="label ib">' . __('Show') . '</span> <label for="nb" class="classic">' .
-                    form::field('nb', 3, 3, dcCore::app()->admin->nb_per_page) . ' ' .
+                    form::field('nb', 3, 3, dcCore::app()->admin->post_filter->nb) . ' ' .
                     __('entries per page') . '</label></p>' .
                 '</div>' .
                 '</div>' .
@@ -609,8 +616,8 @@ class Manage extends dcNsProcess
                     echo '<p><strong>' . __('No related posts') . '</strong></p>';
                 } else {
                     dcCore::app()->admin->posts_list->display(
-                        dcCore::app()->admin->page,
-                        dcCore::app()->admin->nb_per_page,
+                        dcCore::app()->admin->post_filter->page,
+                        dcCore::app()->admin->post_filter->nb,
                         '<form action="' . dcCore::app()->admin->getPageURL() . '" method="post" id="form-entries">' .
 
                         '%s' .
@@ -632,6 +639,11 @@ class Manage extends dcNsProcess
             }
             dcPage::helpBlock('relatedEntriesposts');
         } else {
+            dcCore::app()->admin->post_filter = new adminPostFilter();
+
+            // get list params
+            $params = dcCore::app()->admin->post_filter->params();
+
             dcCore::app()->admin->posts      = null;
             dcCore::app()->admin->posts_list = null;
 
@@ -842,7 +854,7 @@ class Manage extends dcNsProcess
                     '<p><label for="order" class="ib">' . __('Sort:') . '</label> ' .
                     form::combo('order', dcCore::app()->admin->order_combo, dcCore::app()->admin->order) . '</p>' .
                     '<p><span class="label ib">' . __('Show') . '</span> <label for="nb" class="classic">' .
-                    form::field('nb', 3, 3, dcCore::app()->admin->nb_per_page) . ' ' .
+                    form::field('nb', 3, 3, dcCore::app()->admin->post_filter->nb) . ' ' .
                     __('entries per page') . '</label></p>' .
                 '</div>' .
                 '</div>' .
@@ -859,10 +871,12 @@ class Manage extends dcNsProcess
             if (!isset(dcCore::app()->admin->posts_list) || empty(dcCore::app()->admin->posts_list)) {
                 echo '<p><strong>' . __('No related posts') . '</strong></p>';
             } else {
+                
+
                 // Show posts
                 dcCore::app()->admin->posts_list->display(
-                    dcCore::app()->admin->page,
-                    dcCore::app()->admin->nb_per_page,
+                    dcCore::app()->admin->post_filter->page,
+                    dcCore::app()->admin->post_filter->nb,
                     '<form action="' . dcCore::app()->admin->getPageURL() . '" method="post" id="form-entries">' .
 
                     '%s' .
