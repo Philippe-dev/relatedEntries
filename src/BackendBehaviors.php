@@ -43,7 +43,8 @@ class BackendBehaviors
 
     public static function adminEntryListValue($core, $rs, $cols)
     {
-        $cols['links']  = '<td class="nowrap">' . $rs->post_id . '</td>';
+        $count = dcCore::app()->meta->getMetaRecordset($rs->post_meta, 'relatedEntries')->count();
+        $cols['links']  = '<td class="nowrap">' . $count . '</td>';
     }
 
     public static function adminPostListValue($rs, $cols)
