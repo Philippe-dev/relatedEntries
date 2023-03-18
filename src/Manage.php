@@ -466,7 +466,7 @@ class Manage extends dcNsProcess
             return;
         }
 
-        if (isset($_GET['id']) && isset($_GET['addlinks']) && $_GET['addlinks'] == 1) {
+        if (isset($_GET['id']) && isset($_GET['addlinks']) && $_GET['addlinks'] == 1 || isset($_GET['relatedEntries_filters'])) {
             try {
                 $id                      = (int) $_GET['id'];
                 $my_params['post_id']    = $id;
@@ -480,8 +480,6 @@ class Manage extends dcNsProcess
             } catch (Exception $e) {
                 dcCore::app()->error->add($e->getMessage());
             }
-
-            dcCore::app()->admin->post_filter = new adminPostFilter();
 
             // Filters
             // -------
@@ -627,7 +625,6 @@ class Manage extends dcNsProcess
                 '<input type="hidden" name="addlinks" value="1" />' .
                 form::hidden(['id'], dcCore::app()->admin->id) .
                 form::hidden(['tab'], 'postslist') .
-                dcCore::app()->adminurl->getHiddenFormFields('admin.posts', dcCore::app()->admin->post_filter->values()) .
                 dcCore::app()->formNonce() .
                 '</p>' .
                 '</form>';
@@ -664,8 +661,6 @@ class Manage extends dcNsProcess
             if (isset($_GET['page'])) {
                 dcCore::app()->admin->default_tab = 'postslist';
             }
-
-            dcCore::app()->admin->post_filter = new adminPostFilter();
 
             // Filters
             // -------
@@ -934,7 +929,6 @@ class Manage extends dcNsProcess
                     '<input type="hidden" name="p" value="relatedEntries" />' .
                     form::hidden(['tab'], 'postslist') .
                     form::hidden(['id'], dcCore::app()->admin->id) .
-                    dcCore::app()->adminurl->getHiddenFormFields('admin.posts', dcCore::app()->admin->post_filter->values()) .
                     dcCore::app()->formNonce() . '</p>' .
                     '</div>' .
                     '</form>',
