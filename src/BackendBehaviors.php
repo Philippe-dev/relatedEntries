@@ -10,25 +10,22 @@
  * @copyright GPL-2.0 [https://www.gnu.org/licenses/gpl-2.0.html]
  */
 
- declare(strict_types=1);
+declare(strict_types=1);
 
- namespace Dotclear\Plugin\relatedEntries;
-
+namespace Dotclear\Plugin\relatedEntries;
 
 use dcCore;
-use dcMeta;
-use dt;
 
 class BackendBehaviors
 {
     public static function adminColumnsLists($cols)
     {
-        $cols['posts'][1]['links']  = [true, __('Links')];
+        $cols['posts'][1]['links'] = [true, __('Links')];
     }
 
     private static function adminEntryListHeader($core, $rs, $cols)
     {
-        $cols['links']  = '<th scope="col">' . __('Links') . '</th>';
+        $cols['links'] = '<th scope="col">' . __('Links') . '</th>';
     }
 
     public static function adminPostListHeader($rs, $cols)
@@ -43,8 +40,8 @@ class BackendBehaviors
 
     public static function adminEntryListValue($core, $rs, $cols)
     {
-        $count = dcCore::app()->meta->getMetaRecordset($rs->post_meta, 'relatedEntries')->count();
-        $cols['links']  = '<td class="nowrap">' . $count . '</td>';
+        $count         = dcCore::app()->meta->getMetaRecordset($rs->post_meta, 'relatedEntries')->count();
+        $cols['links'] = '<td class="nowrap">' . $count . '</td>';
     }
 
     public static function adminPostListValue($rs, $cols)
