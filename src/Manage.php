@@ -250,7 +250,7 @@ class Manage extends dcNsProcess
         $show_filters = false;
 
         $page        = !empty($_GET['page']) ? (int) $_GET['page'] : 1;
-        $nb_per_page = 30;
+        $nb_per_page = adminUserPref::getUserFilters('pages', 'nb');
 
         if (!empty($_GET['nb']) && (int) $_GET['nb'] > 0) {
             if ($nb_per_page != $_GET['nb']) {
@@ -607,6 +607,7 @@ class Manage extends dcNsProcess
                 '<input type="hidden" name="p" value="relatedEntries" />' .
                 '<input type="hidden" name="addlinks" value="1" />' .
                 form::hidden(['id'], dcCore::app()->admin->id) .
+                form::hidden(['tab'], 'postslist') .
                 dcCore::app()->formNonce() .
                 '</p>' .
                 '</form>';
