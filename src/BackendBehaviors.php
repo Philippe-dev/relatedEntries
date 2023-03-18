@@ -59,6 +59,6 @@ class BackendBehaviors
 
     public static function adminPostsSortbyCombo($container)
     {
-        $container[1][__('ID')] = 'post_id';
+        $container[1][__('Links')] = 'post_id';
     }
 }
