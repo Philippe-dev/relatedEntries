@@ -20,7 +20,7 @@ class BackendBehaviors
 {
     public static function adminColumnsLists($cols)
     {
-        $cols['posts'][1]['links'] = [true, __('Links')];
+        $cols['posts'][1]['Lnks'] = [true, __('Links')];
     }
 
     private static function adminEntryListHeader($core, $rs, $cols)
