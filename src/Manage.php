@@ -590,56 +590,15 @@ class Manage extends dcNsProcess
                 ) .
                     '<h3>' . __('Select posts related to entry:') . ' <a href="' . dcCore::app()->getPostAdminURL($post_type, $post_id) . '">' . $post_title . '</a></h3>';
 
-                echo
-                '<form action="' . dcCore::app()->admin->getPageURL() . '" method="get" id="filters-form">' .
-                '<h3 class="out-of-screen-if-js">' . __('Filter posts list') . '</h3>' .
-                '<div class="table">' .
-                '<div class="cell">' .
-                '<h4>' . __('Filters') . '</h4>' .
-                '<p><label for="user_id" class="ib">' . __('Author:') . '</label> ' .
-                    form::combo('user_id', dcCore::app()->admin->users_combo, dcCore::app()->admin->user_id) . '</p>' .
-                    '<p><label for="cat_id" class="ib">' . __('Category:') . '</label> ' .
-                    form::combo('cat_id', dcCore::app()->admin->categories_combo, dcCore::app()->admin->cat_id) . '</p>' .
-                    '<p><label for="status" class="ib">' . __('Status:') . '</label> ' .
-                    form::combo('status', dcCore::app()->admin->status_combo, dcCore::app()->admin->status) . '</p> ' .
-                '</div>' .
-
-                '<div class="cell filters-sibling-cell">' .
-                    '<p><label for="selected" class="ib">' . __('Selected:') . '</label> ' .
-                    form::combo('selected', dcCore::app()->admin->selected_combo, dcCore::app()->admin->selected) . '</p>' .
-                    '<p><label for="month" class="ib">' . __('Month:') . '</label> ' .
-                    form::combo('month', dcCore::app()->admin->dt_m_combo, dcCore::app()->admin->month) . '</p>' .
-                    '<p><label for="lang" class="ib">' . __('Lang:') . '</label> ' .
-                    form::combo('lang', dcCore::app()->admin->lang_combo, dcCore::app()->admin->lang) . '</p> ' .
-                '</div>' .
-
-                '<div class="cell filters-options">' .
-                    '<h4>' . __('Display options') . '</h4>' .
-                    '<p><label for="sortby" class="ib">' . __('Order by:') . '</label> ' .
-                    form::combo('sortby', dcCore::app()->admin->sortby_combo, dcCore::app()->admin->sortby) . '</p>' .
-                    '<p><label for="order" class="ib">' . __('Sort:') . '</label> ' .
-                    form::combo('order', dcCore::app()->admin->order_combo, dcCore::app()->admin->order) . '</p>' .
-                    '<p><span class="label ib">' . __('Show') . '</span> <label for="nb" class="classic">' .
-                    form::field('nb', 3, 3, dcCore::app()->admin->post_filter->nb) . ' ' .
-                    __('entries per page') . '</label></p>' .
-                '</div>' .
-                '</div>' .
-
-                '<p><input type="submit" value="' . __('Apply filters and display options') . '" />' .
-                    '<br class="clear" /></p>' . //Opera sucks
-                '<p>' . form::hidden(['relatedEntries_filters'], 'relatedEntries') .
-                '<input type="hidden" name="p" value="relatedEntries" />' .
-                '<input type="hidden" name="addlinks" value="1" />' .
-                form::hidden(['id'], dcCore::app()->admin->id) .
-                form::hidden(['tab'], 'postslist') .
-                dcCore::app()->formNonce() .
-                '</p>' .
-                '</form>';
+                
 
                 // Show posts
                 if (!isset(dcCore::app()->admin->posts_list) || empty(dcCore::app()->admin->posts_list)) {
                     echo '<p><strong>' . __('No related posts') . '</strong></p>';
                 } else {
+                    # filters
+                    dcCore::app()->admin->post_filter->display('admin.plugin.relatedEntries');
+
                     dcCore::app()->admin->posts_list->display(
                         dcCore::app()->admin->post_filter->page,
                         dcCore::app()->admin->post_filter->nb,
@@ -872,53 +831,13 @@ class Manage extends dcNsProcess
 
             '<div class="multi-part" id="postslist" title="' . __('Related posts list') . '">';
 
-            echo
-                '<form action="' . dcCore::app()->admin->getPageURL() . '" method="get" id="filters-form">' .
-                '<h3 class="out-of-screen-if-js">' . __('Filter posts list') . '</h3>' .
-                '<div class="table">' .
-                '<div class="cell">' .
-                '<h4>' . __('Filters') . '</h4>' .
-                '<p><label for="user_id" class="ib">' . __('Author:') . '</label> ' .
-                    form::combo('user_id', dcCore::app()->admin->users_combo, dcCore::app()->admin->user_id) . '</p>' .
-                    '<p><label for="cat_id" class="ib">' . __('Category:') . '</label> ' .
-                    form::combo('cat_id', dcCore::app()->admin->categories_combo, dcCore::app()->admin->cat_id) . '</p>' .
-                    '<p><label for="status" class="ib">' . __('Status:') . '</label> ' .
-                    form::combo('status', dcCore::app()->admin->status_combo, dcCore::app()->admin->status) . '</p> ' .
-                '</div>' .
-
-                '<div class="cell filters-sibling-cell">' .
-                    '<p><label for="selected" class="ib">' . __('Selected:') . '</label> ' .
-                    form::combo('selected', dcCore::app()->admin->selected_combo, dcCore::app()->admin->selected) . '</p>' .
-                    '<p><label for="month" class="ib">' . __('Month:') . '</label> ' .
-                    form::combo('month', dcCore::app()->admin->dt_m_combo, dcCore::app()->admin->month) . '</p>' .
-                    '<p><label for="lang" class="ib">' . __('Lang:') . '</label> ' .
-                    form::combo('lang', dcCore::app()->admin->lang_combo, dcCore::app()->admin->lang) . '</p> ' .
-                '</div>' .
-
-                '<div class="cell filters-options">' .
-                    '<h4>' . __('Display options') . '</h4>' .
-                    '<p><label for="sortby" class="ib">' . __('Order by:') . '</label> ' .
-                    form::combo('sortby', dcCore::app()->admin->sortby_combo, dcCore::app()->admin->sortby) . '</p>' .
-                    '<p><label for="order" class="ib">' . __('Sort:') . '</label> ' .
-                    form::combo('order', dcCore::app()->admin->order_combo, dcCore::app()->admin->order) . '</p>' .
-                    '<p><span class="label ib">' . __('Show') . '</span> <label for="nb" class="classic">' .
-                    form::field('nb', 3, 3, dcCore::app()->admin->post_filter->nb) . ' ' .
-                    __('entries per page') . '</label></p>' .
-                '</div>' .
-                '</div>' .
-                '<p>' . dcCore::app()->formNonce() . '</p>' .
-                '<p><input type="submit" value="' . __('Apply filters and display options') . '" />' .
-                    '<br class="clear" /></p>' . //Opera sucks
-                '<p>' . form::hidden(['relatedEntries_filters_config'], 'relatedEntries') .
-                '<input type="hidden" name="p" value="relatedEntries" />' .
-                form::hidden(['id'], dcCore::app()->admin->id) .
-                form::hidden(['tab'], 'postslist') .
-                '</p>' .
-                '</form>';
+            
 
             if (!isset(dcCore::app()->admin->posts_list) || empty(dcCore::app()->admin->posts_list)) {
                 echo '<p><strong>' . __('No related posts') . '</strong></p>';
             } else {
+                dcCore::app()->admin->post_filter->display('admin.plugin.relatedEntries');
+
                 // Show posts
                 dcCore::app()->admin->posts_list->display(
                     dcCore::app()->admin->post_filter->page,
