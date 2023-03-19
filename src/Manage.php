@@ -38,6 +38,13 @@ class Manage extends dcNsProcess
     {
         self::$init = true;
 
+        dcCore::app()->addBehavior('adminColumnsListsV2', [BackendBehaviors::class, 'adminColumnsLists']);
+        dcCore::app()->addBehavior('adminPostListHeaderV2', [BackendBehaviors::class, 'adminPostListHeader']);
+        dcCore::app()->addBehavior('adminPostListValueV2', [BackendBehaviors::class, 'adminPostListValue']);
+        dcCore::app()->addBehavior('adminPagesListHeaderV2', [BackendBehaviors::class, 'adminPagesListHeader']);
+        dcCore::app()->addBehavior('adminPagesListValueV2', [BackendBehaviors::class, 'adminPagesListValue']);
+        dcCore::app()->addBehavior('adminPostsSortbyCombo', [BackendBehaviors::class, 'adminPostsSortbyCombo']);
+
         return self::$init;
     }
 
@@ -467,14 +474,6 @@ class Manage extends dcNsProcess
         }
 
         if (isset($_GET['id']) && isset($_GET['addlinks']) && $_GET['addlinks'] == 1 || isset($_GET['relatedEntries_filters'])) {
-            
-            dcCore::app()->addBehavior('adminColumnsListsV2', [BackendBehaviors::class, 'adminColumnsLists']);
-            dcCore::app()->addBehavior('adminPostListHeaderV2', [BackendBehaviors::class, 'adminPostListHeader']);
-            dcCore::app()->addBehavior('adminPostListValueV2', [BackendBehaviors::class, 'adminPostListValue']);
-            dcCore::app()->addBehavior('adminPagesListHeaderV2', [BackendBehaviors::class, 'adminPagesListHeader']);
-            dcCore::app()->addBehavior('adminPagesListValueV2', [BackendBehaviors::class, 'adminPagesListValue']);
-            dcCore::app()->addBehavior('adminPostsSortbyCombo', [BackendBehaviors::class, 'adminPostsSortbyCombo']);
-            
             try {
                 $id                      = (int) $_GET['id'];
                 $my_params['post_id']    = $id;
@@ -666,13 +665,6 @@ class Manage extends dcNsProcess
             }
             dcPage::helpBlock('relatedEntriesposts');
         } else {
-            dcCore::app()->addBehavior('adminColumnsListsV2', [BackendBehaviors::class, 'adminColumnsLists']);
-            dcCore::app()->addBehavior('adminPostListHeaderV2', [BackendBehaviors::class, 'adminPostListHeader']);
-            dcCore::app()->addBehavior('adminPostListValueV2', [BackendBehaviors::class, 'adminPostListValue']);
-            dcCore::app()->addBehavior('adminPagesListHeaderV2', [BackendBehaviors::class, 'adminPagesListHeader']);
-            dcCore::app()->addBehavior('adminPagesListValueV2', [BackendBehaviors::class, 'adminPagesListValue']);
-            dcCore::app()->addBehavior('adminPostsSortbyCombo', [BackendBehaviors::class, 'adminPostsSortbyCombo']);
-
             if (isset($_GET['page'])) {
                 dcCore::app()->admin->default_tab = 'postslist';
             }
@@ -879,7 +871,7 @@ class Manage extends dcNsProcess
             //Related posts list tab
 
             '<div class="multi-part" id="postslist" title="' . __('Related posts list') . '">';
-            
+
             echo
                 '<form action="' . dcCore::app()->admin->getPageURL() . '" method="get" id="filters-form">' .
                 '<h3 class="out-of-screen-if-js">' . __('Filter posts list') . '</h3>' .
