@@ -879,7 +879,7 @@ class Manage extends dcNsProcess
             //Related posts list tab
 
             '<div class="multi-part" id="postslist" title="' . __('Related posts list') . '">';
-
+            
             echo
                 '<form action="' . dcCore::app()->admin->getPageURL() . '" method="get" id="filters-form">' .
                 '<h3 class="out-of-screen-if-js">' . __('Filter posts list') . '</h3>' .
