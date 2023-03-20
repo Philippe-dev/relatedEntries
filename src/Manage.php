@@ -158,6 +158,7 @@ class Manage extends dcNsProcess
         dcCore::app()->admin->link_combo     = $link_combo;
         dcCore::app()->admin->bubble_combo   = $bubble_combo;
         dcCore::app()->admin->settings       = $settings;
+        
 
         // Save Post relatedEntries
 
