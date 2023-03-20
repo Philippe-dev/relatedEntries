@@ -147,10 +147,13 @@ class Manage extends dcNsProcess
 
         dcCore::app()->admin->default_tab = empty($_REQUEST['tab']) ? '' : $_REQUEST['tab'];
 
+        
+
         /*
          * Admin page params.
          */
-        dcCore::app()->admin->from_combo     = $from_combo;
+        dcCore::app()->admin->show_filters   = $show_filters;
+         dcCore::app()->admin->from_combo     = $from_combo;
         dcCore::app()->admin->img_size_combo = $img_size_combo;
         dcCore::app()->admin->alt_combo      = $alt_combo;
         dcCore::app()->admin->legend_combo   = $legend_combo;
