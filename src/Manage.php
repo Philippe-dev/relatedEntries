@@ -158,36 +158,8 @@ class Manage extends dcNsProcess
         dcCore::app()->admin->link_combo     = $link_combo;
         dcCore::app()->admin->bubble_combo   = $bubble_combo;
         dcCore::app()->admin->settings       = $settings;
-        
-
-        // Save Post relatedEntries
-
-        if (isset($_POST['entries']) && isset($_POST['addlinks']) && $_POST['addlinks'] === true) {
-            try {
-                $meta    = dcCore::app()->meta;
-                $entries = implode(', ', $_POST['entries']);
-                $id      = $_POST['id'];
-
-                foreach ($meta->splitMetaValues($entries) as $tag) {
-                    $meta->delPostMeta($id, 'relatedEntries', $tag);
-                    $meta->setPostMeta($id, 'relatedEntries', $tag);
-                }
-                foreach ($meta->splitMetaValues($entries) as $tag) {
-                    $r_tags = $meta->getMetaStr(serialize($tag), 'relatedEntries');
-                    $r_tags = explode(', ', $r_tags);
-                    array_push($r_tags, $id);
-                    $r_tags = implode(', ', $r_tags);
-                    foreach ($meta->splitMetaValues($r_tags) as $tags) {
-                        $meta->delPostMeta($tag, 'relatedEntries', $tags);
-                        $meta->setPostMeta($tag, 'relatedEntries', $tags);
-                    }
-                }
-
-                http::redirect(DC_ADMIN_URL . 'post.php?id=' . $id . '&add=1&upd=1');
-            } catch (Exception $e) {
-                dcCore::app()->error->add($e->getMessage());
-            }
-        }
+        $id                                  = !empty($_GET['id']) ? $_GET['id'] : '';
+        dcCore::app()->admin->id             = $id;
 
         // Saving configurations
         if (isset($_POST['save'])) {
@@ -217,6 +189,36 @@ class Manage extends dcNsProcess
             dcCore::app()->blog->triggerBlog();
             http::redirect(dcCore::app()->admin->getPageURL() . '&upd=1');
         }
+        
+        // Save Post relatedEntries
+
+        if (isset($_POST['entries']) && isset($_POST['addlinks']) && $_POST['addlinks'] === true) {
+            try {
+                $meta    = dcCore::app()->meta;
+                $entries = implode(', ', $_POST['entries']);
+                $id      = $_POST['id'];
+
+                foreach ($meta->splitMetaValues($entries) as $tag) {
+                    $meta->delPostMeta($id, 'relatedEntries', $tag);
+                    $meta->setPostMeta($id, 'relatedEntries', $tag);
+                }
+                foreach ($meta->splitMetaValues($entries) as $tag) {
+                    $r_tags = $meta->getMetaStr(serialize($tag), 'relatedEntries');
+                    $r_tags = explode(', ', $r_tags);
+                    array_push($r_tags, $id);
+                    $r_tags = implode(', ', $r_tags);
+                    foreach ($meta->splitMetaValues($r_tags) as $tags) {
+                        $meta->delPostMeta($tag, 'relatedEntries', $tags);
+                        $meta->setPostMeta($tag, 'relatedEntries', $tags);
+                    }
+                }
+
+                http::redirect(DC_ADMIN_URL . 'post.php?id=' . $id . '&add=1&upd=1');
+            } catch (Exception $e) {
+                dcCore::app()->error->add($e->getMessage());
+            }
+        }
+
         //Remove related posts links
 
         if (isset($_POST['entries']) && isset($_POST['addlinks']) && $_POST['addlinks'] === false) {
