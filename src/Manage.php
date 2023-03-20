@@ -161,11 +161,9 @@ class Manage extends dcNsProcess
 
         // Save Post relatedEntries
 
-        if (isset($_POST['addlinks']) && $_POST['addlinks'] == 1) {
-            
-
+        if (isset($_POST['entries']) && isset($_POST['addlinks']) && $_POST['addlinks'] === true) {
             try {
-                $meta = dcCore::app()->meta;
+                $meta    = dcCore::app()->meta;
                 $entries = implode(', ', $_POST['entries']);
                 $id      = $_POST['id'];
 
@@ -220,8 +218,7 @@ class Manage extends dcNsProcess
         }
         //Remove related posts links
 
-        if (isset($_POST['addlinks']) && $_POST['addlinks'] == 0) {
-            
+        if (isset($_POST['entries']) && isset($_POST['addlinks']) && $_POST['addlinks'] === false) {
             try {
                 $tags = [];
                 $meta = dcCore::app()->meta;
@@ -396,9 +393,10 @@ class Manage extends dcNsProcess
                         '<p class="col right">' .
                         '<input type="submit" value="' . __('Add links to selected posts') . '" /> <a class="button reset" href="post.php?id=' . dcCore::app()->admin->id . '&upd=1">' . __('Cancel') . '</a></p>' .
                         '<p>' .
-                        '<input type="hidden" name="p" value="relatedEntries" />' .
-                        '<input type="hidden" name="addlinks" value="1" />' .
+                        form::hidden(['addlinks'], true) .
                         form::hidden(['id'], dcCore::app()->admin->id) .
+                        form::hidden(['p'], 'relatedEntries') .
+                        dcCore::app()->adminurl->getHiddenFormFields('admin.plugin.relatedEntries', dcCore::app()->admin->post_filter->values()) .
                         dcCore::app()->formNonce() . '</p>' .
                         '</div>' .
                         '</form>',
@@ -636,8 +634,10 @@ class Manage extends dcNsProcess
                     '<p>' .
                     '<input type="hidden" name="p" value="relatedEntries" />' .
                     form::hidden(['tab'], 'postslist') .
+                    form::hidden(['addlinks'], false) .
                     form::hidden(['id'], dcCore::app()->admin->id) .
-                    '<input type="hidden" name="addlinks" value="0" />' .
+                    form::hidden(['p'], 'relatedEntries') .
+                    dcCore::app()->adminurl->getHiddenFormFields('admin.plugin.relatedEntries', dcCore::app()->admin->post_filter->values()) .
                     dcCore::app()->formNonce() . '</p>' .
                     '</div>' .
                     '</form>',
