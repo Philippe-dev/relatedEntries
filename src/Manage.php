@@ -24,8 +24,6 @@ use form;
 use html;
 use http;
 use dcMedia;
-use dcUtils;
-use dt;
 use adminPostList;
 use adminPostFilter;
 
@@ -160,17 +158,16 @@ class Manage extends dcNsProcess
         dcCore::app()->admin->link_combo     = $link_combo;
         dcCore::app()->admin->bubble_combo   = $bubble_combo;
         dcCore::app()->admin->settings       = $settings;
-        
-        
 
         // Save Post relatedEntries
 
-        if (isset($_POST['entries'])) {
+        if (isset($_POST['entries']) && isset($_POST['addlinks'])) {
+            
+
             try {
+                $meta = dcCore::app()->meta;
                 $entries = implode(', ', $_POST['entries']);
                 $id      = $_POST['id'];
-
-                $meta = dcCore::app()->meta;
 
                 foreach ($meta->splitMetaValues($entries) as $tag) {
                     $meta->delPostMeta($id, 'relatedEntries', $tag);
@@ -223,11 +220,11 @@ class Manage extends dcNsProcess
         }
         //Remove related posts links
 
-        if (isset($_POST['entries'])) {
-            $meta = dcCore::app()->meta;
-
+        if (isset($_POST['entries']) && !isset($_POST['addlinks'])) {
+            
             try {
                 $tags = [];
+                $meta = dcCore::app()->meta;
 
                 foreach ($_POST['entries'] as $id) {
                     // Get tags for post
@@ -621,7 +618,7 @@ class Manage extends dcNsProcess
             if (!isset(dcCore::app()->admin->posts_list) || empty(dcCore::app()->admin->posts_list)) {
                 echo '<p><strong>' . __('No related posts') . '</strong></p>';
             } else {
-                dcCore::app()->admin->post_filter->display('admin.plugin.relatedEntries','<input type="hidden" name="p" value="relatedEntries" /><input type="hidden" name="tab" value="postslist" />');
+                dcCore::app()->admin->post_filter->display('admin.plugin.relatedEntries', '<input type="hidden" name="p" value="relatedEntries" /><input type="hidden" name="tab" value="postslist" />');
 
                 // Show posts
                 dcCore::app()->admin->posts_list->display(
