@@ -161,7 +161,7 @@ class Manage extends dcNsProcess
 
         // Save Post relatedEntries
 
-        if (isset($_POST['entries']) && isset($_POST['addlinks'])) {
+        if (isset($_POST['addlinks']) && $_POST['addlinks'] == 1) {
             
 
             try {
@@ -220,7 +220,7 @@ class Manage extends dcNsProcess
         }
         //Remove related posts links
 
-        if (isset($_POST['entries']) && !isset($_POST['addlinks'])) {
+        if (isset($_POST['addlinks']) && $_POST['addlinks'] == 0) {
             
             try {
                 $tags = [];
@@ -637,6 +637,7 @@ class Manage extends dcNsProcess
                     '<input type="hidden" name="p" value="relatedEntries" />' .
                     form::hidden(['tab'], 'postslist') .
                     form::hidden(['id'], dcCore::app()->admin->id) .
+                    '<input type="hidden" name="addlinks" value="0" />' .
                     dcCore::app()->formNonce() . '</p>' .
                     '</div>' .
                     '</form>',
