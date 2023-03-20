@@ -376,7 +376,7 @@ class Manage extends dcNsProcess
 
         // Save Post relatedEntries
 
-        if (isset($_POST['entries'])) {
+        if (isset($_POST['id'])) {
             try {
                 $entries = implode(', ', $_POST['entries']);
                 $id      = $_POST['id'];
