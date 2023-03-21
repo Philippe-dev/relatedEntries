@@ -193,60 +193,58 @@ class Manage extends dcNsProcess
             http::redirect(dcCore::app()->admin->getPageURL() . '&upd=1');
         }
 
-        // Save Post relatedEntries
+        if (isset($_POST['entries'])) {
+            if (isset($_POST['id'])) {
+                // Save Post relatedEntries
+                try {
+                    $meta    = dcCore::app()->meta;
+                    $entries = implode(', ', $_POST['entries']);
+                    $id      = $_POST['id'];
 
-        if (isset($_POST['entries']) && isset($_POST['id'])) {
-            try {
-                $meta    = dcCore::app()->meta;
-                $entries = implode(', ', $_POST['entries']);
-                $id      = $_POST['id'];
-
-                foreach ($meta->splitMetaValues($entries) as $tag) {
-                    $meta->delPostMeta($id, 'relatedEntries', $tag);
-                    $meta->setPostMeta($id, 'relatedEntries', $tag);
-                }
-                foreach ($meta->splitMetaValues($entries) as $tag) {
-                    $r_tags = $meta->getMetaStr(serialize($tag), 'relatedEntries');
-                    $r_tags = explode(', ', $r_tags);
-                    array_push($r_tags, $id);
-                    $r_tags = implode(', ', $r_tags);
-                    foreach ($meta->splitMetaValues($r_tags) as $tags) {
-                        $meta->delPostMeta($tag, 'relatedEntries', $tags);
-                        $meta->setPostMeta($tag, 'relatedEntries', $tags);
+                    foreach ($meta->splitMetaValues($entries) as $tag) {
+                        $meta->delPostMeta($id, 'relatedEntries', $tag);
+                        $meta->setPostMeta($id, 'relatedEntries', $tag);
                     }
-                }
-
-                http::redirect(DC_ADMIN_URL . 'post.php?id=' . $id . '&add=1&upd=1');
-            } catch (Exception $e) {
-                dcCore::app()->error->add($e->getMessage());
-            }
-        }
-
-        //Remove related posts links
-
-        if (isset($_POST['entries']) && !isset($_POST['id'])) {
-            try {
-                $tags = [];
-                $meta = dcCore::app()->meta;
-
-                foreach ($_POST['entries'] as $post_id) {
-                    // Get tags for post
-                    $post_meta = $meta->getMetadata([
-                        'meta_type' => 'relatedEntries',
-                        'post_id'   => $post_id, ]);
-                    $pm = [];
-                    while ($post_meta->fetch()) {
-                        $pm[] = $post_meta->meta_id;
+                    foreach ($meta->splitMetaValues($entries) as $tag) {
+                        $r_tags = $meta->getMetaStr(serialize($tag), 'relatedEntries');
+                        $r_tags = explode(', ', $r_tags);
+                        array_push($r_tags, $id);
+                        $r_tags = implode(', ', $r_tags);
+                        foreach ($meta->splitMetaValues($r_tags) as $tags) {
+                            $meta->delPostMeta($tag, 'relatedEntries', $tags);
+                            $meta->setPostMeta($tag, 'relatedEntries', $tags);
+                        }
                     }
-                    foreach ($pm as $tag) {
-                        $meta->delPostMeta($post_id, 'relatedEntries', $tag);
-                        $meta->delPostMeta($tag, 'relatedEntries', $post_id);
-                    }
-                }
 
-                http::redirect(dcCore::app()->admin->getPageURL() . '&upd=2&tab=postslist');
-            } catch (Exception $e) {
-                dcCore::app()->error->add($e->getMessage());
+                    http::redirect(DC_ADMIN_URL . 'post.php?id=' . $id . '&add=1&upd=1');
+                } catch (Exception $e) {
+                    dcCore::app()->error->add($e->getMessage());
+                }
+            } else {
+                //Remove related posts links
+                try {
+                    $tags = [];
+                    $meta = dcCore::app()->meta;
+
+                    foreach ($_POST['entries'] as $id) {
+                        // Get tags for post
+                        $post_meta = $meta->getMetadata([
+                            'meta_type' => 'relatedEntries',
+                            'post_id'   => $id, ]);
+                        $pm = [];
+                        while ($post_meta->fetch()) {
+                            $pm[] = $post_meta->meta_id;
+                        }
+                        foreach ($pm as $tag) {
+                            $meta->delPostMeta($id, 'relatedEntries', $tag);
+                            $meta->delPostMeta($tag, 'relatedEntries', $id);
+                        }
+                    }
+
+                    http::redirect(dcCore::app()->admin->getPageURL() . '&upd=2&tab=postslist');
+                } catch (Exception $e) {
+                    dcCore::app()->error->add($e->getMessage());
+                }
             }
         }
 
