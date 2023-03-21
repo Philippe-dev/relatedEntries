@@ -195,7 +195,7 @@ class Manage extends dcNsProcess
 
         // Save Post relatedEntries
 
-        if (isset($_POST['entries']) && isset($_POST['addlinks']) && $_POST['addlinks'] === true) {
+        if (isset($_POST['entries']) && isset($_POST['id'])) {
             try {
                 $meta    = dcCore::app()->meta;
                 $entries = implode(', ', $_POST['entries']);
@@ -224,7 +224,7 @@ class Manage extends dcNsProcess
 
         //Remove related posts links
 
-        if (isset($_POST['entries']) && isset($_POST['addlinks']) && $_POST['addlinks'] === false) {
+        if (isset($_POST['entries']) && !isset($_POST['id'])) {
             try {
                 $tags = [];
                 $meta = dcCore::app()->meta;
@@ -640,8 +640,6 @@ class Manage extends dcNsProcess
                     '<p>' .
                     '<input type="hidden" name="p" value="relatedEntries" />' .
                     form::hidden(['tab'], 'postslist') .
-                    form::hidden(['addlinks'], false) .
-                    form::hidden(['id'], dcCore::app()->admin->id) .
                     form::hidden(['p'], 'relatedEntries') .
                     dcCore::app()->adminurl->getHiddenFormFields('admin.plugin.relatedEntries', dcCore::app()->admin->post_filter->values()) .
                     dcCore::app()->formNonce() . '</p>' .
