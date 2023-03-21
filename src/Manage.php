@@ -229,18 +229,18 @@ class Manage extends dcNsProcess
                 $tags = [];
                 $meta = dcCore::app()->meta;
 
-                foreach ($_POST['entries'] as $id) {
+                foreach ($_POST['entries'] as $post_id) {
                     // Get tags for post
                     $post_meta = $meta->getMetadata([
                         'meta_type' => 'relatedEntries',
-                        'post_id'   => $id, ]);
+                        'post_id'   => $post_id, ]);
                     $pm = [];
                     while ($post_meta->fetch()) {
                         $pm[] = $post_meta->meta_id;
                     }
                     foreach ($pm as $tag) {
-                        $meta->delPostMeta($id, 'relatedEntries', $tag);
-                        $meta->delPostMeta($tag, 'relatedEntries', $id);
+                        $meta->delPostMeta($post_id, 'relatedEntries', $tag);
+                        $meta->delPostMeta($tag, 'relatedEntries', $post_id);
                     }
                 }
 
