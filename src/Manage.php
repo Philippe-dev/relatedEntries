@@ -282,22 +282,6 @@ class Manage extends dcNsProcess
             // get list params
             $params = dcCore::app()->admin->post_filter->params();
 
-            // lexical sort
-            $sortby_lex = [
-                // key in sorty_combo (see above) => field in SQL request
-                'post_title' => 'post_title',
-                'cat_title'  => 'cat_title',
-                'user_id'    => 'P.user_id', ];
-
-            # --BEHAVIOR-- adminPostsSortbyLexCombo
-            dcCore::app()->callBehavior('adminPostsSortbyLexCombo', [& $sortby_lex]);
-
-            $params['order'] = (array_key_exists(dcCore::app()->admin->post_filter->sortby, $sortby_lex) ?
-                dcCore::app()->con->lexFields($sortby_lex[dcCore::app()->admin->post_filter->sortby]) :
-                dcCore::app()->admin->post_filter->sortby) . ' ' . dcCore::app()->admin->post_filter->order;
-
-            $params['no_content'] = true;
-
             dcCore::app()->admin->posts      = null;
             dcCore::app()->admin->posts_list = null;
 
@@ -420,22 +404,6 @@ class Manage extends dcNsProcess
 
             // get list params
             $params = dcCore::app()->admin->post_filter->params();
-
-            // lexical sort
-            $sortby_lex = [
-                // key in sorty_combo (see above) => field in SQL request
-                'post_title' => 'post_title',
-                'cat_title'  => 'cat_title',
-                'user_id'    => 'P.user_id', ];
-
-            # --BEHAVIOR-- adminPostsSortbyLexCombo
-            dcCore::app()->callBehavior('adminPostsSortbyLexCombo', [& $sortby_lex]);
-
-            $params['order'] = (array_key_exists(dcCore::app()->admin->post_filter->sortby, $sortby_lex) ?
-                dcCore::app()->con->lexFields($sortby_lex[dcCore::app()->admin->post_filter->sortby]) :
-                dcCore::app()->admin->post_filter->sortby) . ' ' . dcCore::app()->admin->post_filter->order;
-
-            $params['no_content'] = true;
 
             dcCore::app()->admin->posts      = null;
             dcCore::app()->admin->posts_list = null;
@@ -642,7 +610,6 @@ class Manage extends dcNsProcess
                     '<input type="hidden" name="p" value="relatedEntries" />' .
                     form::hidden(['tab'], 'postslist') .
                     form::hidden(['p'], 'relatedEntries') .
-                    //form::hidden(['relatedEntries_filters'], 'relatedEntries')
                     dcCore::app()->adminurl->getHiddenFormFields('admin.plugin.relatedEntries', dcCore::app()->admin->post_filter->values()) .
                     dcCore::app()->formNonce() . '</p>' .
                     '</div>' .

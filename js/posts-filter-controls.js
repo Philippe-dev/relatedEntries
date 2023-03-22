@@ -7,7 +7,7 @@ $(() => {
         : filter_reset_url;
     const $filtersform = $("#filters-form");
     $filtersform.before(
-        `<p><a id="filter-control" class="form-control" href="plugin.php?p=relatedEntries&relatedEntries_filters=relatedEntries&id=${id}" style="display:inline">${dotclear.msg.filter_posts_list}</a></p>`
+        `<p><a id="filter-control" class="form-control" href="${reset_url}&p=relatedEntries&relatedEntries_filters=relatedEntries&id=${id}" style="display:inline">${dotclear.msg.filter_posts_list}</a></p>`
     );
     if (dotclear.msg.show_filters) {
         $("#filter-control")
