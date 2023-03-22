@@ -317,6 +317,7 @@ class Manage extends dcNsProcess
             dcPage::jsVar('dotclear.msg.show_filters', dcCore::app()->admin->show_filters ? 'true' : 'false') . "\n" .
             dcPage::jsVar('dotclear.msg.filter_posts_list', $form_filter_title) . "\n" .
             dcPage::jsVar('dotclear.msg.cancel_the_filter', __('Cancel filters and display options')) . "\n" .
+            dcPage::jsVar('reset_url', dcCore::app()->admin->getPageURL()) . "\n" .
             dcPage::jsVar('id', $id) . "\n" .
             '//]]>' .
             '</script>';
@@ -440,6 +441,7 @@ class Manage extends dcNsProcess
             dcPage::jsVar('dotclear.msg.show_filters', dcCore::app()->admin->show_filters ? 'true' : 'false') . "\n" .
             dcPage::jsVar('dotclear.msg.filter_posts_list', $form_filter_title) . "\n" .
             dcPage::jsVar('dotclear.msg.cancel_the_filter', __('Cancel filters and display options')) . "\n" .
+            dcPage::jsVar('reset_url', dcCore::app()->admin->getPageURL()) . "\n" .
             '//]]>' .
             '</script>';
             echo $starting_script;
