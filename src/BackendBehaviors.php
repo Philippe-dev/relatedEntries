@@ -56,6 +56,7 @@ class BackendBehaviors
 
     public static function adminPostsSortbyCombo($container)
     {
-        $container[0][__('Links')] = 'post_id';
+        $count         = dcCore::app()->meta->getMetaRecordset($rs->post_meta, 'relatedEntries')->count();
+        $container[0][__('Links')] = $count;
     }
 }
