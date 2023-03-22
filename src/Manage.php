@@ -24,8 +24,6 @@ use form;
 use html;
 use http;
 use dcMedia;
-use dcUtils;
-use dt;
 use adminPostList;
 use adminPostFilter;
 
@@ -147,194 +145,9 @@ class Manage extends dcNsProcess
             __('no alt')      => 'none',
         ];
 
-        // Getting categories
-        try {
-            $categories = dcCore::app()->blog->getCategories(['post_type' => 'post']);
-        } catch (Exception $e) {
-            dcCore::app()->error->add($e->getMessage());
-        }
-
-        // Getting authors
-        try {
-            $users = dcCore::app()->blog->getPostsUsers();
-        } catch (Exception $e) {
-            dcCore::app()->error->add($e->getMessage());
-        }
-
-        // Getting dates
-        try {
-            $dates = dcCore::app()->blog->getDates(['type' => 'month']);
-        } catch (Exception $e) {
-            dcCore::app()->error->add($e->getMessage());
-        }
-
-        // Getting langs
-        try {
-            $langs = dcCore::app()->blog->getLangs();
-        } catch (Exception $e) {
-            dcCore::app()->error->add($e->getMessage());
-        }
-
-        // Creating filter combo boxes
-        if (!dcCore::app()->error->flag()) {
-            // Filter form we'll put in html_block
-            $users_combo      = $categories_combo = [];
-            $users_combo['-'] = $categories_combo['-'] = '';
-            while ($users->fetch()) {
-                $user_cn = dcUtils::getUserCN(
-                    $users->user_id,
-                    $users->user_name,
-                    $users->user_firstname,
-                    $users->user_displayname
-                );
-
-                if ($user_cn != $users->user_id) {
-                    $user_cn .= ' (' . $users->user_id . ')';
-                }
-
-                $users_combo[$user_cn] = $users->user_id;
-            }
-
-            $categories_combo[__('None')] = 'NULL';
-            while ($categories->fetch()) {
-                $categories_combo[str_repeat('&nbsp;&nbsp;', $categories->level - 1) . ($categories->level - 1 == 0 ? '' : '&bull; ') .
-                    html::escapeHTML($categories->cat_title) .
-                    ' (' . $categories->nb_post . ')'] = $categories->cat_id;
-            }
-
-            $status_combo = [
-                '-' => '',
-            ];
-            foreach (dcCore::app()->blog->getAllPostStatus() as $k => $v) {
-                $status_combo[$v] = (string) $k;
-            }
-
-            $selected_combo = [
-                '-'                => '',
-                __('Selected')     => '1',
-                __('Not selected') => '0',
-            ];
-
-            // Months array
-            $dt_m_combo['-'] = '';
-            while ($dates->fetch()) {
-                $dt_m_combo[dt::str('%B %Y', $dates->ts())] = $dates->year() . $dates->month();
-            }
-
-            $lang_combo['-'] = '';
-            while ($langs->fetch()) {
-                $lang_combo[$langs->post_lang] = $langs->post_lang;
-            }
-
-            $sortby_combo = [
-                __('Date')     => 'post_dt',
-                __('Title')    => 'post_title',
-                __('Category') => 'cat_title',
-                __('Author')   => 'user_id',
-                __('Status')   => 'post_status',
-                __('Selected') => 'post_selected',
-            ];
-
-            $order_combo = [
-                __('Descending') => 'desc',
-                __('Ascending')  => 'asc',
-            ];
-        }
-
-        /* Get posts
-        -------------------------------------------------------- */
-        $id       = !empty($_GET['id']) ? $_GET['id'] : '';
-        $user_id  = !empty($_GET['user_id']) ? $_GET['user_id'] : '';
-        $cat_id   = !empty($_GET['cat_id']) ? $_GET['cat_id'] : '';
-        $status   = $_GET['status']   ?? '';
-        $selected = $_GET['selected'] ?? '';
-        $month    = !empty($_GET['month']) ? $_GET['month'] : '';
-        $entries  = !empty($_GET['entries']) ? $_GET['entries'] : '';
-        $lang     = !empty($_GET['lang']) ? $_GET['lang'] : '';
-        $sortby   = !empty($_GET['sortby']) ? $_GET['sortby'] : 'post_dt';
-        $order    = !empty($_GET['order']) ? $_GET['order'] : 'desc';
+        dcCore::app()->admin->default_tab = empty($_REQUEST['tab']) ? '' : $_REQUEST['tab'];
 
         $show_filters = false;
-
-        $page        = !empty($_GET['page']) ? (int) $_GET['page'] : 1;
-        $nb_per_page = adminUserPref::getUserFilters('pages', 'nb');
-
-        if (!empty($_GET['nb']) && (int) $_GET['nb'] > 0) {
-            if ($nb_per_page != $_GET['nb']) {
-                $show_filters = true;
-            }
-            $nb_per_page = (int) $_GET['nb'];
-        }
-
-        $params['limit']      = [(($page - 1) * $nb_per_page), $nb_per_page];
-        $params['no_content'] = true;
-
-        // - User filter
-        if ($user_id !== '' && in_array($user_id, $users_combo)) {
-            $params['user_id'] = $user_id;
-            $show_filters      = true;
-        } else {
-            $user_id = '';
-        }
-
-        // - Categories filter
-        if ($cat_id !== '' && in_array($cat_id, $categories_combo)) {
-            $params['cat_id'] = $cat_id;
-            $show_filters     = true;
-        } else {
-            $cat_id = '';
-        }
-
-        // - Status filter
-        if ($status !== '' && in_array($status, $status_combo)) {
-            $params['post_status'] = $status;
-            $show_filters          = true;
-        } else {
-            $status = '';
-        }
-
-        // - Selected filter
-        if ($selected !== '' && in_array($selected, $selected_combo)) {
-            $params['post_selected'] = $selected;
-            $show_filters            = true;
-        } else {
-            $selected = '';
-        }
-
-        // - Month filter
-        if ($month !== '' && in_array($month, $dt_m_combo)) {
-            $params['post_month'] = substr($month, 4, 2);
-            $params['post_year']  = substr($month, 0, 4);
-            $show_filters         = true;
-        } else {
-            $month = '';
-        }
-
-        // - Lang filter
-        if ($lang !== '' && in_array($lang, $lang_combo)) {
-            $params['post_lang'] = $lang;
-            $show_filters        = true;
-        } else {
-            $lang = '';
-        }
-
-        // - Sortby and order filter
-        if ($sortby !== '' && in_array($sortby, $sortby_combo)) {
-            if ($order !== '' && in_array($order, $order_combo)) {
-                $params['order'] = $sortby . ' ' . $order;
-            } else {
-                $order = 'desc';
-            }
-
-            if ($sortby != 'post_dt' || $order != 'desc') {
-                $show_filters = true;
-            }
-        } else {
-            $sortby = 'post_dt';
-            $order  = 'desc';
-        }
-
-        dcCore::app()->admin->default_tab = empty($_REQUEST['tab']) ? '' : $_REQUEST['tab'];
 
         /*
          * Admin page params.
@@ -348,61 +161,8 @@ class Manage extends dcNsProcess
         dcCore::app()->admin->link_combo     = $link_combo;
         dcCore::app()->admin->bubble_combo   = $bubble_combo;
         dcCore::app()->admin->settings       = $settings;
-        /*
-         * Filters
-         */
-        dcCore::app()->admin->users_combo      = $users_combo;
-        dcCore::app()->admin->user_id          = $user_id;
-        dcCore::app()->admin->categories_combo = $categories_combo;
-        dcCore::app()->admin->cat_id           = $cat_id;
-        dcCore::app()->admin->status_combo     = $status_combo;
-        dcCore::app()->admin->status           = $status;
-        dcCore::app()->admin->selected_combo   = $selected_combo;
-        dcCore::app()->admin->selected         = $selected;
-        dcCore::app()->admin->dt_m_combo       = $dt_m_combo;
-        dcCore::app()->admin->month            = $month;
-        dcCore::app()->admin->lang_combo       = $lang_combo;
-        dcCore::app()->admin->lang             = $lang;
-        dcCore::app()->admin->sortby_combo     = $sortby_combo;
-        dcCore::app()->admin->sortby           = $sortby;
-        dcCore::app()->admin->order_combo      = $order_combo;
-        dcCore::app()->admin->order            = $order;
-        dcCore::app()->admin->id               = $id;
-        /*
-         * Posts list
-         */
-        dcCore::app()->admin->page        = $page;
-        dcCore::app()->admin->nb_per_page = $nb_per_page;
-
-        // Save Post relatedEntries
-
-        if (isset($_POST['entries'])) {
-            try {
-                $entries = implode(', ', $_POST['entries']);
-                $id      = $_POST['id'];
-
-                $meta = dcCore::app()->meta;
-
-                foreach ($meta->splitMetaValues($entries) as $tag) {
-                    $meta->delPostMeta($id, 'relatedEntries', $tag);
-                    $meta->setPostMeta($id, 'relatedEntries', $tag);
-                }
-                foreach ($meta->splitMetaValues($entries) as $tag) {
-                    $r_tags = $meta->getMetaStr(serialize($tag), 'relatedEntries');
-                    $r_tags = explode(', ', $r_tags);
-                    array_push($r_tags, $id);
-                    $r_tags = implode(', ', $r_tags);
-                    foreach ($meta->splitMetaValues($r_tags) as $tags) {
-                        $meta->delPostMeta($tag, 'relatedEntries', $tags);
-                        $meta->setPostMeta($tag, 'relatedEntries', $tags);
-                    }
-                }
-
-                http::redirect(DC_ADMIN_URL . 'post.php?id=' . $id . '&add=1&upd=1');
-            } catch (Exception $e) {
-                dcCore::app()->error->add($e->getMessage());
-            }
-        }
+        $id                                  = !empty($_GET['id']) ? $_GET['id'] : '';
+        dcCore::app()->admin->id             = $id;
 
         // Saving configurations
         if (isset($_POST['save'])) {
@@ -432,32 +192,59 @@ class Manage extends dcNsProcess
             dcCore::app()->blog->triggerBlog();
             http::redirect(dcCore::app()->admin->getPageURL() . '&upd=1');
         }
-        //Remove related posts links
 
         if (isset($_POST['entries'])) {
-            $meta = dcCore::app()->meta;
+            if (isset($_POST['id'])) {
+                // Save Post relatedEntries
+                try {
+                    $meta    = dcCore::app()->meta;
+                    $entries = implode(', ', $_POST['entries']);
+                    $id      = $_POST['id'];
 
-            try {
-                $tags = [];
-
-                foreach ($_POST['entries'] as $id) {
-                    // Get tags for post
-                    $post_meta = $meta->getMetadata([
-                        'meta_type' => 'relatedEntries',
-                        'post_id'   => $id, ]);
-                    $pm = [];
-                    while ($post_meta->fetch()) {
-                        $pm[] = $post_meta->meta_id;
-                    }
-                    foreach ($pm as $tag) {
+                    foreach ($meta->splitMetaValues($entries) as $tag) {
                         $meta->delPostMeta($id, 'relatedEntries', $tag);
-                        $meta->delPostMeta($tag, 'relatedEntries', $id);
+                        $meta->setPostMeta($id, 'relatedEntries', $tag);
                     }
-                }
+                    foreach ($meta->splitMetaValues($entries) as $tag) {
+                        $r_tags = $meta->getMetaStr(serialize($tag), 'relatedEntries');
+                        $r_tags = explode(', ', $r_tags);
+                        array_push($r_tags, $id);
+                        $r_tags = implode(', ', $r_tags);
+                        foreach ($meta->splitMetaValues($r_tags) as $tags) {
+                            $meta->delPostMeta($tag, 'relatedEntries', $tags);
+                            $meta->setPostMeta($tag, 'relatedEntries', $tags);
+                        }
+                    }
 
-                http::redirect(dcCore::app()->admin->getPageURL() . '&upd=2&tab=postslist');
-            } catch (Exception $e) {
-                dcCore::app()->error->add($e->getMessage());
+                    http::redirect(DC_ADMIN_URL . 'post.php?id=' . $id . '&add=1&upd=1');
+                } catch (Exception $e) {
+                    dcCore::app()->error->add($e->getMessage());
+                }
+            } else {
+                //Remove related posts links
+                try {
+                    $tags = [];
+                    $meta = dcCore::app()->meta;
+
+                    foreach ($_POST['entries'] as $id) {
+                        // Get tags for post
+                        $post_meta = $meta->getMetadata([
+                            'meta_type' => 'relatedEntries',
+                            'post_id'   => $id, ]);
+                        $pm = [];
+                        while ($post_meta->fetch()) {
+                            $pm[] = $post_meta->meta_id;
+                        }
+                        foreach ($pm as $tag) {
+                            $meta->delPostMeta($id, 'relatedEntries', $tag);
+                            $meta->delPostMeta($tag, 'relatedEntries', $id);
+                        }
+                    }
+
+                    http::redirect(dcCore::app()->admin->getPageURL() . '&upd=2&tab=postslist');
+                } catch (Exception $e) {
+                    dcCore::app()->error->add($e->getMessage());
+                }
             }
         }
 
@@ -495,22 +282,6 @@ class Manage extends dcNsProcess
             // get list params
             $params = dcCore::app()->admin->post_filter->params();
 
-            // lexical sort
-            $sortby_lex = [
-                // key in sorty_combo (see above) => field in SQL request
-                'post_title' => 'post_title',
-                'cat_title'  => 'cat_title',
-                'user_id'    => 'P.user_id', ];
-
-            # --BEHAVIOR-- adminPostsSortbyLexCombo
-            dcCore::app()->callBehavior('adminPostsSortbyLexCombo', [& $sortby_lex]);
-
-            $params['order'] = (array_key_exists(dcCore::app()->admin->post_filter->sortby, $sortby_lex) ?
-                dcCore::app()->con->lexFields($sortby_lex[dcCore::app()->admin->post_filter->sortby]) :
-                dcCore::app()->admin->post_filter->sortby) . ' ' . dcCore::app()->admin->post_filter->order;
-
-            $params['no_content'] = true;
-
             dcCore::app()->admin->posts      = null;
             dcCore::app()->admin->posts_list = null;
 
@@ -539,13 +310,12 @@ class Manage extends dcNsProcess
             $form_filter_title = __('Show filters and display options');
             $starting_script   = dcPage::jsLoad('js/_posts_list.js');
             $starting_script .= dcPage::jsLoad(DC_ADMIN_URL . '?pf=relatedEntries/js/posts-filter-controls.js');
-            $starting_script .= dcPage::jsPageTabs(dcCore::app()->admin->default_tab);
-            $starting_script .= dcPage::jsConfirmClose('config-form');
             $starting_script .= '<script>' . "\n" .
             '//<![CDATA[' . "\n" .
             dcPage::jsVar('dotclear.msg.show_filters', dcCore::app()->admin->show_filters ? 'true' : 'false') . "\n" .
             dcPage::jsVar('dotclear.msg.filter_posts_list', $form_filter_title) . "\n" .
             dcPage::jsVar('dotclear.msg.cancel_the_filter', __('Cancel filters and display options')) . "\n" .
+            dcPage::jsVar('reset_url', dcCore::app()->admin->getPageURL()) . "\n" .
             dcPage::jsVar('id', $id) . "\n" .
             '//]]>' .
             '</script>';
@@ -590,56 +360,13 @@ class Manage extends dcNsProcess
                 ) .
                     '<h3>' . __('Select posts related to entry:') . ' <a href="' . dcCore::app()->getPostAdminURL($post_type, $post_id) . '">' . $post_title . '</a></h3>';
 
-                echo
-                '<form action="' . dcCore::app()->admin->getPageURL() . '" method="get" id="filters-form">' .
-                '<h3 class="out-of-screen-if-js">' . __('Filter posts list') . '</h3>' .
-                '<div class="table">' .
-                '<div class="cell">' .
-                '<h4>' . __('Filters') . '</h4>' .
-                '<p><label for="user_id" class="ib">' . __('Author:') . '</label> ' .
-                    form::combo('user_id', dcCore::app()->admin->users_combo, dcCore::app()->admin->user_id) . '</p>' .
-                    '<p><label for="cat_id" class="ib">' . __('Category:') . '</label> ' .
-                    form::combo('cat_id', dcCore::app()->admin->categories_combo, dcCore::app()->admin->cat_id) . '</p>' .
-                    '<p><label for="status" class="ib">' . __('Status:') . '</label> ' .
-                    form::combo('status', dcCore::app()->admin->status_combo, dcCore::app()->admin->status) . '</p> ' .
-                '</div>' .
-
-                '<div class="cell filters-sibling-cell">' .
-                    '<p><label for="selected" class="ib">' . __('Selected:') . '</label> ' .
-                    form::combo('selected', dcCore::app()->admin->selected_combo, dcCore::app()->admin->selected) . '</p>' .
-                    '<p><label for="month" class="ib">' . __('Month:') . '</label> ' .
-                    form::combo('month', dcCore::app()->admin->dt_m_combo, dcCore::app()->admin->month) . '</p>' .
-                    '<p><label for="lang" class="ib">' . __('Lang:') . '</label> ' .
-                    form::combo('lang', dcCore::app()->admin->lang_combo, dcCore::app()->admin->lang) . '</p> ' .
-                '</div>' .
-
-                '<div class="cell filters-options">' .
-                    '<h4>' . __('Display options') . '</h4>' .
-                    '<p><label for="sortby" class="ib">' . __('Order by:') . '</label> ' .
-                    form::combo('sortby', dcCore::app()->admin->sortby_combo, dcCore::app()->admin->sortby) . '</p>' .
-                    '<p><label for="order" class="ib">' . __('Sort:') . '</label> ' .
-                    form::combo('order', dcCore::app()->admin->order_combo, dcCore::app()->admin->order) . '</p>' .
-                    '<p><span class="label ib">' . __('Show') . '</span> <label for="nb" class="classic">' .
-                    form::field('nb', 3, 3, dcCore::app()->admin->post_filter->nb) . ' ' .
-                    __('entries per page') . '</label></p>' .
-                '</div>' .
-                '</div>' .
-
-                '<p><input type="submit" value="' . __('Apply filters and display options') . '" />' .
-                    '<br class="clear" /></p>' . //Opera sucks
-                '<p>' . form::hidden(['relatedEntries_filters'], 'relatedEntries') .
-                '<input type="hidden" name="p" value="relatedEntries" />' .
-                '<input type="hidden" name="addlinks" value="1" />' .
-                form::hidden(['id'], dcCore::app()->admin->id) .
-                form::hidden(['tab'], 'postslist') .
-                dcCore::app()->formNonce() .
-                '</p>' .
-                '</form>';
-
                 // Show posts
                 if (!isset(dcCore::app()->admin->posts_list) || empty(dcCore::app()->admin->posts_list)) {
                     echo '<p><strong>' . __('No related posts') . '</strong></p>';
                 } else {
+                    # filters
+                    dcCore::app()->admin->post_filter->display('admin.plugin.relatedEntries', '<input type="hidden" name="p" value="relatedEntries" /><input type="hidden" name="addlinks" value="1" /><input type="hidden" name="id" value="' . $id . '" />');
+
                     dcCore::app()->admin->posts_list->display(
                         dcCore::app()->admin->post_filter->page,
                         dcCore::app()->admin->post_filter->nb,
@@ -653,9 +380,10 @@ class Manage extends dcNsProcess
                         '<p class="col right">' .
                         '<input type="submit" value="' . __('Add links to selected posts') . '" /> <a class="button reset" href="post.php?id=' . dcCore::app()->admin->id . '&upd=1">' . __('Cancel') . '</a></p>' .
                         '<p>' .
-                        '<input type="hidden" name="p" value="relatedEntries" />' .
-                        '<input type="hidden" name="addlinks" value="1" />' .
+                        form::hidden(['addlinks'], true) .
                         form::hidden(['id'], dcCore::app()->admin->id) .
+                        form::hidden(['p'], 'relatedEntries') .
+                        dcCore::app()->adminurl->getHiddenFormFields('admin.plugin.relatedEntries', dcCore::app()->admin->post_filter->values()) .
                         dcCore::app()->formNonce() . '</p>' .
                         '</div>' .
                         '</form>',
@@ -675,22 +403,6 @@ class Manage extends dcNsProcess
 
             // get list params
             $params = dcCore::app()->admin->post_filter->params();
-
-            // lexical sort
-            $sortby_lex = [
-                // key in sorty_combo (see above) => field in SQL request
-                'post_title' => 'post_title',
-                'cat_title'  => 'cat_title',
-                'user_id'    => 'P.user_id', ];
-
-            # --BEHAVIOR-- adminPostsSortbyLexCombo
-            dcCore::app()->callBehavior('adminPostsSortbyLexCombo', [& $sortby_lex]);
-
-            $params['order'] = (array_key_exists(dcCore::app()->admin->post_filter->sortby, $sortby_lex) ?
-                dcCore::app()->con->lexFields($sortby_lex[dcCore::app()->admin->post_filter->sortby]) :
-                dcCore::app()->admin->post_filter->sortby) . ' ' . dcCore::app()->admin->post_filter->order;
-
-            $params['no_content'] = true;
 
             dcCore::app()->admin->posts      = null;
             dcCore::app()->admin->posts_list = null;
@@ -714,6 +426,9 @@ class Manage extends dcNsProcess
             '<html>' .
             '<head>' ;
 
+            
+            
+
             $form_filter_title = __('Show filters and display options');
             $starting_script   = dcPage::jsLoad('js/_posts_list.js');
             $starting_script .= dcPage::jsLoad(DC_ADMIN_URL . '?pf=relatedEntries/js/filter-controls.js');
@@ -724,6 +439,7 @@ class Manage extends dcNsProcess
             dcPage::jsVar('dotclear.msg.show_filters', dcCore::app()->admin->show_filters ? 'true' : 'false') . "\n" .
             dcPage::jsVar('dotclear.msg.filter_posts_list', $form_filter_title) . "\n" .
             dcPage::jsVar('dotclear.msg.cancel_the_filter', __('Cancel filters and display options')) . "\n" .
+            dcPage::jsVar('reset_url', dcCore::app()->admin->getPageURL()) . "\n" .
             '//]]>' .
             '</script>';
             echo $starting_script;
@@ -872,53 +588,11 @@ class Manage extends dcNsProcess
 
             '<div class="multi-part" id="postslist" title="' . __('Related posts list') . '">';
 
-            echo
-                '<form action="' . dcCore::app()->admin->getPageURL() . '" method="get" id="filters-form">' .
-                '<h3 class="out-of-screen-if-js">' . __('Filter posts list') . '</h3>' .
-                '<div class="table">' .
-                '<div class="cell">' .
-                '<h4>' . __('Filters') . '</h4>' .
-                '<p><label for="user_id" class="ib">' . __('Author:') . '</label> ' .
-                    form::combo('user_id', dcCore::app()->admin->users_combo, dcCore::app()->admin->user_id) . '</p>' .
-                    '<p><label for="cat_id" class="ib">' . __('Category:') . '</label> ' .
-                    form::combo('cat_id', dcCore::app()->admin->categories_combo, dcCore::app()->admin->cat_id) . '</p>' .
-                    '<p><label for="status" class="ib">' . __('Status:') . '</label> ' .
-                    form::combo('status', dcCore::app()->admin->status_combo, dcCore::app()->admin->status) . '</p> ' .
-                '</div>' .
-
-                '<div class="cell filters-sibling-cell">' .
-                    '<p><label for="selected" class="ib">' . __('Selected:') . '</label> ' .
-                    form::combo('selected', dcCore::app()->admin->selected_combo, dcCore::app()->admin->selected) . '</p>' .
-                    '<p><label for="month" class="ib">' . __('Month:') . '</label> ' .
-                    form::combo('month', dcCore::app()->admin->dt_m_combo, dcCore::app()->admin->month) . '</p>' .
-                    '<p><label for="lang" class="ib">' . __('Lang:') . '</label> ' .
-                    form::combo('lang', dcCore::app()->admin->lang_combo, dcCore::app()->admin->lang) . '</p> ' .
-                '</div>' .
-
-                '<div class="cell filters-options">' .
-                    '<h4>' . __('Display options') . '</h4>' .
-                    '<p><label for="sortby" class="ib">' . __('Order by:') . '</label> ' .
-                    form::combo('sortby', dcCore::app()->admin->sortby_combo, dcCore::app()->admin->sortby) . '</p>' .
-                    '<p><label for="order" class="ib">' . __('Sort:') . '</label> ' .
-                    form::combo('order', dcCore::app()->admin->order_combo, dcCore::app()->admin->order) . '</p>' .
-                    '<p><span class="label ib">' . __('Show') . '</span> <label for="nb" class="classic">' .
-                    form::field('nb', 3, 3, dcCore::app()->admin->post_filter->nb) . ' ' .
-                    __('entries per page') . '</label></p>' .
-                '</div>' .
-                '</div>' .
-                '<p>' . dcCore::app()->formNonce() . '</p>' .
-                '<p><input type="submit" value="' . __('Apply filters and display options') . '" />' .
-                    '<br class="clear" /></p>' . //Opera sucks
-                '<p>' . form::hidden(['relatedEntries_filters_config'], 'relatedEntries') .
-                '<input type="hidden" name="p" value="relatedEntries" />' .
-                form::hidden(['id'], dcCore::app()->admin->id) .
-                form::hidden(['tab'], 'postslist') .
-                '</p>' .
-                '</form>';
-
             if (!isset(dcCore::app()->admin->posts_list) || empty(dcCore::app()->admin->posts_list)) {
                 echo '<p><strong>' . __('No related posts') . '</strong></p>';
             } else {
+                dcCore::app()->admin->post_filter->display('admin.plugin.relatedEntries', '<input type="hidden" name="p" value="relatedEntries" /><input type="hidden" name="tab" value="postslist" />');
+
                 // Show posts
                 dcCore::app()->admin->posts_list->display(
                     dcCore::app()->admin->post_filter->page,
@@ -935,7 +609,9 @@ class Manage extends dcNsProcess
                     '<p>' .
                     '<input type="hidden" name="p" value="relatedEntries" />' .
                     form::hidden(['tab'], 'postslist') .
-                    form::hidden(['id'], dcCore::app()->admin->id) .
+                    form::hidden(['p'], 'relatedEntries') .
+                    
+                    dcCore::app()->adminurl->getHiddenFormFields('admin.plugin.relatedEntries', dcCore::app()->admin->post_filter->values()) .
                     dcCore::app()->formNonce() . '</p>' .
                     '</div>' .
                     '</form>',
