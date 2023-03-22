@@ -310,8 +310,6 @@ class Manage extends dcNsProcess
             $form_filter_title = __('Show filters and display options');
             $starting_script   = dcPage::jsLoad('js/_posts_list.js');
             $starting_script .= dcPage::jsLoad(DC_ADMIN_URL . '?pf=relatedEntries/js/posts-filter-controls.js');
-            $starting_script .= dcPage::jsPageTabs(dcCore::app()->admin->default_tab);
-            $starting_script .= dcPage::jsConfirmClose('config-form');
             $starting_script .= '<script>' . "\n" .
             '//<![CDATA[' . "\n" .
             dcPage::jsVar('dotclear.msg.show_filters', dcCore::app()->admin->show_filters ? 'true' : 'false') . "\n" .
