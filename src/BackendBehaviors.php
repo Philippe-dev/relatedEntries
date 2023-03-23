@@ -40,8 +40,7 @@ class BackendBehaviors
 
     public static function adminEntryListValue($core, $rs, $cols)
     {
-        dcCore::app()->admin->count = dcCore::app()->meta->getMetaRecordset($rs->post_meta, 'relatedEntries')->count();
-        $cols['Links']              = '<td class="nowrap">' . dcCore::app()->admin->count . '</td>';
+        $cols['Links'] = '<td class="nowrap">' . dcCore::app()->meta->getMetaRecordset($rs->post_meta, 'relatedEntries')->count() . '</td>';
     }
 
     public static function adminPostListValue($rs, $cols)
@@ -52,10 +51,5 @@ class BackendBehaviors
     public static function adminPagesListValue($rs, $cols)
     {
         self::adminEntryListValue(dcCore::app(), $rs, $cols);
-    }
-
-    public static function adminPostsSortbyCombo($container)
-    {
-        $container[0][__('Links')] = dcCore::app()->admin->count;
     }
 }
