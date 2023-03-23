@@ -25,7 +25,7 @@ class BackendBehaviors
 
     private static function adminEntryListHeader($core, $rs, $cols)
     {
-        $cols['links'] = '<th scope="col">' . __('Links') . '</th>';
+        $cols['Links'] = '<th scope="col">' . __('Links') . '</th>';
     }
 
     public static function adminPostListHeader($rs, $cols)
