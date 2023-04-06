@@ -46,7 +46,7 @@ class FrontendTemplate
 
         //current post
         $params['post_id']    = $id;
-        $params['no_content'] = true;
+        $params['no_content'] = false;
         $params['post_type']  = ['post'];
 
         $rs = dcCore::app()->blog->getPosts($params);

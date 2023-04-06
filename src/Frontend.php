@@ -17,7 +17,6 @@ namespace Dotclear\Plugin\relatedEntries;
 use dcCore;
 use dcNsProcess;
 use html;
-use path;
 use l10n;
 use tplEntryImages;
 
@@ -66,7 +65,7 @@ class Frontend extends dcNsProcess
     {
         $meta                 = dcCore::app()->meta;
         $params['post_id']    = $id;
-        $params['no_content'] = false;
+        $params['no_content'] = true;
         $params['post_type']  = ['post'];
 
         $rs = dcCore::app()->blog->getPosts($params);
@@ -74,7 +73,7 @@ class Frontend extends dcNsProcess
         return $meta->getMetaStr($rs->post_meta, 'relatedEntries');
     }
 
-    public static function publicEntryBeforeContent($core, $_ctx)
+    public static function publicEntryBeforeContent()
     {
         // Settings
 
@@ -90,9 +89,11 @@ class Frontend extends dcNsProcess
             //related entries
             $meta = dcCore::app()->meta;
 
-            $r_ids             = self::thisPostrelatedEntries(dcCore::app()->ctx->posts->post_id);
-            $params['post_id'] = $meta->splitMetaValues($r_ids);
-            $rs                = dcCore::app()->blog->getPosts($params);
+            $r_ids                = self::thisPostrelatedEntries(dcCore::app()->ctx->posts->post_id);
+            $params['post_id']    = $meta->splitMetaValues($r_ids);
+            $params['no_content'] = false;
+            $params['post_type']  = ['post'];
+            $rs                   = dcCore::app()->blog->getPosts($params);
 
             if (dcCore::app()->plugins->moduleExists('listImages') && $s->relatedEntries_images) {
                 //images display options
@@ -136,7 +137,7 @@ class Frontend extends dcNsProcess
         }
     }
 
-    public static function publicEntryAfterContent($core, $_ctx)
+    public static function publicEntryAfterContent()
     {
         // Settings
 
@@ -152,9 +153,11 @@ class Frontend extends dcNsProcess
             //related entries
             $meta = dcCore::app()->meta;
 
-            $r_ids             = self::thisPostrelatedEntries(dcCore::app()->ctx->posts->post_id);
-            $params['post_id'] = $meta->splitMetaValues($r_ids);
-            $rs                = dcCore::app()->blog->getPosts($params);
+            $r_ids                = self::thisPostrelatedEntries(dcCore::app()->ctx->posts->post_id);
+            $params['post_id']    = $meta->splitMetaValues($r_ids);
+            $params['no_content'] = false;
+            $params['post_type']  = ['post'];
+            $rs                   = dcCore::app()->blog->getPosts($params);
 
             if (dcCore::app()->plugins->moduleExists('listImages') && $s->relatedEntries_images) {
                 //images display options
