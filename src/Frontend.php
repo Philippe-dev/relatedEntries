@@ -83,6 +83,7 @@ class Frontend extends dcNsProcess
             $params['post_id']    = $meta->splitMetaValues($r_ids);
             $params['no_content'] = false;
             $params['post_type']  = ['post'];
+            dcCore::app()->blog->withoutPassword(false);
             $rs                   = dcCore::app()->blog->getPosts($params);
 
             if (dcCore::app()->plugins->moduleExists('listImages') && $s->relatedEntries_images) {
@@ -149,6 +150,7 @@ class Frontend extends dcNsProcess
             $params['post_id']    = $meta->splitMetaValues($r_ids);
             $params['no_content'] = false;
             $params['post_type']  = ['post'];
+            dcCore::app()->blog->withoutPassword(false);
             $rs                   = dcCore::app()->blog->getPosts($params);
 
             if (dcCore::app()->plugins->moduleExists('listImages') && $s->relatedEntries_images) {

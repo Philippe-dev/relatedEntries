@@ -52,6 +52,7 @@ class FrontendTemplate
             $params['post_id']    = $meta->splitMetaValues($meta_rs);
             $params['no_content'] = false;
             $params['post_type']  = ['post'];
+            dcCore::app()->blog->withoutPassword(false);
             $rs                   = dcCore::app()->blog->getPosts($params);
             $ret                  = ($widget->title ? $widget->renderTitle(html::escapeHTML($widget->title)) : '');
 
