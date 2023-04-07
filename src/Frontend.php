@@ -61,18 +61,6 @@ class Frontend extends dcNsProcess
         '<link rel="stylesheet" type="text/css" href="' . $url . '/css/style.css" />' . "\n";
     }
 
-    public static function thisPostrelatedEntries($id)
-    {
-        $meta                 = dcCore::app()->meta;
-        $params['post_id']    = $id;
-        $params['no_content'] = true;
-        $params['post_type']  = ['post'];
-
-        $rs = dcCore::app()->blog->getPosts($params);
-
-        return $meta->getMetaStr($rs->post_meta, 'relatedEntries');
-    }
-
     public static function publicEntryBeforeContent()
     {
         // Settings
@@ -82,14 +70,16 @@ class Frontend extends dcNsProcess
         if (!$s->relatedEntries_enabled) {
             return;
         }
+
         if (!$s->relatedEntries_beforePost) {
             return;
         }
-        if (dcCore::app()->ctx->posts->post_type == 'post' && self::thisPostrelatedEntries(dcCore::app()->ctx->posts->post_id) != '') {
+
+        if (dcCore::app()->ctx->posts->post_type == 'post' && dcCore::app()->ctx->posts->post_meta != '') {
             //related entries
             $meta = dcCore::app()->meta;
 
-            $r_ids                = self::thisPostrelatedEntries(dcCore::app()->ctx->posts->post_id);
+            $r_ids                = $meta->getMetaStr(dcCore::app()->ctx->posts->post_meta, 'relatedEntries');
             $params['post_id']    = $meta->splitMetaValues($r_ids);
             $params['no_content'] = false;
             $params['post_type']  = ['post'];
@@ -146,14 +136,16 @@ class Frontend extends dcNsProcess
         if (!$s->relatedEntries_enabled) {
             return;
         }
+
         if (!$s->relatedEntries_afterPost) {
             return;
         }
-        if (dcCore::app()->ctx->posts->post_type == 'post' && self::thisPostrelatedEntries(dcCore::app()->ctx->posts->post_id) != '') {
+
+        if (dcCore::app()->ctx->posts->post_type == 'post' && dcCore::app()->ctx->posts->post_meta != '') {
             //related entries
             $meta = dcCore::app()->meta;
 
-            $r_ids                = self::thisPostrelatedEntries(dcCore::app()->ctx->posts->post_id);
+            $r_ids                = $meta->getMetaStr(dcCore::app()->ctx->posts->post_meta, 'relatedEntries');
             $params['post_id']    = $meta->splitMetaValues($r_ids);
             $params['no_content'] = false;
             $params['post_type']  = ['post'];

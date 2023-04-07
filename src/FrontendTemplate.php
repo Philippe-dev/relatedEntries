@@ -42,18 +42,12 @@ class FrontendTemplate
             return;
         }
 
-        $id = dcCore::app()->ctx->posts->post_id;
+        $meta = dcCore::app()->meta;
 
-        //current post
-        $params['post_id']    = $id;
-        $params['no_content'] = false;
-        $params['post_type']  = ['post'];
+        $meta_rs = $meta->getMetaStr(dcCore::app()->ctx->posts->post_meta, 'relatedEntries');
 
-        $rs = dcCore::app()->blog->getPosts($params);
-
-        $meta    = dcCore::app()->meta;
-        $meta_rs = $meta->getMetaStr($rs->post_meta, 'relatedEntries');
         if ($meta_rs != '') {
+            
             //related posts
             $params['post_id']    = $meta->splitMetaValues($meta_rs);
             $params['no_content'] = false;
