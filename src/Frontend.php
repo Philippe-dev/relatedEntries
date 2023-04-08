@@ -75,7 +75,7 @@ class Frontend extends dcNsProcess
             return;
         }
 
-        return FrontendTemplate::relatedEntriesHtml();
+        return FrontendTemplates::relatedEntriesHtml();
     }
 
     public static function publicEntryAfterContent()
@@ -92,6 +92,6 @@ class Frontend extends dcNsProcess
             return;
         }
 
-        return FrontendTemplate::relatedEntriesHtml();
+        return FrontendTemplates::relatedEntriesHtml();
     }
 }

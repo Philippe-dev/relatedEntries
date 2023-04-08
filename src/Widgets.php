@@ -30,7 +30,7 @@ class Widgets
         $widgets->create(
             'relatedEntriesWidget',
             __('Related posts'),
-            [FrontendTemplate::class, 'relatedEntriesWidget'],
+            [FrontendTemplates::class, 'relatedEntriesWidget'],
             null,
             __('Related entries to current post')
         );

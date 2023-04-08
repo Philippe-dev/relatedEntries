@@ -18,7 +18,7 @@ use Dotclear\Plugin\widgets\WidgetsElement;
 use html;
 use tplEntryImages;
 
-class FrontendTemplate
+class FrontendTemplates
 {
     /**
      * Public HTML rendering helper
