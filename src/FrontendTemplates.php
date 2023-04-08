@@ -21,6 +21,80 @@ use tplEntryImages;
 class FrontendTemplates
 {
     /**
+     * Widget public rendering helper
+     *
+     * @param      WidgetsElement  $widget  The widget
+     *
+     * @return     string
+     */
+    public static function relatedEntriesWidget(WidgetsElement $widget)
+    {
+        $params = [];
+        if ($widget->offline) {
+            return '';
+        }
+
+        if (!$widget->checkHomeOnly(dcCore::app()->url->type)) {
+            return '';
+        }
+
+        if (dcCore::app()->url->type != 'post') {
+            return;
+        }
+
+        $meta = dcCore::app()->meta;
+
+        $meta_rs = $meta->getMetaStr(dcCore::app()->ctx->posts->post_meta, 'relatedEntries');
+
+        if ($meta_rs != '') {
+            //related posts
+            $params['post_id']    = $meta->splitMetaValues($meta_rs);
+            $params['no_content'] = false;
+            $params['post_type']  = ['post'];
+            dcCore::app()->blog->withoutPassword(false);
+            $rs  = dcCore::app()->blog->getPosts($params);
+            $ret = ($widget->title ? $widget->renderTitle(html::escapeHTML($widget->title)) : '');
+
+            if (!$widget->relatedEntries_images || !dcCore::app()->plugins->moduleExists('listImages')) {
+                $ret .= '<ul>';
+                while ($rs->fetch()) {
+                    $ret .= '<li><a href="' . $rs->getURL() . '" title="' . html::escapeHTML($rs->post_title) . '">' . $rs->post_title . '</a></li>';
+                }
+                $ret .= '</ul>';
+            } else {
+                // Récupération des options d'affichage des images
+                $size     = $widget->size;
+                $html_tag = $widget->html_tag;
+                $link     = $widget->link;
+                $exif     = 0;
+                $legend   = $widget->legend;
+                $bubble   = $widget->bubble;
+                $from     = $widget->from;
+                $start    = abs((int) $widget->start);
+                $length   = abs((int) $widget->length);
+                $class    = $widget->class;
+                $alt      = $widget->alt;
+                $img_dim  = abs((int) $widget->img_dim);
+                $def_size = 'o';
+
+                // Début d'affichage
+
+                $ret .= '<' . ($html_tag == 'li' ? 'ul' : 'div') . ' class="relatedEntries-wrapper">';
+
+                // Appel de la fonction de traitement pour chacun des billets
+                while ($rs->fetch()) {
+                    $ret .= tplEntryImages::EntryImagesHelper($size, $html_tag, $link, $exif, $legend, $bubble, $from, $start, $length, $class, $alt, $img_dim, $def_size, $rs);
+                }
+
+                // Fin d'affichage
+                $ret .= '</' . ($html_tag == 'li' ? 'ul' : 'div') . '>' . "\n";
+            }
+
+            return $widget->renderDiv((bool) $widget->content_only, 'relatedEntries ' . $widget->class, '', $ret);
+        }
+    }
+
+    /**
      * Public HTML rendering helper
      *
      * @return     string
@@ -38,7 +112,7 @@ class FrontendTemplates
             $params['no_content'] = false;
             $params['post_type']  = ['post'];
             dcCore::app()->blog->withoutPassword(false);
-            $rs                   = dcCore::app()->blog->getPosts($params);
+            $rs = dcCore::app()->blog->getPosts($params);
 
             if (dcCore::app()->plugins->moduleExists('listImages') && $s->relatedEntries_images) {
                 //images display options
@@ -79,82 +153,6 @@ class FrontendTemplates
 
                 echo $ret;
             }
-        }
-        
-    }
-
-    /**
-     * Widget public rendering helper
-     *
-     * @param      WidgetsElement  $widget  The widget
-     *
-     * @return     string
-     */
-    public static function relatedEntriesWidget(WidgetsElement $widget)
-    {
-        $params = [];
-        if ($widget->offline) {
-            return '';
-        }
-
-        if (!$widget->checkHomeOnly(dcCore::app()->url->type)) {
-            return '';
-        }
-
-        if (dcCore::app()->url->type != 'post') {
-            return;
-        }
-
-        $meta = dcCore::app()->meta;
-
-        $meta_rs = $meta->getMetaStr(dcCore::app()->ctx->posts->post_meta, 'relatedEntries');
-
-        if ($meta_rs != '') {
-            
-            //related posts
-            $params['post_id']    = $meta->splitMetaValues($meta_rs);
-            $params['no_content'] = false;
-            $params['post_type']  = ['post'];
-            dcCore::app()->blog->withoutPassword(false);
-            $rs                   = dcCore::app()->blog->getPosts($params);
-            $ret                  = ($widget->title ? $widget->renderTitle(html::escapeHTML($widget->title)) : '');
-
-            if (!$widget->relatedEntries_images || !dcCore::app()->plugins->moduleExists('listImages')) {
-                $ret .= '<ul>';
-                while ($rs->fetch()) {
-                    $ret .= '<li><a href="' . $rs->getURL() . '" title="' . html::escapeHTML($rs->post_title) . '">' . $rs->post_title . '</a></li>';
-                }
-                $ret .= '</ul>';
-            } else {
-                // Récupération des options d'affichage des images
-                $size     = $widget->size;
-                $html_tag = $widget->html_tag;
-                $link     = $widget->link;
-                $exif     = 0;
-                $legend   = $widget->legend;
-                $bubble   = $widget->bubble;
-                $from     = $widget->from;
-                $start    = abs((int) $widget->start);
-                $length   = abs((int) $widget->length);
-                $class    = $widget->class;
-                $alt      = $widget->alt;
-                $img_dim  = abs((int) $widget->img_dim);
-                $def_size = 'o';
-
-                // Début d'affichage
-
-                $ret .= '<' . ($html_tag == 'li' ? 'ul' : 'div') . ' class="relatedEntries-wrapper">';
-
-                // Appel de la fonction de traitement pour chacun des billets
-                while ($rs->fetch()) {
-                    $ret .= tplEntryImages::EntryImagesHelper($size, $html_tag, $link, $exif, $legend, $bubble, $from, $start, $length, $class, $alt, $img_dim, $def_size, $rs);
-                }
-
-                // Fin d'affichage
-                $ret .= '</' . ($html_tag == 'li' ? 'ul' : 'div') . '>' . "\n";
-            }
-
-            return $widget->renderDiv((bool) $widget->content_only, 'relatedEntries ' . $widget->class, '', $ret);
         }
     }
 }
