@@ -20,7 +20,6 @@ use dcCore;
 use dt;
 use html;
 use dcPager;
-use form;
 
 class BackendMiniList extends adminGenericListV2
 {
@@ -36,7 +35,7 @@ class BackendMiniList extends adminGenericListV2
         if ($this->rs->isEmpty()) {
             echo '<p><strong>' . __('No entry') . '</strong></p>';
         } else {
-            $pager   = new dcPager($page, (int) $this->rs_count, $nb_per_page, 10);
+            $pager            = new dcPager($page, (int) $this->rs_count, $nb_per_page, 10);
             $pager->html_prev = $this->html_prev;
             $pager->html_next = $this->html_next;
             $pager->var_page  = 'page';

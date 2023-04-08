@@ -397,8 +397,6 @@ class Manage extends dcNsProcess
             }
 
             // Filters
-            // -------
-        
             dcCore::app()->admin->post_filter = new adminPostFilter();
 
             // get list params
@@ -413,7 +411,7 @@ class Manage extends dcNsProcess
                 $params['sql']                   = 'AND P.post_id IN (SELECT META.post_id FROM ' . dcCore::app()->prefix . 'meta META WHERE META.post_id = P.post_id ' . "AND META.meta_type = 'relatedEntries' ) ";
                 dcCore::app()->admin->posts      = dcCore::app()->blog->getPosts($params);
                 dcCore::app()->admin->counter    = dcCore::app()->blog->getPosts($params, true);
-                dcCore::app()->admin->posts_list = new adminPostList(dcCore::app()->admin->posts, dcCore::app()->admin->counter->f(0));
+                dcCore::app()->admin->posts_list = new BackendList(dcCore::app()->admin->posts, dcCore::app()->admin->counter->f(0));
             } catch (Exception $e) {
                 dcCore::app()->error->add($e->getMessage());
             }
