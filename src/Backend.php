@@ -15,14 +15,14 @@ declare(strict_types=1);
 namespace Dotclear\Plugin\relatedEntries;
 
 use adminUserPref;
-use dcPager;
 use dcAdmin;
 use dcAuth;
 use dcCore;
 use dcFavorites;
 use dcPage;
 use dcNsProcess;
-use dt;
+use arrayObject;
+use dcAdminFilter;
 use form;
 use html;
 use http;
@@ -61,6 +61,7 @@ class Backend extends dcNsProcess
             ]);
         });
 
+        dcCore::app()->addBehavior('adminPostFilterV2', [self::class,  'adminPostFilter']);
         dcCore::app()->addBehavior('adminPageHelpBlock', [self::class,  'adminPageHelpBlock']);
         dcCore::app()->addBehavior('adminPostHeaders', [self::class,  'postHeaders']);
         dcCore::app()->addBehavior('adminPostForm', [self::class,  'adminPostForm']);
@@ -84,6 +85,47 @@ class Backend extends dcNsProcess
         }
 
         return true;
+    }
+
+    public static function adminPostFilter(arrayObject $filters)
+    {
+        if (dcCore::app()->admin->getPageURL() != 'plugin.php?p=relatedEntries') {
+            return null;
+        }
+
+        if (isset($_GET['addlinks']) && $_GET['addlinks'] == 1) {
+            return null;
+        }
+
+        $categories = null;
+
+        try {
+            $categories = dcCore::app()->blog->getCategories(['post_type' => 'post']);
+            if ($categories->isEmpty()) {
+                return null;
+            }
+        } catch (Exception $e) {
+            dcCore::app()->error->add($e->getMessage());
+
+            return null;
+        }
+
+        $combo = [
+            '-'            => '',
+            __('(No cat)') => 'NULL',
+        ];
+        while ($categories->fetch()) {
+            $combo[
+                str_repeat('&nbsp;', ($categories->level - 1) * 4) .
+                Html::escapeHTML($categories->cat_title)
+            ] = $categories->cat_id;
+        }
+
+        $filters->append((new dcAdminFilter('cat_id'))
+            ->param()
+            ->title(__('Category:'))
+            ->options($combo)
+            ->prime(true));
     }
 
     public static function adminPageHelpBlock($blocks)
@@ -173,11 +215,11 @@ class Backend extends dcNsProcess
 
             // Get related posts
             try {
-                $params['post_id']    = $meta->splitMetaValues($meta_rs);
-                $params['no_content'] = true;
-                $params['post_type']  = ['post'];
-                $posts                = dcCore::app()->blog->getPosts($params);
-                $counter              = dcCore::app()->blog->getPosts($params, true);
+                $params['post_id']              = $meta->splitMetaValues($meta_rs);
+                $params['no_content']           = true;
+                $params['post_type']            = ['post'];
+                $posts                          = dcCore::app()->blog->getPosts($params);
+                $counter                        = dcCore::app()->blog->getPosts($params, true);
                 dcCore::app()->admin->post_list = new BackendMiniList($posts, $counter->f(0));
             } catch (Exception $e) {
                 dcCore::app()->error->add($e->getMessage());

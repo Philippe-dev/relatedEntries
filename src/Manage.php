@@ -292,8 +292,8 @@ class Manage extends dcNsProcess
                     $params['no_content']            = true;
                     $params['exclude_post_id']       = $id;
                     dcCore::app()->admin->posts      = dcCore::app()->blog->getPosts($params);
-                    $counter                         = dcCore::app()->blog->getPosts($params, true);
-                    dcCore::app()->admin->posts_list = new AdminPostList(dcCore::app()->admin->posts, $counter->f(0));
+                    dcCore::app()->admin->counter    = dcCore::app()->blog->getPosts($params, true);
+                    dcCore::app()->admin->posts_list = new AdminPostList(dcCore::app()->admin->posts, dcCore::app()->admin->counter->f(0));
                 } catch (Exception $e) {
                     dcCore::app()->error->add($e->getMessage());
                 }
@@ -408,12 +408,11 @@ class Manage extends dcNsProcess
 
             // Get posts with related posts
             try {
-                $params['no_content'] = true;
-                $params['sql']        = 'AND P.post_id IN (SELECT META.post_id FROM ' . dcCore::app()->prefix . 'meta META WHERE META.post_id = P.post_id ' .
-                        "AND META.meta_type = 'relatedEntries' ) ";
+                $params['no_content']            = true;
+                $params['sql']                   = 'AND P.post_id IN (SELECT META.post_id FROM ' . dcCore::app()->prefix . 'meta META WHERE META.post_id = P.post_id ' . "AND META.meta_type = 'relatedEntries' ) ";
                 dcCore::app()->admin->posts      = dcCore::app()->blog->getPosts($params);
-                $counter                         = dcCore::app()->blog->getPosts($params, true);
-                dcCore::app()->admin->posts_list = new adminPostList(dcCore::app()->admin->posts, $counter->f(0));
+                dcCore::app()->admin->counter    = dcCore::app()->blog->getPosts($params, true);
+                dcCore::app()->admin->posts_list = new adminPostList(dcCore::app()->admin->posts, dcCore::app()->admin->counter->f(0));
             } catch (Exception $e) {
                 dcCore::app()->error->add($e->getMessage());
             }
