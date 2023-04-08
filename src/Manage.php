@@ -293,7 +293,7 @@ class Manage extends dcNsProcess
                     $params['exclude_post_id']       = $id;
                     dcCore::app()->admin->posts      = dcCore::app()->blog->getPosts($params);
                     dcCore::app()->admin->counter    = dcCore::app()->blog->getPosts($params, true);
-                    dcCore::app()->admin->posts_list = new AdminPostList(dcCore::app()->admin->posts, dcCore::app()->admin->counter->f(0));
+                    dcCore::app()->admin->posts_list = new adminPostList(dcCore::app()->admin->posts, dcCore::app()->admin->counter->f(0));
                 } catch (Exception $e) {
                     dcCore::app()->error->add($e->getMessage());
                 }
@@ -398,6 +398,7 @@ class Manage extends dcNsProcess
 
             // Filters
             // -------
+        
             dcCore::app()->admin->post_filter = new adminPostFilter();
 
             // get list params
