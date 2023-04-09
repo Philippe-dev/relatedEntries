@@ -121,9 +121,18 @@ class Backend extends dcNsProcess
             __('(No cat)') => 'NULL',
         ];
         while ($categories->fetch()) {
+            try {
+                $params['no_content'] = true;
+                $params['cat_id']     = $categories->cat_id;
+                $params['sql']        = 'AND P.post_id IN (SELECT META.post_id FROM ' . dcCore::app()->prefix . 'meta META WHERE META.post_id = P.post_id ' . "AND META.meta_type = 'relatedEntries' ) ";
+                dcCore::app()->blog->withoutPassword(false);
+                dcCore::app()->admin->counter = dcCore::app()->blog->getPosts($params, true);
+            } catch (Exception $e) {
+                dcCore::app()->error->add($e->getMessage());
+            }
             $combo[
                 str_repeat('&nbsp;', ($categories->level - 1) * 4) .
-                Html::escapeHTML($categories->cat_title)
+                Html::escapeHTML($categories->cat_title) . ' (' . dcCore::app()->admin->counter->f(0) . ')'
             ] = $categories->cat_id;
         }
 
@@ -222,7 +231,7 @@ class Backend extends dcNsProcess
             // Get related posts
             try {
                 dcCore::app()->blog->withoutPassword(false);
-                
+
                 $params['post_id']              = $meta->splitMetaValues($meta_rs);
                 $params['no_content']           = true;
                 $params['post_type']            = ['post'];
