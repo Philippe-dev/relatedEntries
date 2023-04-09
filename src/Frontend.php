@@ -61,7 +61,7 @@ class Frontend extends dcNsProcess
         '<link rel="stylesheet" type="text/css" href="' . $url . '/css/style.css" />' . "\n";
     }
 
-    public static function publicEntryBeforeContent($core, $_ctx)
+    public static function publicEntryBeforeContent()
     {
         // Settings
 
@@ -76,7 +76,7 @@ class Frontend extends dcNsProcess
         return FrontendTemplates::relatedEntriesHtml();
     }
 
-    public static function publicEntryAfterContent($core, $_ctx)
+    public static function publicEntryAfterContent()
     {
         // Settings
 
