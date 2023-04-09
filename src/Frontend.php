@@ -16,9 +16,7 @@ namespace Dotclear\Plugin\relatedEntries;
 
 use dcCore;
 use dcNsProcess;
-use html;
 use l10n;
-use tplEntryImages;
 
 class Frontend extends dcNsProcess
 {
