@@ -350,6 +350,8 @@ class Manage extends dcNsProcess
                     echo '&nbsp;&nbsp;&nbsp;' . $img_status;
                 }
 
+                dcCore::app()->admin->page_title = __('Add links to related posts');
+
                 echo dcPage::breadcrumb(
                     [
                         html::escapeHTML(dcCore::app()->blog->name) => '',
