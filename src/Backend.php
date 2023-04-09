@@ -215,6 +215,8 @@ class Backend extends dcNsProcess
 
             // Get related posts
             try {
+                dcCore::app()->blog->withoutPassword(false);
+                
                 $params['post_id']              = $meta->splitMetaValues($meta_rs);
                 $params['no_content']           = true;
                 $params['post_type']            = ['post'];
