@@ -373,7 +373,7 @@ class Manage extends dcNsProcess
                         '<p class="col checkboxes-helpers"></p>' .
 
                         '<p class="col right">' .
-                        '<input type="submit" value="' . __('Add links to selected posts') . '" /> <a class="button reset" href="post.php?id=' . dcCore::app()->admin->id . '&upd=1">' . __('Cancel') . '</a></p>' .
+                        '<input type="submit" value="' . __('Add links to selected posts') . '" /> <a class="button reset" href="post.php?id=' . dcCore::app()->admin->id . '">' . __('Cancel') . '</a></p>' .
                         '<p>' .
                         form::hidden(['addlinks'], true) .
                         form::hidden(['id'], dcCore::app()->admin->id) .
