@@ -101,18 +101,17 @@ class FrontendTemplates
      */
     public static function relatedEntriesHtml()
     {
-        $s = dcCore::app()->blog->settings->relatedEntries;
+        $s       = dcCore::app()->blog->settings->relatedEntries;
+        $meta    = dcCore::app()->meta;
+        $meta_rs = $meta->getMetaStr(dcCore::app()->ctx->posts->post_meta, 'relatedEntries');
 
-        if (dcCore::app()->ctx->posts->post_type == 'post' && self::thisPostrelatedEntries(dcCore::app()->ctx->posts->post_id) != '') {
+        if (dcCore::app()->ctx->posts->post_type == 'post' && $meta_rs != '') {
             //related entries
-            $meta = dcCore::app()->meta;
-
-            $r_ids                = self::thisPostrelatedEntries(dcCore::app()->ctx->posts->post_id);
-            $params['post_id']    = $meta->splitMetaValues($r_ids);
+            dcCore::app()->blog->withoutPassword(false);
+            $params['post_id']    = $meta->splitMetaValues($meta_rs);
             $params['no_content'] = false;
             $params['post_type']  = ['post'];
-            dcCore::app()->blog->withoutPassword(false);
-            $rs = dcCore::app()->blog->getPosts($params);
+            $rs                   = dcCore::app()->blog->getPosts($params);
 
             if (dcCore::app()->plugins->moduleExists('listImages') && $s->relatedEntries_images) {
                 //images display options
@@ -154,18 +153,5 @@ class FrontendTemplates
                 echo $ret;
             }
         }
-    }
-
-    public static function thisPostrelatedEntries($id)
-    {
-        $meta                 = dcCore::app()->meta;
-        $params['post_id']    = $id;
-        $params['no_content'] = false;
-        $params['post_type']  = ['post'];
-        dcCore::app()->blog->withoutPassword(false);
-
-        $rs = dcCore::app()->blog->getPosts($params);
-
-        return $meta->getMetaStr($rs->post_meta, 'relatedEntries');
     }
 }
