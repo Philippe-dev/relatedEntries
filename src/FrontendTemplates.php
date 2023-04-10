@@ -107,7 +107,7 @@ class FrontendTemplates
             //related entries
             $meta = dcCore::app()->meta;
 
-            $r_ids                = $meta->getMetaStr(dcCore::app()->ctx->posts->post_meta, 'relatedEntries');
+            $r_ids                = self::thisPostrelatedEntries(dcCore::app()->ctx->posts->post_id);
             $params['post_id']    = $meta->splitMetaValues($r_ids);
             $params['no_content'] = false;
             $params['post_type']  = ['post'];
