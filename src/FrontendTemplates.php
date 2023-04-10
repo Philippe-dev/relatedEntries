@@ -48,12 +48,12 @@ class FrontendTemplates
 
         if ($meta_rs != '') {
             //related posts
+            dcCore::app()->blog->withoutPassword(false);
             $params['post_id']    = $meta->splitMetaValues($meta_rs);
             $params['no_content'] = false;
             $params['post_type']  = ['post'];
-            dcCore::app()->blog->withoutPassword(false);
-            $rs  = dcCore::app()->blog->getPosts($params);
-            $ret = ($widget->title ? $widget->renderTitle(html::escapeHTML($widget->title)) : '');
+            $rs                   = dcCore::app()->blog->getPosts($params);
+            $ret                  = ($widget->title ? $widget->renderTitle(html::escapeHTML($widget->title)) : '');
 
             if (!$widget->relatedEntries_images || !dcCore::app()->plugins->moduleExists('listImages')) {
                 $ret .= '<ul>';
