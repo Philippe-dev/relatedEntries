@@ -320,30 +320,7 @@ class Manage extends dcNsProcess
             '<body>';
 
             if (!dcCore::app()->error->flag()) {
-                if (dcCore::app()->admin->id) {
-                    switch (dcCore::app()->admin->status) {
-                        case dcBlog::POST_PUBLISHED:
-                            $img_status = sprintf((string) dcCore::app()->admin->img_status_pattern, __('Published'), 'check-on.png');
-
-                            break;
-                        case dcBlog::POST_UNPUBLISHED:
-                            $img_status = sprintf((string) dcCore::app()->admin->img_status_pattern, __('Unpublished'), 'check-off.png');
-
-                            break;
-                        case dcBlog::POST_SCHEDULED:
-                            $img_status = sprintf((string) dcCore::app()->admin->img_status_pattern, __('Scheduled'), 'scheduled.png');
-
-                            break;
-                        case dcBlog::POST_PENDING:
-                            $img_status = sprintf((string) dcCore::app()->admin->img_status_pattern, __('Pending'), 'check-wrn.png');
-
-                            break;
-                        default:
-                            $img_status = '';
-                    }
-                    echo '&nbsp;&nbsp;&nbsp;' . $img_status;
-                }
-
+                
                 dcCore::app()->admin->page_title = __('Add links to related posts');
 
                 echo dcPage::breadcrumb(
