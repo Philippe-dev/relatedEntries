@@ -40,7 +40,8 @@ class BackendList extends adminGenericListV2
             if ($filter) {
                 echo '<p><strong>' . __('No entry matches the filter') . '</strong></p>';
             } else {
-                echo '<p><strong>' . __('No entry') . '</strong></p>';
+                echo '<p><strong>' . __('No entry') . '</strong></p>' . 
+                '<p class="form-note info clear">' . __('To get started, edit one of your posts and add links to other related posts in the block Related entries.') . '</p>';
             }
         } else {
             $pager   = new dcPager($page, (int) $this->rs_count, $nb_per_page, 10);
