@@ -397,7 +397,8 @@ class Manage extends dcNsProcess
             '<head>' ;
 
             $form_filter_title = __('Show filters and display options');
-            $starting_script   = dcPage::jsLoad('js/_posts_list.js');
+            $starting_script   = dcPage::jsLoad('js/_posts_list.js') . dcCore::app()->admin->post_filter->js();
+            
             $starting_script .= dcPage::jsLoad(DC_ADMIN_URL . '?pf=relatedEntries/js/filter-controls.js');
             $starting_script .= dcPage::jsPageTabs(dcCore::app()->admin->default_tab);
             $starting_script .= dcPage::jsConfirmClose('config-form');
