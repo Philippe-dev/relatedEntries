@@ -337,7 +337,7 @@ class Manage extends dcNsProcess
                     echo '<p><strong>' . __('No related posts') . '</strong></p>';
                 } else {
                     # filters
-                    dcCore::app()->admin->post_filter->display('admin.plugin', '<input type="hidden" name="p" value="relatedEntries" /><input type="hidden" name="addlinks" value="1" /><input type="hidden" name="id" value="' . $id . '" />');
+                    dcCore::app()->admin->post_filter->display('admin.plugin.relatedEntries', '<input type="hidden" name="p" value="relatedEntries" /><input type="hidden" name="addlinks" value="1" /><input type="hidden" name="id" value="' . $id . '" />');
 
                     dcCore::app()->admin->posts_list->display(
                         dcCore::app()->admin->post_filter->page,
@@ -355,7 +355,7 @@ class Manage extends dcNsProcess
                         form::hidden(['addlinks'], true) .
                         form::hidden(['id'], dcCore::app()->admin->id) .
                         form::hidden(['p'], 'relatedEntries') .
-                        dcCore::app()->adminurl->getHiddenFormFields('admin.plugin', dcCore::app()->admin->post_filter->values()) .
+                        dcCore::app()->adminurl->getHiddenFormFields('admin.plugin.relatedEntries', dcCore::app()->admin->post_filter->values()) .
                         dcCore::app()->formNonce() . '</p>' .
                         '</div>' .
                         '</form>',
@@ -559,7 +559,7 @@ class Manage extends dcNsProcess
             if (!isset(dcCore::app()->admin->posts_list) || empty(dcCore::app()->admin->posts_list)) {
                 echo '<p><strong>' . __('No related posts') . '</strong></p>';
             } else {
-                dcCore::app()->admin->post_filter->display('admin.plugin', '<input type="hidden" name="p" value="relatedEntries" /><input type="hidden" name="tab" value="postslist" />');
+                dcCore::app()->admin->post_filter->display('admin.plugin.relatedEntries', '<input type="hidden" name="p" value="relatedEntries" /><input type="hidden" name="tab" value="postslist" />');
 
                 // Show posts
                 dcCore::app()->admin->posts_list->display(
@@ -578,7 +578,7 @@ class Manage extends dcNsProcess
                     '<input type="hidden" name="p" value="relatedEntries" />' .
                     form::hidden(['tab'], 'postslist') .
                     form::hidden(['p'], 'relatedEntries') .
-                    dcCore::app()->adminurl->getHiddenFormFields('admin.plugin', dcCore::app()->admin->post_filter->values()) .
+                    dcCore::app()->adminurl->getHiddenFormFields('admin.plugin.relatedEntries', dcCore::app()->admin->post_filter->values()) .
                     dcCore::app()->formNonce() . '</p>' .
                     '</div>' .
                     '</form>',
