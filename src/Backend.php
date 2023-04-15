@@ -143,20 +143,11 @@ class Backend extends dcNsProcess
             ->prime(true));
     }
 
-    public static function adminPageHelpBlock($blocks)
+    public static function adminPageHelpBlock(ArrayObject $blocks): void
     {
-        $found = false;
-        foreach ($blocks as $block) {
-            if ($block == 'core_post') {
-                $found = true;
-
-                break;
-            }
+        if (array_search('core_post', $blocks->getArrayCopy(), true) !== false) {
+            $blocks->append('relatedEntries_post');
         }
-        if (!$found) {
-            return null;
-        }
-        $blocks[] = 'relatedEntries_post';
     }
 
     public static function postHeaders(): string
