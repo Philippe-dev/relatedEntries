@@ -33,22 +33,6 @@ class Manage extends dcNsProcess
      */
     public static function init(): bool
     {
-        self::$init = true;
-
-        return self::$init;
-    }
-
-    /**
-     * Processes the request(s).
-     */
-    public static function process(): bool
-    {
-        if (!self::$init) {
-            return false;
-        }
-
-        $settings = dcCore::app()->blog->settings->relatedEntries;
-
         if (is_null(dcCore::app()->blog->settings->relatedEntries->relatedEntries_enabled)) {
             try {
                 // Add default settings values if necessary
@@ -82,6 +66,22 @@ class Manage extends dcNsProcess
                 dcCore::app()->error->add($e->getMessage());
             }
         }
+        
+        self::$init = true;
+
+        return self::$init;
+    }
+
+    /**
+     * Processes the request(s).
+     */
+    public static function process(): bool
+    {
+        if (!self::$init) {
+            return false;
+        }
+
+        $settings = dcCore::app()->blog->settings->relatedEntries;
 
         // Image size combo
         $img_size_combo = [];

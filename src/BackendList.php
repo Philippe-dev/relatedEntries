@@ -133,7 +133,7 @@ class BackendList extends adminGenericListV2
             $cat_title = sprintf(
                 $cat_link,
                 $this->rs->cat_id,
-                Html::escapeHTML($this->rs->cat_title)
+                html::escapeHTML($this->rs->cat_title)
             );
         } else {
             $cat_title = __('(No cat)');
@@ -198,14 +198,14 @@ class BackendList extends adminGenericListV2
             '</td>',
             'title' => '<td class="maximal" scope="row"><a href="' .
             dcCore::app()->getPostAdminURL($this->rs->post_type, $this->rs->post_id) . '">' .
-            Html::escapeHTML(trim(Html::clean($this->rs->post_title))) . '</a></td>',
+            html::escapeHTML(trim(html::clean($this->rs->post_title))) . '</a></td>',
             'date' => '<td class="nowrap count">' .
                 '<time datetime="' . dt::iso8601(strtotime($this->rs->post_dt), dcCore::app()->auth->getInfo('user_tz')) . '">' .
                 dt::dt2str(__('%Y-%m-%d %H:%M'), $this->rs->post_dt) .
                 '</time>' .
                 '</td>',
             'category'   => '<td class="nowrap">' . $cat_title . '</td>',
-            'author'     => '<td class="nowrap">' . Html::escapeHTML($this->rs->user_id) . '</td>',
+            'author'     => '<td class="nowrap">' . html::escapeHTML($this->rs->user_id) . '</td>',
             'comments'   => '<td class="nowrap count">' . $this->rs->nb_comment . '</td>',
             'trackbacks' => '<td class="nowrap count">' . $this->rs->nb_trackback . '</td>',
             'status'     => '<td class="nowrap status">' . $img_status . ' ' . $selected . ' ' . $protected . ' ' . $attach . '</td>',

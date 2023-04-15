@@ -132,7 +132,7 @@ class Backend extends dcNsProcess
             }
             $combo[
                 str_repeat('&nbsp;', ($categories->level - 1) * 4) .
-                Html::escapeHTML($categories->cat_title) . ' (' . dcCore::app()->admin->counter->f(0) . ')'
+                html::escapeHTML($categories->cat_title) . ' (' . dcCore::app()->admin->counter->f(0) . ')'
             ] = $categories->cat_id;
         }
 
