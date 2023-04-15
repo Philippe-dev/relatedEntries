@@ -20,36 +20,50 @@ class BackendBehaviors
 {
     public static function adminColumnsLists($cols)
     {
-        $cols['posts'][1]['Links'] = [true, __('Links')];
+        if (dcCore::app()->admin->getPageURL() == 'plugin.php?p=relatedEntries') {
+            $cols['posts'][1]['Links'] = [true, __('Links')];
+        }
     }
 
     private static function adminEntryListHeader($core, $rs, $cols)
     {
-        $cols['Links'] = '<th scope="col">' . __('Links') . '</th>';
+        if (dcCore::app()->admin->getPageURL() == 'plugin.php?p=relatedEntries') {
+            $cols['Links'] = '<th scope="col">' . __('Links') . '</th>';
+        }
     }
 
     public static function adminPostListHeader($rs, $cols)
     {
-        self::adminEntryListHeader(dcCore::app(), $rs, $cols);
+        if (dcCore::app()->admin->getPageURL() == 'plugin.php?p=relatedEntries') {
+            self::adminEntryListHeader(dcCore::app(), $rs, $cols);
+        }
     }
 
     public static function adminPagesListHeader($rs, $cols)
     {
-        self::adminEntryListHeader(dcCore::app(), $rs, $cols);
+        if (dcCore::app()->admin->getPageURL() == 'plugin.php?p=relatedEntries') {
+            self::adminEntryListHeader(dcCore::app(), $rs, $cols);
+        }
     }
 
     public static function adminEntryListValue($core, $rs, $cols)
     {
-        $cols['Links'] = '<td class="nowrap">' . dcCore::app()->meta->getMetaRecordset($rs->post_meta, 'relatedEntries')->count() . '</td>';
+        if (dcCore::app()->admin->getPageURL() == 'plugin.php?p=relatedEntries') {
+            $cols['Links'] = '<td class="nowrap">' . dcCore::app()->meta->getMetaRecordset($rs->post_meta, 'relatedEntries')->count() . '</td>';
+        }
     }
 
     public static function adminPostListValue($rs, $cols)
     {
-        self::adminEntryListValue(dcCore::app(), $rs, $cols);
+        if (dcCore::app()->admin->getPageURL() == 'plugin.php?p=relatedEntries') {
+            self::adminEntryListValue(dcCore::app(), $rs, $cols);
+        }
     }
 
     public static function adminPagesListValue($rs, $cols)
     {
-        self::adminEntryListValue(dcCore::app(), $rs, $cols);
+        if (dcCore::app()->admin->getPageURL() == 'plugin.php?p=relatedEntries') {
+            self::adminEntryListValue(dcCore::app(), $rs, $cols);
+        }
     }
 }

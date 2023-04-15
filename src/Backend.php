@@ -32,7 +32,7 @@ class Backend extends dcNsProcess
     public static function init(): bool
     {
         self::$init = defined('DC_CONTEXT_ADMIN');
-
+        
         dcCore::app()->addBehavior('adminColumnsListsV2', [BackendBehaviors::class, 'adminColumnsLists']);
         dcCore::app()->addBehavior('adminPostListHeaderV2', [BackendBehaviors::class, 'adminPostListHeader']);
         dcCore::app()->addBehavior('adminPostListValueV2', [BackendBehaviors::class, 'adminPostListValue']);
