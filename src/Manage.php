@@ -252,6 +252,18 @@ class Manage extends dcNsProcess
             return;
         }
 
+        // Filters
+        dcCore::app()->admin->post_filter = new adminPostFilter();
+
+        // get list params
+        $params = dcCore::app()->admin->post_filter->params();
+
+        dcCore::app()->admin->posts      = null;
+        dcCore::app()->admin->posts_list = null;
+
+        dcCore::app()->admin->page        = !empty($_GET['page']) ? max(1, (int) $_GET['page']) : 1;
+        dcCore::app()->admin->nb_per_page = adminUserPref::getUserFilters('pages', 'nb');
+
         if (isset($_GET['id']) && isset($_GET['addlinks']) && $_GET['addlinks'] == 1 || isset($_GET['relatedEntries_filters'])) {
             try {
                 $id                      = (int) $_GET['id'];
@@ -267,16 +279,6 @@ class Manage extends dcNsProcess
                 dcCore::app()->error->add($e->getMessage());
             }
 
-            // Filters
-            // -------
-            dcCore::app()->admin->post_filter = new adminPostFilter();
-
-            // get list params
-            $params = dcCore::app()->admin->post_filter->params();
-
-            dcCore::app()->admin->posts      = null;
-            dcCore::app()->admin->posts_list = null;
-
             // Get posts without current
 
             if (isset($_GET['id'])) {
@@ -291,9 +293,6 @@ class Manage extends dcNsProcess
                     dcCore::app()->error->add($e->getMessage());
                 }
             }
-
-            dcCore::app()->admin->page        = !empty($_GET['page']) ? max(1, (int) $_GET['page']) : 1;
-            dcCore::app()->admin->nb_per_page = adminUserPref::getUserFilters('pages', 'nb');
 
             $head = dcPage::jsLoad('js/_posts_list.js') .
             dcCore::app()->admin->post_filter->js(dcCore::app()->admin->getPageURL() . '&amp;id=' . $id . '&amp;addlinks=1') .
@@ -353,15 +352,6 @@ class Manage extends dcNsProcess
                 dcCore::app()->admin->default_tab = 'postslist';
             }
 
-            // Filters
-            dcCore::app()->admin->post_filter = new adminPostFilter();
-
-            // get list params
-            $params = dcCore::app()->admin->post_filter->params();
-
-            dcCore::app()->admin->posts      = null;
-            dcCore::app()->admin->posts_list = null;
-
             // Get posts with related posts
             try {
                 $params['no_content']            = true;
@@ -372,9 +362,6 @@ class Manage extends dcNsProcess
             } catch (Exception $e) {
                 dcCore::app()->error->add($e->getMessage());
             }
-
-            dcCore::app()->admin->page        = !empty($_GET['page']) ? max(1, (int) $_GET['page']) : 1;
-            dcCore::app()->admin->nb_per_page = adminUserPref::getUserFilters('pages', 'nb');
 
             $head = dcPage::jsLoad('js/_posts_list.js') .
             dcCore::app()->admin->post_filter->js(dcCore::app()->admin->getPageURL() . '#postslist') .
