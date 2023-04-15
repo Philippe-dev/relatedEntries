@@ -261,7 +261,7 @@ class Manage extends dcNsProcess
         dcCore::app()->admin->page        = !empty($_GET['page']) ? max(1, (int) $_GET['page']) : 1;
         dcCore::app()->admin->nb_per_page = adminUserPref::getUserFilters('pages', 'nb');
 
-        if (isset($_GET['id']) && isset($_GET['addlinks']) && $_GET['addlinks'] == 1 || isset($_GET['relatedEntries_filters'])) {
+        if (isset($_GET['id']) && isset($_GET['addlinks']) && $_GET['addlinks'] == 1) {
             try {
                 $id                      = (int) $_GET['id'];
                 $my_params['post_id']    = $id;
