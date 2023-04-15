@@ -17,7 +17,6 @@ namespace Dotclear\Plugin\relatedEntries;
 use dcCore;
 use dcNsProcess;
 use adminUserPref;
-use dcBlog;
 use dcPage;
 use Exception;
 use form;
@@ -296,41 +295,26 @@ class Manage extends dcNsProcess
             dcCore::app()->admin->page        = !empty($_GET['page']) ? max(1, (int) $_GET['page']) : 1;
             dcCore::app()->admin->nb_per_page = adminUserPref::getUserFilters('pages', 'nb');
 
-            echo
-            '<html>' .
-            '<head>' ;
+            $head = '';
+            $head .= dcPage::jsLoad('js/_posts_list.js') .
+            dcCore::app()->admin->post_filter->js(dcCore::app()->admin->getPageURL() . '&amp;id=' . $id . '&amp;addlinks=1') .
+            dcPage::jsPageTabs(dcCore::app()->admin->default_tab) .
+            dcPage::jsConfirmClose('config-form');
 
-            $form_filter_title = __('Show filters and display options');
-            $starting_script   = dcPage::jsLoad('js/_posts_list.js');
-            $starting_script .= dcPage::jsLoad(DC_ADMIN_URL . '?pf=relatedEntries/js/posts-filter-controls.js');
-            $starting_script .= '<script>' . "\n" .
-            '//<![CDATA[' . "\n" .
-            dcPage::jsVar('dotclear.msg.show_filters', dcCore::app()->admin->show_filters ? 'true' : 'false') . "\n" .
-            dcPage::jsVar('dotclear.msg.filter_posts_list', $form_filter_title) . "\n" .
-            dcPage::jsVar('dotclear.msg.cancel_the_filter', __('Cancel filters and display options')) . "\n" .
-            dcPage::jsVar('filter_reset_url', dcCore::app()->admin->getPageURL()) . "\n" .
-            dcPage::jsVar('id', $id) . "\n" .
-            '//]]>' .
-            '</script>';
-            echo $starting_script;
+            dcPage::openModule(__('Related entries'), $head);
 
-            echo
-            '<title>' . __('Related posts') . '</title>' .
-            '</head>' .
-            '<body>';
+            dcCore::app()->admin->page_title = __('Add links to related posts');
+
+            echo dcPage::breadcrumb(
+                [
+                    html::escapeHTML(dcCore::app()->blog->name) => '',
+                    __('Related posts')                         => dcCore::app()->admin->getPageURL(),
+                    dcCore::app()->admin->page_title            => '',
+                ]
+            );
 
             if (!dcCore::app()->error->flag()) {
-                
-                dcCore::app()->admin->page_title = __('Add links to related posts');
-
-                echo dcPage::breadcrumb(
-                    [
-                        html::escapeHTML(dcCore::app()->blog->name) => '',
-                        __('Related posts')                         => dcCore::app()->admin->getPageURL(),
-                        dcCore::app()->admin->page_title            => '',
-                    ]
-                ) .
-                    '<h3>' . __('Select posts related to entry:') . ' <a href="' . dcCore::app()->getPostAdminURL($post_type, $post_id) . '">' . $post_title . '</a></h3>';
+                echo '<h3>' . __('Select posts related to entry:') . ' <a href="' . dcCore::app()->getPostAdminURL($post_type, $post_id) . '">' . $post_title . '</a></h3>';
 
                 // Show posts
                 if (!isset(dcCore::app()->admin->posts_list) || empty(dcCore::app()->admin->posts_list)) {
@@ -364,6 +348,7 @@ class Manage extends dcNsProcess
                 }
             }
             dcPage::helpBlock('relatedEntriesposts');
+            dcPage::closeModule();
         } else {
             if (isset($_GET['page'])) {
                 dcCore::app()->admin->default_tab = 'postslist';
@@ -392,29 +377,13 @@ class Manage extends dcNsProcess
             dcCore::app()->admin->page        = !empty($_GET['page']) ? max(1, (int) $_GET['page']) : 1;
             dcCore::app()->admin->nb_per_page = adminUserPref::getUserFilters('pages', 'nb');
 
-            echo
-            '<html>' .
-            '<head>' ;
+            $head = '';
+            $head .= dcPage::jsLoad('js/_posts_list.js') .
+            dcCore::app()->admin->post_filter->js(dcCore::app()->admin->getPageURL() . '#postslist') .
+            dcPage::jsPageTabs(dcCore::app()->admin->default_tab) .
+            dcPage::jsConfirmClose('config-form');
 
-            $form_filter_title = __('Show filters and display options');
-            $starting_script   = dcPage::jsLoad('js/_posts_list.js');
-            $starting_script .= dcPage::jsLoad(DC_ADMIN_URL . '?pf=relatedEntries/js/filter-controls.js');
-            $starting_script .= dcPage::jsPageTabs(dcCore::app()->admin->default_tab);
-            $starting_script .= dcPage::jsConfirmClose('config-form');
-            $starting_script .= '<script>' . "\n" .
-            '//<![CDATA[' . "\n" .
-            dcPage::jsVar('dotclear.msg.show_filters', dcCore::app()->admin->show_filters ? 'true' : 'false') . "\n" .
-            dcPage::jsVar('dotclear.msg.filter_posts_list', $form_filter_title) . "\n" .
-            dcPage::jsVar('dotclear.msg.cancel_the_filter', __('Cancel filters and display options')) . "\n" .
-            dcPage::jsVar('filter_reset_url', dcCore::app()->admin->getPageURL()) . "\n" .
-            '//]]>' .
-            '</script>';
-            echo $starting_script;
-
-            echo
-            '<title>' . __('Related posts') . '</title>' .
-            '</head>' .
-            '<body>';
+            dcPage::openModule(__('Related entries'), $head);
 
             echo dcPage::breadcrumb(
                 [
@@ -589,10 +558,7 @@ class Manage extends dcNsProcess
             '</div>';
 
             dcPage::helpBlock('relatedEntries');
+            dcPage::closeModule();
         }
-
-        echo
-        '</body>' .
-        '</html>';
     }
 }
