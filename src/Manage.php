@@ -66,7 +66,7 @@ class Manage extends dcNsProcess
                 dcCore::app()->error->add($e->getMessage());
             }
         }
-        
+
         self::$init = true;
 
         return self::$init;
