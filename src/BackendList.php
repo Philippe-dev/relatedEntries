@@ -18,7 +18,7 @@ use adminGenericListV2;
 use dcBlog;
 use dcCore;
 use dcAuth;
-use arrayObject;
+use ArrayObject;
 use dt;
 use html;
 use dcPager;
@@ -72,7 +72,7 @@ class BackendList extends adminGenericListV2
                 '" /><span class="hidden">' . __('Trackbacks') . '</span></th>',
                 'status' => '<th scope="col">' . __('Status') . '</th>',
             ];
-            $cols = new arrayObject($cols);
+            $cols = new ArrayObject($cols);
             dcCore::app()->callBehavior('adminPostListHeaderV2', $this->rs, $cols);
 
             // Cope with optional columns
@@ -210,7 +210,7 @@ class BackendList extends adminGenericListV2
             'trackbacks' => '<td class="nowrap count">' . $this->rs->nb_trackback . '</td>',
             'status'     => '<td class="nowrap status">' . $img_status . ' ' . $selected . ' ' . $protected . ' ' . $attach . '</td>',
         ];
-        $cols = new arrayObject($cols);
+        $cols = new ArrayObject($cols);
         dcCore::app()->callBehavior('adminPostListValueV2', $this->rs, $cols);
 
         // Cope with optional columns

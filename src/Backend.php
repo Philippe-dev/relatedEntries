@@ -21,7 +21,7 @@ use dcCore;
 use dcFavorites;
 use dcPage;
 use dcNsProcess;
-use arrayObject;
+use ArrayObject;
 use dcAdminFilter;
 use form;
 use html;
@@ -93,7 +93,7 @@ class Backend extends dcNsProcess
         return true;
     }
 
-    public static function adminPostFilter(arrayObject $filters)
+    public static function adminPostFilter(ArrayObject $filters)
     {
         if (dcCore::app()->admin->getPageURL() != 'plugin.php?p=relatedEntries') {
             return null;
