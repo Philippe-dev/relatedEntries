@@ -295,8 +295,7 @@ class Manage extends dcNsProcess
             dcCore::app()->admin->page        = !empty($_GET['page']) ? max(1, (int) $_GET['page']) : 1;
             dcCore::app()->admin->nb_per_page = adminUserPref::getUserFilters('pages', 'nb');
 
-            $head = '';
-            $head .= dcPage::jsLoad('js/_posts_list.js') .
+            $head = dcPage::jsLoad('js/_posts_list.js') .
             dcCore::app()->admin->post_filter->js(dcCore::app()->admin->getPageURL() . '&amp;id=' . $id . '&amp;addlinks=1') .
             dcPage::jsPageTabs(dcCore::app()->admin->default_tab) .
             dcPage::jsConfirmClose('config-form');
@@ -377,8 +376,7 @@ class Manage extends dcNsProcess
             dcCore::app()->admin->page        = !empty($_GET['page']) ? max(1, (int) $_GET['page']) : 1;
             dcCore::app()->admin->nb_per_page = adminUserPref::getUserFilters('pages', 'nb');
 
-            $head = '';
-            $head .= dcPage::jsLoad('js/_posts_list.js') .
+            $head = dcPage::jsLoad('js/_posts_list.js') .
             dcCore::app()->admin->post_filter->js(dcCore::app()->admin->getPageURL() . '#postslist') .
             dcPage::jsPageTabs(dcCore::app()->admin->default_tab) .
             dcPage::jsConfirmClose('config-form');
