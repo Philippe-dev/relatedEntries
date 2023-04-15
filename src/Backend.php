@@ -159,11 +159,11 @@ class Backend extends dcNsProcess
         $blocks[] = 'relatedEntries_post';
     }
 
-    public static function postHeaders()
+    public static function postHeaders(): string
     {
         $s = dcCore::app()->blog->settings->relatedEntries;
         if (!$s->relatedEntries_enabled) {
-            return;
+            return false;
         }
 
         return
