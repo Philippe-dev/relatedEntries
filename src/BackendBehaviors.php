@@ -39,13 +39,6 @@ class BackendBehaviors
         }
     }
 
-    public static function adminPagesListHeader($rs, $cols)
-    {
-        if (dcCore::app()->admin->getPageURL() == 'plugin.php?p=relatedEntries') {
-            self::adminEntryListHeader(dcCore::app(), $rs, $cols);
-        }
-    }
-
     public static function adminEntryListValue($core, $rs, $cols)
     {
         if (dcCore::app()->admin->getPageURL() == 'plugin.php?p=relatedEntries') {
@@ -60,10 +53,4 @@ class BackendBehaviors
         }
     }
 
-    public static function adminPagesListValue($rs, $cols)
-    {
-        if (dcCore::app()->admin->getPageURL() == 'plugin.php?p=relatedEntries') {
-            self::adminEntryListValue(dcCore::app(), $rs, $cols);
-        }
-    }
 }
