@@ -262,7 +262,7 @@ class Manage extends dcNsProcess
         if (isset($_GET['id']) && isset($_GET['addlinks']) && $_GET['addlinks'] == 1) {
             
             /*
-            * List of posts to be linked to current
+            *  List of posts to be linked to current
             */
 
             // Get current post
@@ -348,7 +348,7 @@ class Manage extends dcNsProcess
         } else {
 
             /*
-            * Parameters tab and list of related posts
+            * Config and list of related posts tabs
             */
 
             if (isset($_GET['page'])) {
@@ -356,7 +356,7 @@ class Manage extends dcNsProcess
             }
 
             // Get posts with related posts
-            
+
             try {
                 $params['no_content']            = true;
                 $params['sql']                   = 'AND P.post_id IN (SELECT META.post_id FROM ' . dcCore::app()->prefix . 'meta META WHERE META.post_id = P.post_id ' . "AND META.meta_type = 'relatedEntries' ) ";
@@ -389,7 +389,7 @@ class Manage extends dcNsProcess
 
             $as = unserialize(dcCore::app()->admin->settings->relatedEntries_images_options);
 
-            //Parameters tab
+            // Config tab
 
             echo
             '<div class="multi-part" id="parameters" title="' . __('Parameters') . '">' .
@@ -509,7 +509,7 @@ class Manage extends dcNsProcess
             '</form>' .
             '</div>' .
 
-            //Related posts list tab
+            // Related posts list tab
 
             '<div class="multi-part" id="postslist" title="' . __('Related posts list') . '">';
 
