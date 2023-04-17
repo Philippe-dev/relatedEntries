@@ -262,7 +262,7 @@ class Manage extends dcNsProcess
         if (isset($_GET['id']) && isset($_GET['addlinks']) && $_GET['addlinks'] == 1) {
             
             /*
-            *  List of posts to be linked to current
+            *   List of posts to be linked to current
             */
 
             // Get current post
