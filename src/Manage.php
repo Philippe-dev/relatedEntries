@@ -292,9 +292,7 @@ class Manage extends dcNsProcess
             }
 
             $head = dcPage::jsLoad('js/_posts_list.js') .
-            dcCore::app()->admin->post_filter->js(dcCore::app()->admin->getPageURL() . '&amp;id=' . $id . '&amp;addlinks=1') .
-            dcPage::jsPageTabs(dcCore::app()->admin->default_tab) .
-            dcPage::jsConfirmClose('config-form');
+            dcCore::app()->admin->post_filter->js(dcCore::app()->admin->getPageURL() . '&amp;id=' . $id . '&amp;addlinks=1');
 
             dcPage::openModule(__('Related entries'), $head);
 
