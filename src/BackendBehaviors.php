@@ -20,37 +20,26 @@ class BackendBehaviors
 {
     public static function adminColumnsLists($cols)
     {
-        if (dcCore::app()->admin->getPageURL() == 'plugin.php?p=relatedEntries') {
-            $cols['posts'][1]['Links'] = [true, __('Links')];
-        }
+        $cols['posts'][1]['Links'] = [true, __('Links')];
     }
 
     private static function adminEntryListHeader($core, $rs, $cols)
     {
-        if (dcCore::app()->admin->getPageURL() == 'plugin.php?p=relatedEntries') {
-            $cols['Links'] = '<th scope="col">' . __('Links') . '</th>';
-        }
+        $cols['Links'] = '<th scope="col">' . __('Links') . '</th>';
     }
 
     public static function adminPostListHeader($rs, $cols)
     {
-        if (dcCore::app()->admin->getPageURL() == 'plugin.php?p=relatedEntries') {
-            self::adminEntryListHeader(dcCore::app(), $rs, $cols);
-        }
+        self::adminEntryListHeader(dcCore::app(), $rs, $cols);
     }
 
     public static function adminEntryListValue($core, $rs, $cols)
     {
-        if (dcCore::app()->admin->getPageURL() == 'plugin.php?p=relatedEntries') {
-            $cols['Links'] = '<td class="nowrap">' . dcCore::app()->meta->getMetaRecordset($rs->post_meta, 'relatedEntries')->count() . '</td>';
-        }
+        $cols['Links'] = '<td class="nowrap">' . dcCore::app()->meta->getMetaRecordset($rs->post_meta, 'relatedEntries')->count() . '</td>';
     }
 
     public static function adminPostListValue($rs, $cols)
     {
-        if (dcCore::app()->admin->getPageURL() == 'plugin.php?p=relatedEntries') {
-            self::adminEntryListValue(dcCore::app(), $rs, $cols);
-        }
+        self::adminEntryListValue(dcCore::app(), $rs, $cols);
     }
-
 }
