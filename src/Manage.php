@@ -150,8 +150,6 @@ class Manage extends dcNsProcess
         dcCore::app()->admin->link_combo     = $link_combo;
         dcCore::app()->admin->bubble_combo   = $bubble_combo;
         dcCore::app()->admin->settings       = $settings;
-        $id                                  = !empty($_GET['id']) ? $_GET['id'] : '';
-        dcCore::app()->admin->id             = $id;
 
         // Saving configurations
         if (isset($_POST['save'])) {
@@ -262,37 +260,40 @@ class Manage extends dcNsProcess
         dcCore::app()->admin->nb_per_page = adminUserPref::getUserFilters('pages', 'nb');
 
         if (isset($_GET['id']) && isset($_GET['addlinks']) && $_GET['addlinks'] == 1) {
+            
+            /*
+            * List of posts to be linked to current
+            */
+
+            // Get current post
+
             try {
-                $id                      = (int) $_GET['id'];
-                $my_params['post_id']    = $id;
+                $post_id                 = (int) $_GET['id'];
+                $my_params['post_id']    = $post_id;
                 $my_params['no_content'] = true;
                 $my_params['post_type']  = ['post'];
 
                 $rs         = dcCore::app()->blog->getPosts($my_params);
                 $post_title = $rs->post_title;
                 $post_type  = $rs->post_type;
-                $post_id    = $rs->post_id;
             } catch (Exception $e) {
                 dcCore::app()->error->add($e->getMessage());
             }
 
             // Get posts without current
 
-            if (isset($_GET['id'])) {
-                try {
-                    $id                              = $_GET['id'];
-                    $params['no_content']            = true;
-                    $params['exclude_post_id']       = $id;
-                    dcCore::app()->admin->posts      = dcCore::app()->blog->getPosts($params);
-                    dcCore::app()->admin->counter    = dcCore::app()->blog->getPosts($params, true);
-                    dcCore::app()->admin->posts_list = new adminPostList(dcCore::app()->admin->posts, dcCore::app()->admin->counter->f(0));
-                } catch (Exception $e) {
-                    dcCore::app()->error->add($e->getMessage());
-                }
+            try {
+                $params['no_content']            = true;
+                $params['exclude_post_id']       = $post_id;
+                dcCore::app()->admin->posts      = dcCore::app()->blog->getPosts($params);
+                dcCore::app()->admin->counter    = dcCore::app()->blog->getPosts($params, true);
+                dcCore::app()->admin->posts_list = new adminPostList(dcCore::app()->admin->posts, dcCore::app()->admin->counter->f(0));
+            } catch (Exception $e) {
+                dcCore::app()->error->add($e->getMessage());
             }
 
             $head = dcPage::jsLoad('js/_posts_list.js') .
-            dcCore::app()->admin->post_filter->js(dcCore::app()->admin->getPageURL() . '&amp;id=' . $id . '&amp;addlinks=1');
+            dcCore::app()->admin->post_filter->js(dcCore::app()->admin->getPageURL() . '&amp;id=' . $post_id . '&amp;addlinks=1');
 
             dcPage::openModule(__('Related entries'), $head);
 
@@ -314,7 +315,7 @@ class Manage extends dcNsProcess
                     echo '<p><strong>' . __('No related posts') . '</strong></p>';
                 } else {
                     # filters
-                    dcCore::app()->admin->post_filter->display('admin.plugin.relatedEntries', '<input type="hidden" name="p" value="relatedEntries" /><input type="hidden" name="addlinks" value="1" /><input type="hidden" name="id" value="' . $id . '" />');
+                    dcCore::app()->admin->post_filter->display('admin.plugin.relatedEntries', '<input type="hidden" name="p" value="relatedEntries" /><input type="hidden" name="addlinks" value="1" /><input type="hidden" name="id" value="' . $post_id . '" />');
 
                     dcCore::app()->admin->posts_list->display(
                         dcCore::app()->admin->post_filter->page,
@@ -327,10 +328,10 @@ class Manage extends dcNsProcess
                         '<p class="col checkboxes-helpers"></p>' .
 
                         '<p class="col right">' .
-                        '<input type="submit" value="' . __('Add links to selected posts') . '" /> <a class="button reset" href="post.php?id=' . dcCore::app()->admin->id . '">' . __('Cancel') . '</a></p>' .
+                        '<input type="submit" value="' . __('Add links to selected posts') . '" /> <a class="button reset" href="post.php?id=' . $post_id . '">' . __('Cancel') . '</a></p>' .
                         '<p>' .
                         form::hidden(['addlinks'], true) .
-                        form::hidden(['id'], dcCore::app()->admin->id) .
+                        form::hidden(['id'], $post_id) .
                         form::hidden(['p'], 'relatedEntries') .
                         dcCore::app()->adminurl->getHiddenFormFields('admin.plugin.relatedEntries', dcCore::app()->admin->post_filter->values()) .
                         dcCore::app()->formNonce() . '</p>' .
@@ -340,14 +341,22 @@ class Manage extends dcNsProcess
                     );
                 }
             }
+
             dcPage::helpBlock('relatedEntriesposts');
             dcPage::closeModule();
+
         } else {
+
+            /*
+            * Parameters tab and list of related posts
+            */
+
             if (isset($_GET['page'])) {
                 dcCore::app()->admin->default_tab = 'postslist';
             }
 
             // Get posts with related posts
+            
             try {
                 $params['no_content']            = true;
                 $params['sql']                   = 'AND P.post_id IN (SELECT META.post_id FROM ' . dcCore::app()->prefix . 'meta META WHERE META.post_id = P.post_id ' . "AND META.meta_type = 'relatedEntries' ) ";
