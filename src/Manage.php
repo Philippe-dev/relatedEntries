@@ -260,7 +260,6 @@ class Manage extends dcNsProcess
         dcCore::app()->admin->nb_per_page = adminUserPref::getUserFilters('pages', 'nb');
 
         if (isset($_GET['id']) && isset($_GET['addlinks']) && $_GET['addlinks'] == 1) {
-            
             /*
             *   List of posts to be linked to current
             */
@@ -272,10 +271,9 @@ class Manage extends dcNsProcess
                 $my_params['post_id']    = $post_id;
                 $my_params['no_content'] = true;
                 $my_params['post_type']  = ['post'];
-
-                $rs         = dcCore::app()->blog->getPosts($my_params);
-                $post_title = $rs->post_title;
-                $post_type  = $rs->post_type;
+                $rs                      = dcCore::app()->blog->getPosts($my_params);
+                $post_title              = $rs->post_title;
+                $post_type               = $rs->post_type;
             } catch (Exception $e) {
                 dcCore::app()->error->add($e->getMessage());
             }
@@ -344,9 +342,7 @@ class Manage extends dcNsProcess
 
             dcPage::helpBlock('relatedEntriesposts');
             dcPage::closeModule();
-
         } else {
-
             /*
             * Config and list of related posts tabs
             */
