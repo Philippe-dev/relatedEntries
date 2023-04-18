@@ -330,7 +330,6 @@ class Manage extends dcNsProcess
                         '<p>' .
                         form::hidden(['addlinks'], true) .
                         form::hidden(['id'], $post_id) .
-                        form::hidden(['p'], 'relatedEntries') .
                         dcCore::app()->adminurl->getHiddenFormFields('admin.plugin.relatedEntries', dcCore::app()->admin->post_filter->values()) .
                         dcCore::app()->formNonce() . '</p>' .
                         '</div>' .
@@ -528,8 +527,6 @@ class Manage extends dcNsProcess
                     '<p class="col right">' .
                     '<input type="submit" class="delete" value="' . __('Remove all links from selected posts') . '" /></p>' .
                     '<p>' .
-                    form::hidden(['tab'], 'postslist') .
-                    form::hidden(['p'], 'relatedEntries') .
                     dcCore::app()->adminurl->getHiddenFormFields('admin.plugin.relatedEntries', dcCore::app()->admin->post_filter->values()) .
                     dcCore::app()->formNonce() . '</p>' .
                     '</div>' .
