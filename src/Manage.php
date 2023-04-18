@@ -309,34 +309,31 @@ class Manage extends dcNsProcess
                 echo '<h3>' . __('Select posts related to entry:') . ' <a href="' . dcCore::app()->getPostAdminURL($post_type, $post_id) . '">' . $post_title . '</a></h3>';
 
                 // Show posts
-                if (!isset(dcCore::app()->admin->posts_list) || empty(dcCore::app()->admin->posts_list)) {
-                    echo '<p><strong>' . __('No related posts') . '</strong></p>';
-                } else {
-                    # filters
-                    dcCore::app()->admin->post_filter->display('admin.plugin.relatedEntries', '<input type="hidden" name="p" value="relatedEntries" /><input type="hidden" name="addlinks" value="1" /><input type="hidden" name="id" value="' . $post_id . '" />');
 
-                    dcCore::app()->admin->posts_list->display(
-                        dcCore::app()->admin->post_filter->page,
-                        dcCore::app()->admin->post_filter->nb,
-                        '<form action="' . dcCore::app()->admin->getPageURL() . '" method="post" id="form-entries">' .
+                # filters
+                dcCore::app()->admin->post_filter->display('admin.plugin.relatedEntries', '<input type="hidden" name="p" value="relatedEntries" /><input type="hidden" name="addlinks" value="1" /><input type="hidden" name="id" value="' . $post_id . '" />');
 
-                        '%s' .
+                dcCore::app()->admin->posts_list->display(
+                    dcCore::app()->admin->post_filter->page,
+                    dcCore::app()->admin->post_filter->nb,
+                    '<form action="' . dcCore::app()->admin->getPageURL() . '" method="post" id="form-entries">' .
 
-                        '<div class="two-cols">' .
-                        '<p class="col checkboxes-helpers"></p>' .
+                    '%s' .
 
-                        '<p class="col right">' .
-                        '<input type="submit" value="' . __('Add links to selected posts') . '" /> <a class="button reset" href="post.php?id=' . $post_id . '">' . __('Cancel') . '</a></p>' .
-                        '<p>' .
-                        form::hidden(['addlinks'], true) .
-                        form::hidden(['id'], $post_id) .
-                        dcCore::app()->adminurl->getHiddenFormFields('admin.plugin.relatedEntries', dcCore::app()->admin->post_filter->values()) .
-                        dcCore::app()->formNonce() . '</p>' .
-                        '</div>' .
-                        '</form>',
-                        dcCore::app()->admin->post_filter->show()
-                    );
-                }
+                    '<div class="two-cols">' .
+                    '<p class="col checkboxes-helpers"></p>' .
+
+                    '<p class="col right">' .
+                    '<input type="submit" value="' . __('Add links to selected posts') . '" /> <a class="button reset" href="post.php?id=' . $post_id . '">' . __('Cancel') . '</a></p>' .
+                    '<p>' .
+                    form::hidden(['addlinks'], true) .
+                    form::hidden(['id'], $post_id) .
+                    dcCore::app()->adminurl->getHiddenFormFields('admin.plugin.relatedEntries', dcCore::app()->admin->post_filter->values()) .
+                    dcCore::app()->formNonce() . '</p>' .
+                    '</div>' .
+                    '</form>',
+                    dcCore::app()->admin->post_filter->show()
+                );
             }
 
             dcPage::helpBlock('relatedEntriesposts');
@@ -508,32 +505,28 @@ class Manage extends dcNsProcess
 
             '<div class="multi-part" id="postslist" title="' . __('Related posts list') . '">';
 
-            if (!isset(dcCore::app()->admin->posts_list) || empty(dcCore::app()->admin->posts_list)) {
-                echo '<p><strong>' . __('No related posts') . '</strong></p>';
-            } else {
-                dcCore::app()->admin->post_filter->display('admin.plugin.relatedEntries', '<input type="hidden" name="p" value="relatedEntries" /><input type="hidden" name="tab" value="postslist" />');
+            dcCore::app()->admin->post_filter->display('admin.plugin.relatedEntries', '<input type="hidden" name="p" value="relatedEntries" /><input type="hidden" name="tab" value="postslist" />');
 
-                // Show posts
-                dcCore::app()->admin->posts_list->display(
-                    dcCore::app()->admin->post_filter->page,
-                    dcCore::app()->admin->post_filter->nb,
-                    '<form action="' . dcCore::app()->admin->getPageURL() . '" method="post" id="form-entries">' .
+            // Show posts
+            dcCore::app()->admin->posts_list->display(
+                dcCore::app()->admin->post_filter->page,
+                dcCore::app()->admin->post_filter->nb,
+                '<form action="' . dcCore::app()->admin->getPageURL() . '" method="post" id="form-entries">' .
 
-                    '%s' .
+                '%s' .
 
-                    '<div class="two-cols">' .
-                    '<p class="col checkboxes-helpers"></p>' .
+                '<div class="two-cols">' .
+                '<p class="col checkboxes-helpers"></p>' .
 
-                    '<p class="col right">' .
-                    '<input type="submit" class="delete" value="' . __('Remove all links from selected posts') . '" /></p>' .
-                    '<p>' .
-                    dcCore::app()->adminurl->getHiddenFormFields('admin.plugin.relatedEntries', dcCore::app()->admin->post_filter->values()) .
-                    dcCore::app()->formNonce() . '</p>' .
-                    '</div>' .
-                    '</form>',
-                    dcCore::app()->admin->post_filter->show()
-                );
-            }
+                '<p class="col right">' .
+                '<input type="submit" class="delete" value="' . __('Remove all links from selected posts') . '" /></p>' .
+                '<p>' .
+                dcCore::app()->adminurl->getHiddenFormFields('admin.plugin.relatedEntries', dcCore::app()->admin->post_filter->values()) .
+                dcCore::app()->formNonce() . '</p>' .
+                '</div>' .
+                '</form>',
+                dcCore::app()->admin->post_filter->show()
+            );
 
             echo
             '</div>';
