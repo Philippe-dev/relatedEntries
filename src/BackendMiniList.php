@@ -17,8 +17,8 @@ namespace Dotclear\Plugin\relatedEntries;
 use adminGenericListV2;
 use dcBlog;
 use dcCore;
-use dt;
-use html;
+use Dotclear\Helper\Date;
+use Dotclear\Helper\Html\Html;
 use dcPager;
 
 class BackendMiniList extends adminGenericListV2
@@ -89,7 +89,7 @@ class BackendMiniList extends adminGenericListV2
             $cat_title = sprintf(
                 $cat_link,
                 $this->rs->cat_id,
-                html::escapeHTML($this->rs->cat_title)
+                Html::escapeHTML($this->rs->cat_title)
             );
         } else {
             $cat_title = __('None');
@@ -136,8 +136,8 @@ class BackendMiniList extends adminGenericListV2
         ' id="p' . $this->rs->post_id . '">';
 
         $res .= '<td class="maximal"><a href="' . dcCore::app()->getPostAdminURL($this->rs->post_type, $this->rs->post_id) . '">' .
-        html::escapeHTML($this->rs->post_title) . '</a></td>' .
-        '<td class="nowrap">' . dt::dt2str(__('%Y-%m-%d %H:%M'), $this->rs->post_dt) . '</td>' .
+        Html::escapeHTML($this->rs->post_title) . '</a></td>' .
+        '<td class="nowrap">' . Date::dt2str(__('%Y-%m-%d %H:%M'), $this->rs->post_dt) . '</td>' .
         '<td class="nowrap">' . $cat_title . '</td>' .
         '<td class="nowrap status">' . $img_status . ' ' . $selected . ' ' . $protected . ' ' . $attach . '</td>' .
         '<td class="nowrap count"><a class="link-remove metaRemove" href="' . DC_ADMIN_URL . 'plugin.php?p=relatedEntries&amp;id=' . $id . '&amp;r_id=' . $this->rs->post_id . '" title="' . __('Delete this link') . '"><img src="images/trash.png" alt="supprimer" /></a></td>' .

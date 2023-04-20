@@ -16,7 +16,7 @@ namespace Dotclear\Plugin\relatedEntries;
 
 use dcCore;
 use dcNsProcess;
-use l10n;
+use Dotclear\Helper\L10n;
 
 class Frontend extends dcNsProcess
 {
@@ -38,7 +38,7 @@ class Frontend extends dcNsProcess
         dcCore::app()->addBehavior('publicHeadContent', [self::class,  'publicHeadContent']);
         dcCore::app()->addBehavior('initWidgets', [Widgets::class, 'initWidgets']);
 
-        l10n::set(dirname(__FILE__) . '/locales/' . dcCore::app()->lang . '/main');
+        L10n::set(dirname(__FILE__) . '/locales/' . dcCore::app()->lang . '/main');
 
         return true;
     }

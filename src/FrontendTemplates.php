@@ -15,7 +15,7 @@ namespace Dotclear\Plugin\relatedEntries;
 
 use dcCore;
 use Dotclear\Plugin\widgets\WidgetsElement;
-use html;
+use Dotclear\Helper\Html\Html;
 use tplEntryImages;
 
 class FrontendTemplates
@@ -53,12 +53,12 @@ class FrontendTemplates
             $params['no_content'] = false;
             $params['post_type']  = ['post'];
             $rs                   = dcCore::app()->blog->getPosts($params);
-            $ret                  = ($widget->title ? $widget->renderTitle(html::escapeHTML($widget->title)) : '');
+            $ret                  = ($widget->title ? $widget->renderTitle(Html::escapeHTML($widget->title)) : '');
 
             if (!$widget->relatedEntries_images || !dcCore::app()->plugins->moduleExists('listImages')) {
                 $ret .= '<ul>';
                 while ($rs->fetch()) {
-                    $ret .= '<li><a href="' . $rs->getURL() . '" title="' . html::escapeHTML($rs->post_title) . '">' . $rs->post_title . '</a></li>';
+                    $ret .= '<li><a href="' . $rs->getURL() . '" title="' . Html::escapeHTML($rs->post_title) . '">' . $rs->post_title . '</a></li>';
                 }
                 $ret .= '</ul>';
             } else {
@@ -146,7 +146,7 @@ class FrontendTemplates
                 $ret .= '<ul class="relatedEntries">';
 
                 while ($rs->fetch()) {
-                    $ret .= '<li><a href="' . $rs->getURL() . '" title="' . html::escapeHTML($rs->post_title) . '">' . $rs->post_title . '</a></li>';
+                    $ret .= '<li><a href="' . $rs->getURL() . '" title="' . Html::escapeHTML($rs->post_title) . '">' . $rs->post_title . '</a></li>';
                 }
                 $ret .= '</ul>';
 

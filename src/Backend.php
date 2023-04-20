@@ -24,8 +24,8 @@ use dcNsProcess;
 use ArrayObject;
 use dcAdminFilter;
 use form;
-use html;
-use http;
+use Dotclear\Helper\Html\Html;
+use Dotclear\Helper\Network\Http;
 
 class Backend extends dcNsProcess
 {
@@ -84,7 +84,7 @@ class Backend extends dcNsProcess
                     $meta->delPostMeta($tag, 'relatedEntries', $id);
                 }
 
-                http::redirect(DC_ADMIN_URL . 'post.php?id=' . $id . '&del=1&upd=1');
+                Http::redirect(DC_ADMIN_URL . 'post.php?id=' . $id . '&del=1&upd=1');
             } catch (Exception $e) {
                 dcCore::app()->error->add($e->getMessage());
             }
@@ -132,7 +132,7 @@ class Backend extends dcNsProcess
             }
             $combo[
                 str_repeat('&nbsp;', ($categories->level - 1) * 4) .
-                html::escapeHTML($categories->cat_title) . ' (' . dcCore::app()->admin->counter->f(0) . ')'
+                Html::escapeHTML($categories->cat_title) . ' (' . dcCore::app()->admin->counter->f(0) . ')'
             ] = $categories->cat_id;
         }
 

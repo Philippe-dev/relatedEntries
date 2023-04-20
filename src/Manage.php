@@ -20,8 +20,8 @@ use adminUserPref;
 use dcPage;
 use Exception;
 use form;
-use html;
-use http;
+use Dotclear\Helper\Html\Html;
+use Dotclear\Helper\Network\Http;
 use dcMedia;
 use adminPostList;
 use adminPostFilter;
@@ -61,7 +61,7 @@ class Manage extends dcNsProcess
                 $settings->put('relatedEntries_images_options', serialize($opts), 'string', 'Related entries images options', false, true);
 
                 dcCore::app()->blog->triggerBlog();
-                http::redirect(dcCore::app()->admin->getPageURL());
+                Http::redirect(dcCore::app()->admin->getPageURL());
             } catch (Exception $e) {
                 dcCore::app()->error->add($e->getMessage());
             }
@@ -154,7 +154,7 @@ class Manage extends dcNsProcess
         // Saving configurations
         if (isset($_POST['save'])) {
             dcCore::app()->admin->settings->put('relatedEntries_enabled', !empty($_POST['relatedEntries_enabled']));
-            dcCore::app()->admin->settings->put('relatedEntries_title', html::escapeHTML($_POST['relatedEntries_title']));
+            dcCore::app()->admin->settings->put('relatedEntries_title', Html::escapeHTML($_POST['relatedEntries_title']));
             dcCore::app()->admin->settings->put('relatedEntries_beforePost', !empty($_POST['relatedEntries_beforePost']));
             dcCore::app()->admin->settings->put('relatedEntries_afterPost', !empty($_POST['relatedEntries_afterPost']));
             dcCore::app()->admin->settings->put('relatedEntries_images', !empty($_POST['relatedEntries_images']));
@@ -177,7 +177,7 @@ class Manage extends dcNsProcess
             dcCore::app()->admin->settings->put('relatedEntries_images_options', serialize($opts));
 
             dcCore::app()->blog->triggerBlog();
-            http::redirect(dcCore::app()->admin->getPageURL() . '&upd=1');
+            Http::redirect(dcCore::app()->admin->getPageURL() . '&upd=1');
         }
 
         if (isset($_POST['entries'])) {
@@ -203,7 +203,7 @@ class Manage extends dcNsProcess
                         }
                     }
 
-                    http::redirect(DC_ADMIN_URL . 'post.php?id=' . $id . '&add=1&upd=1');
+                    Http::redirect(DC_ADMIN_URL . 'post.php?id=' . $id . '&add=1&upd=1');
                 } catch (Exception $e) {
                     dcCore::app()->error->add($e->getMessage());
                 }
@@ -228,7 +228,7 @@ class Manage extends dcNsProcess
                         }
                     }
 
-                    http::redirect(dcCore::app()->admin->getPageURL() . '&upd=2&tab=postslist');
+                    Http::redirect(dcCore::app()->admin->getPageURL() . '&upd=2&tab=postslist');
                 } catch (Exception $e) {
                     dcCore::app()->error->add($e->getMessage());
                 }
@@ -299,7 +299,7 @@ class Manage extends dcNsProcess
 
             echo dcPage::breadcrumb(
                 [
-                    html::escapeHTML(dcCore::app()->blog->name) => '',
+                    Html::escapeHTML(dcCore::app()->blog->name) => '',
                     __('Related posts')                         => dcCore::app()->admin->getPageURL(),
                     dcCore::app()->admin->page_title            => '',
                 ]
@@ -368,7 +368,7 @@ class Manage extends dcNsProcess
 
             echo dcPage::breadcrumb(
                 [
-                    html::escapeHTML(dcCore::app()->blog->name) => '',
+                    Html::escapeHTML(dcCore::app()->blog->name) => '',
                     __('Related posts')                         => '',
                 ]
             );
@@ -393,7 +393,7 @@ class Manage extends dcNsProcess
             '</div>' .
             '<div class="fieldset"><h3>' . __('Display options') . '</h3>' .
                 '<p class="field"><label class="maximal" for="relatedEntries_title">' . __('Block title:') . '&nbsp;' .
-                form::field('relatedEntries_title', 40, 255, html::escapeHTML(dcCore::app()->admin->settings->relatedEntries_title)) .
+                form::field('relatedEntries_title', 40, 255, Html::escapeHTML(dcCore::app()->admin->settings->relatedEntries_title)) .
                 '</label></p>' .
                 '<p><label class="classic" for="relatedEntries_beforePost">' .
                 form::checkbox('relatedEntries_beforePost', '1', dcCore::app()->admin->settings->relatedEntries_beforePost) .
