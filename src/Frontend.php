@@ -61,31 +61,17 @@ class Frontend extends dcNsProcess
 
     public static function publicEntryBeforeContent()
     {
-        // Settings
-
-        $s = dcCore::app()->blog->settings->relatedEntries;
-
-        if (!$s->relatedEntries_enabled) {
-            return;
+        if (dcCore::app()->blog->settings->relatedEntries->relatedEntries_enabled
+         && dcCore::app()->blog->settings->relatedEntries->relatedEntries_beforePost) {
+            return FrontendTemplates::relatedEntriesHtml();
         }
-        if (!$s->relatedEntries_beforePost) {
-            return;
-        }
-        return FrontendTemplates::relatedEntriesHtml();
     }
 
     public static function publicEntryAfterContent()
     {
-        // Settings
-
-        $s = dcCore::app()->blog->settings->relatedEntries;
-
-        if (!$s->relatedEntries_enabled) {
-            return;
+        if (dcCore::app()->blog->settings->relatedEntries->relatedEntries_enabled
+         && dcCore::app()->blog->settings->relatedEntries->relatedEntries_afterPost) {
+            return FrontendTemplates::relatedEntriesHtml();
         }
-        if (!$s->relatedEntries_afterPost) {
-            return;
-        }
-        return FrontendTemplates::relatedEntriesHtml();
     }
 }
