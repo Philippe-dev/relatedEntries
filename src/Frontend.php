@@ -63,7 +63,7 @@ class Frontend extends dcNsProcess
     {
         if (dcCore::app()->blog->settings->relatedEntries->relatedEntries_enabled
          && dcCore::app()->blog->settings->relatedEntries->relatedEntries_beforePost) {
-            return FrontendTemplates::relatedEntriesHtml();
+            return FrontendTemplates::htmlBlock();
         }
     }
 
@@ -71,7 +71,7 @@ class Frontend extends dcNsProcess
     {
         if (dcCore::app()->blog->settings->relatedEntries->relatedEntries_enabled
          && dcCore::app()->blog->settings->relatedEntries->relatedEntries_afterPost) {
-            return FrontendTemplates::relatedEntriesHtml();
+            return FrontendTemplates::htmlBlock();
         }
     }
 }

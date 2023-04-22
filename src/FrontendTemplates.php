@@ -99,7 +99,7 @@ class FrontendTemplates
      *
      * @return     string
      */
-    public static function relatedEntriesHtml()
+    public static function htmlBlock()
     {
         $s       = dcCore::app()->blog->settings->relatedEntries;
         $meta    = dcCore::app()->meta;
