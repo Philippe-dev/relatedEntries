@@ -182,7 +182,7 @@ class Backend extends dcNsProcess
         '</script>' .
         '<style type="text/css">' . "\n" .
         'a.links-remove {' . "\n" .
-        'color : #ae323b;' . "\n" .
+        'color : #c44d58;' . "\n" .
         '}' . "\n" .
         '</style>';
     }
@@ -209,6 +209,7 @@ class Backend extends dcNsProcess
             echo
                 '<div class="area" id="relatedEntries-area">' .
                 '<label class="bold" for="relatedEntries-list">' . __('Related entries:') . '</label>' .
+                '<span class="form-note">' . __('Links to related posts.') . '</span>' .
                 '<div id="relatedEntries-list" >' .
                 '<p>' . __('No related posts') . '</p>' .
                 '<p><a href="' . DC_ADMIN_URL . 'plugin.php?p=relatedEntries&amp;id=' . $id . '&amp;upd=1&amp;addlinks=1">' . __('Add links to related posts') . '</a></p>' .
@@ -218,6 +219,7 @@ class Backend extends dcNsProcess
             echo
                 '<div class="area" id="relatedEntries-area">' .
                 '<label class="bold" for="relatedEntries-list">' . __('Related entries:') . '</label>' .
+                '<span class="form-note">' . __('Links to related posts.') . '</span>' .
                 '<div id="relatedEntries-list" >';
 
             // Get related posts
