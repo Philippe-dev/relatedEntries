@@ -184,6 +184,9 @@ class Backend extends dcNsProcess
         'a.links-remove {' . "\n" .
         'color : #c44d58;' . "\n" .
         '}' . "\n" .
+        '.add {' . "\n" .
+            'font-size : 1.5rem;' . "\n" .
+            '}' . "\n" .
         '</style>';
     }
 
@@ -244,7 +247,7 @@ class Backend extends dcNsProcess
                 '</div>';
             echo
 
-            '<p class="two-boxes"><a href="' . DC_ADMIN_URL . 'plugin.php?p=relatedEntries&amp;id=' . $id . '&amp;addlinks=1"><strong>' . __('Add links') . '</strong></a></p>' .
+            '<p class="two-boxes add"><a href="' . DC_ADMIN_URL . 'plugin.php?p=relatedEntries&amp;id=' . $id . '&amp;addlinks=1"><strong>' . __('Add links') . '</strong></a></p>' .
             '<p class="two-boxes right"><a class="links-remove delete" href="' . DC_ADMIN_URL . 'plugin.php?p=relatedEntries&amp;id=' . $id . '&amp;r_id=' . $meta_rs . '&upd=1">' . __('Remove all links') . '</a></p>' .
 
             form::hidden(['relatedEntries'], $meta_rs) .
