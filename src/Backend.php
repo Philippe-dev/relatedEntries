@@ -212,7 +212,7 @@ class Backend extends dcNsProcess
                 '<span class="form-note">' . __('Links to related posts.') . '</span>' .
                 '<div id="relatedEntries-list" >' .
                 '<p>' . __('No related posts') . '</p>' .
-                '<p><a href="' . DC_ADMIN_URL . 'plugin.php?p=relatedEntries&amp;id=' . $id . '&amp;upd=1&amp;addlinks=1">' . __('Add links to related posts') . '</a></p>' .
+                '<p><a href="' . DC_ADMIN_URL . 'plugin.php?p=relatedEntries&amp;id=' . $id . '&amp;upd=1&amp;addlinks=1">' . __('Add links') . '</a></p>' .
                 '</div>' .
                 '</div>';
         } else {
