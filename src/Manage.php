@@ -386,7 +386,7 @@ class Manage extends dcNsProcess
                 dcPage::success(__('Links have been successfully removed'));
             }
 
-            $as = unserialize($settings->relatedEntries_images_options);
+            $images = unserialize($settings->relatedEntries_images_options);
 
             // Config tab
 
@@ -424,7 +424,7 @@ class Manage extends dcNsProcess
                 form::combo(
                     'from',
                     dcCore::app()->admin->from_combo,
-                    ($as['from'] != '' ? $as['from'] : 'image')
+                    ($images['from'] != '' ? $images['from'] : 'image')
                 ) .
                 '</p>' .
 
@@ -432,28 +432,28 @@ class Manage extends dcNsProcess
                 form::combo(
                     'size',
                     dcCore::app()->admin->img_size_combo,
-                    ($as['size'] != '' ? $as['size'] : 't')
+                    ($images['size'] != '' ? $images['size'] : 't')
                 ) .
                 '</p>' .
 
                 '<p><label for="img_dim">' .
-                form::checkbox('img_dim', '1', $as['img_dim']) .
+                form::checkbox('img_dim', '1', $images['img_dim']) .
                 __('Include images dimensions') . '</label></p>' .
 
                 '<p><label for="alt">' . __('Images alt attribute:') . '</label>' .
                 form::combo(
                     'alt',
                     dcCore::app()->admin->alt_combo,
-                    ($as['alt'] != '' ? $as['alt'] : 'inherit')
+                    ($images['alt'] != '' ? $images['alt'] : 'inherit')
                 ) .
                 '</p>' .
 
                 '<p><label for="start">' . __('First image to extract:') . '</label>' .
-                    form::field('start', 3, 3, $as['start']) .
+                    form::field('start', 3, 3, $images['start']) .
                 '</p>' .
 
                 '<p><label for="length">' . __('Number of images to extract:') . '</label>' .
-                    form::field('length', 3, 3, $as['length']) .
+                    form::field('length', 3, 3, $images['length']) .
                 '</p>' .
 
                 '</div><div class="two-boxes even">' .
@@ -462,7 +462,7 @@ class Manage extends dcNsProcess
                 form::combo(
                     'legend',
                     dcCore::app()->admin->legend_combo,
-                    ($as['legend'] != '' ? $as['legend'] : 'none')
+                    ($images['legend'] != '' ? $images['legend'] : 'none')
                 ) .
                 '</p>' .
 
@@ -470,19 +470,19 @@ class Manage extends dcNsProcess
                 form::combo(
                     'html_tag',
                     dcCore::app()->admin->html_tag_combo,
-                    ($as['html_tag'] != '' ? $as['html_tag'] : 'div')
+                    ($images['html_tag'] != '' ? $images['html_tag'] : 'div')
                 ) .
                 '</p>' .
 
                 '<p><label for="class">' . __('CSS class on images:') . '</label>' .
-                    form::field('class', 10, 10, $as['class']) .
+                    form::field('class', 10, 10, $images['class']) .
                 '</p>' .
 
                 '<p><label for="link">' . __('Links destination:') . '</label>' .
                 form::combo(
                     'link',
                     dcCore::app()->admin->link_combo,
-                    ($as['link'] != '' ? $as['link'] : 'entry')
+                    ($images['link'] != '' ? $images['link'] : 'entry')
                 ) .
                 '</p>' .
 
@@ -490,7 +490,7 @@ class Manage extends dcNsProcess
                 form::combo(
                     'bubble',
                     dcCore::app()->admin->bubble_combo,
-                    ($as['bubble'] != '' ? $as['bubble'] : 'image')
+                    ($images['bubble'] != '' ? $images['bubble'] : 'image')
                 ) .
                 '</p>' .
 
