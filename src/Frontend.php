@@ -47,9 +47,9 @@ class Frontend extends dcNsProcess
     {
         // Settings
 
-        $s = dcCore::app()->blog->settings->relatedEntries;
+        $settings = dcCore::app()->blog->settings->relatedEntries;
 
-        if (!$s->relatedEntries_enabled) {
+        if (!$settings->relatedEntries_enabled) {
             return;
         }
 
@@ -61,18 +61,18 @@ class Frontend extends dcNsProcess
 
     public static function publicEntryBeforeContent()
     {
-        $s = dcCore::app()->blog->settings->relatedEntries;
+        $settings = dcCore::app()->blog->settings->relatedEntries;
 
-        if ($s->relatedEntries_enabled && $s->relatedEntries_beforePost) {
+        if ($settings->relatedEntries_enabled && $settings->relatedEntries_beforePost) {
             return FrontendTemplates::htmlBlock();
         }
     }
 
     public static function publicEntryAfterContent()
     {
-        $s = dcCore::app()->blog->settings->relatedEntries;
+        $settings = dcCore::app()->blog->settings->relatedEntries;
 
-        if ($s->relatedEntries_enabled && $s->relatedEntries_afterPost) {
+        if ($settings->relatedEntries_enabled && $settings->relatedEntries_afterPost) {
             return FrontendTemplates::htmlBlock();
         }
     }

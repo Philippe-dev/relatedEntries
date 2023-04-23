@@ -152,9 +152,9 @@ class Backend extends dcNsProcess
 
     public static function postHeaders(): string
     {
-        $s = dcCore::app()->blog->settings->relatedEntries;
+        $settings = dcCore::app()->blog->settings->relatedEntries;
 
-        if (!$s->relatedEntries_enabled) {
+        if (!$settings->relatedEntries_enabled) {
             return false;
         }
 
@@ -189,11 +189,11 @@ class Backend extends dcNsProcess
 
     public static function adminPostForm($post)
     {
-        $s = dcCore::app()->blog->settings->relatedEntries;
+        $settings = dcCore::app()->blog->settings->relatedEntries;
 
         $postTypes = ['post'];
 
-        if (!$s->relatedEntries_enabled) {
+        if (!$settings->relatedEntries_enabled) {
             return;
         }
         if (is_null($post) || !in_array($post->post_type, $postTypes)) {

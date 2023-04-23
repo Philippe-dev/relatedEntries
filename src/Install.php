@@ -35,13 +35,13 @@ class Install extends dcNsProcess
             return false;
         }
 
-        $s = dcCore::app()->blog->settings->relatedEntries;
+        $settings = dcCore::app()->blog->settings->relatedEntries;
 
-        $s->put('relatedEntries_enabled', false, 'boolean', 'Enable related entries', false, true);
-        $s->put('relatedEntries_images', false, 'boolean', 'Display related entries links as images', false, true);
-        $s->put('relatedEntries_beforePost', false, 'boolean', 'Display related entries before post content', false, true);
-        $s->put('relatedEntries_afterPost', true, 'boolean', 'Display related entries after post content', false, true);
-        $s->put('relatedEntries_title', __('Related posts'), 'string', 'Related entries block title', false, true);
+        $settings->put('relatedEntries_enabled', false, 'boolean', 'Enable related entries', false, true);
+        $settings->put('relatedEntries_images', false, 'boolean', 'Display related entries links as images', false, true);
+        $settings->put('relatedEntries_beforePost', false, 'boolean', 'Display related entries before post content', false, true);
+        $settings->put('relatedEntries_afterPost', true, 'boolean', 'Display related entries after post content', false, true);
+        $settings->put('relatedEntries_title', __('Related posts'), 'string', 'Related entries block title', false, true);
 
         $opts = [
             'size'     => 't',
@@ -58,7 +58,7 @@ class Install extends dcNsProcess
             'img_dim'  => 0,
         ];
 
-        $s->put('relatedEntries_images_options', serialize($opts), 'string', 'Related entries images options', false, true);
+        $settings->put('relatedEntries_images_options', serialize($opts), 'string', 'Related entries images options', false, true);
 
         return true;
     }

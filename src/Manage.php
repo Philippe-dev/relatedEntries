@@ -36,13 +36,13 @@ class Manage extends dcNsProcess
         if (is_null(dcCore::app()->blog->settings->relatedEntries->relatedEntries_enabled)) {
             try {
                 // Add default settings values if necessary
-                $s = dcCore::app()->blog->settings->relatedEntries;
+                $settings = dcCore::app()->blog->settings->relatedEntries;
 
-                $s->put('relatedEntries_enabled', false, 'boolean', 'Enable related entries', false, true);
-                $s->put('relatedEntries_images', false, 'boolean', 'Display related entries links as images', false, true);
-                $s->put('relatedEntries_beforePost', false, 'boolean', 'Display related entries before post content', false, true);
-                $s->put('relatedEntries_afterPost', true, 'boolean', 'Display related entries after post content', false, true);
-                $s->put('relatedEntries_title', __('Related posts'), 'string', 'Related entries block title', false, true);
+                $settings->put('relatedEntries_enabled', false, 'boolean', 'Enable related entries', false, true);
+                $settings->put('relatedEntries_images', false, 'boolean', 'Display related entries links as images', false, true);
+                $settings->put('relatedEntries_beforePost', false, 'boolean', 'Display related entries before post content', false, true);
+                $settings->put('relatedEntries_afterPost', true, 'boolean', 'Display related entries after post content', false, true);
+                $settings->put('relatedEntries_title', __('Related posts'), 'string', 'Related entries block title', false, true);
 
                 $opts = [
                     'size'     => 't',
@@ -59,7 +59,7 @@ class Manage extends dcNsProcess
                     'img_dim'  => 0,
                 ];
 
-                $s->put('relatedEntries_images_options', serialize($opts), 'string', 'Related entries images options', false, true);
+                $settings->put('relatedEntries_images_options', serialize($opts), 'string', 'Related entries images options', false, true);
 
                 dcCore::app()->blog->triggerBlog();
                 Http::redirect(dcCore::app()->admin->getPageURL());
@@ -150,15 +150,15 @@ class Manage extends dcNsProcess
         dcCore::app()->admin->html_tag_combo = $html_tag_combo;
         dcCore::app()->admin->link_combo     = $link_combo;
         dcCore::app()->admin->bubble_combo   = $bubble_combo;
-        dcCore::app()->admin->settings       = $settings;
+        
 
         // Saving configurations
         if (isset($_POST['save'])) {
-            dcCore::app()->admin->settings->put('relatedEntries_enabled', !empty($_POST['relatedEntries_enabled']));
-            dcCore::app()->admin->settings->put('relatedEntries_title', Html::escapeHTML($_POST['relatedEntries_title']));
-            dcCore::app()->admin->settings->put('relatedEntries_beforePost', !empty($_POST['relatedEntries_beforePost']));
-            dcCore::app()->admin->settings->put('relatedEntries_afterPost', !empty($_POST['relatedEntries_afterPost']));
-            dcCore::app()->admin->settings->put('relatedEntries_images', !empty($_POST['relatedEntries_images']));
+            $settings->put('relatedEntries_enabled', !empty($_POST['relatedEntries_enabled']));
+            $settings->put('relatedEntries_title', Html::escapeHTML($_POST['relatedEntries_title']));
+            $settings->put('relatedEntries_beforePost', !empty($_POST['relatedEntries_beforePost']));
+            $settings->put('relatedEntries_afterPost', !empty($_POST['relatedEntries_afterPost']));
+            $settings->put('relatedEntries_images', !empty($_POST['relatedEntries_images']));
 
             $opts = [
                 'size'     => !empty($_POST['size']) ? $_POST['size'] : 't',
@@ -175,7 +175,7 @@ class Manage extends dcNsProcess
                 'img_dim'  => !empty($_POST['img_dim']) ? $_POST['img_dim'] : 0,
             ];
 
-            dcCore::app()->admin->settings->put('relatedEntries_images_options', serialize($opts));
+            $settings->put('relatedEntries_images_options', serialize($opts));
 
             dcCore::app()->blog->triggerBlog();
             Http::redirect(dcCore::app()->admin->getPageURL() . '&upd=1');
@@ -247,6 +247,8 @@ class Manage extends dcNsProcess
         if (!self::$init) {
             return;
         }
+
+        $settings = dcCore::app()->blog->settings->relatedEntries;
 
         // Filters
         dcCore::app()->admin->post_filter = new adminPostFilter();
@@ -384,7 +386,7 @@ class Manage extends dcNsProcess
                 dcPage::success(__('Links have been successfully removed'));
             }
 
-            $as = unserialize(dcCore::app()->admin->settings->relatedEntries_images_options);
+            $as = unserialize($settings->relatedEntries_images_options);
 
             // Config tab
 
@@ -393,18 +395,18 @@ class Manage extends dcNsProcess
             '<form action="' . dcCore::app()->admin->getPageURL() . '" method="post" id="config-form">' .
             '<div class="fieldset"><h3>' . __('Activation') . '</h3>' .
                 '<p><label class="classic" for="relatedEntries_enabled">' .
-                form::checkbox('relatedEntries_enabled', '1', dcCore::app()->admin->settings->relatedEntries_enabled) .
+                form::checkbox('relatedEntries_enabled', '1', $settings->relatedEntries_enabled) .
                 __('Enable related posts on this blog') . '</label></p>' .
             '</div>' .
             '<div class="fieldset"><h3>' . __('Display options') . '</h3>' .
                 '<p class="field"><label class="maximal" for="relatedEntries_title">' . __('Block title:') . '&nbsp;' .
-                form::field('relatedEntries_title', 40, 255, Html::escapeHTML(dcCore::app()->admin->settings->relatedEntries_title)) .
+                form::field('relatedEntries_title', 40, 255, Html::escapeHTML($settings->relatedEntries_title)) .
                 '</label></p>' .
                 '<p><label class="classic" for="relatedEntries_beforePost">' .
-                form::checkbox('relatedEntries_beforePost', '1', dcCore::app()->admin->settings->relatedEntries_beforePost) .
+                form::checkbox('relatedEntries_beforePost', '1', $settings->relatedEntries_beforePost) .
                 __('Display block before post content') . '</label></p>' .
                 '<p><label class="classic" for="relatedEntries_afterPost">' .
-                form::checkbox('relatedEntries_afterPost', '1', dcCore::app()->admin->settings->relatedEntries_afterPost) .
+                form::checkbox('relatedEntries_afterPost', '1', $settings->relatedEntries_afterPost) .
                 __('Display block after post content') . '</label></p>' .
                 '<p class="form-note info clear">' . __('Uncheck both boxes to use only the presentation widget.') . '</p>' .
             '</div>' .
@@ -413,7 +415,7 @@ class Manage extends dcNsProcess
             if (dcCore::app()->plugins->moduleExists('listImages')) {
                 echo
                 '<p><label class="classic" for="relatedEntries_images">' .
-                form::checkbox('relatedEntries_images', '1', dcCore::app()->admin->settings->relatedEntries_images) .
+                form::checkbox('relatedEntries_images', '1', $settings->relatedEntries_images) .
                 __('Extract images from related posts') . '</label></p>' .
 
                 '<div class="two-boxes odd">' .
