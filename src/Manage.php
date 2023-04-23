@@ -290,10 +290,11 @@ class Manage extends dcNsProcess
                 dcCore::app()->error->add($e->getMessage());
             }
 
-            $head = dcPage::jsLoad('js/_posts_list.js') .
-            dcCore::app()->admin->post_filter->js(dcCore::app()->admin->getPageURL() . '&amp;id=' . $post_id . '&amp;addlinks=1');
-
-            dcPage::openModule(__('Related entries'), $head);
+            dcPage::openModule(
+                __('Related entries'),
+                dcPage::jsLoad('js/_posts_list.js') .
+                dcCore::app()->admin->post_filter->js(dcCore::app()->admin->getPageURL() . '&amp;id=' . $post_id . '&amp;addlinks=1')
+            );
 
             dcCore::app()->admin->page_title = __('Add links to related posts');
 
@@ -303,7 +304,8 @@ class Manage extends dcNsProcess
                     __('Related posts')                         => dcCore::app()->admin->getPageURL(),
                     dcCore::app()->admin->page_title            => '',
                 ]
-            );
+            ) .
+            dcPage::notices();
 
             if (!dcCore::app()->error->flag()) {
                 echo '<h3>' . __('Select posts related to entry:') . ' <a href="' . dcCore::app()->getPostAdminURL($post_type, $post_id) . '">' . $post_title . '</a></h3>';
@@ -359,19 +361,21 @@ class Manage extends dcNsProcess
                 dcCore::app()->error->add($e->getMessage());
             }
 
-            $head = dcPage::jsLoad('js/_posts_list.js') .
-            dcCore::app()->admin->post_filter->js(dcCore::app()->admin->getPageURL() . '#postslist') .
-            dcPage::jsPageTabs(dcCore::app()->admin->default_tab) .
-            dcPage::jsConfirmClose('config-form');
-
-            dcPage::openModule(__('Related entries'), $head);
+            dcPage::openModule(
+                __('Related entries'),
+                dcPage::jsLoad('js/_posts_list.js') .
+                dcCore::app()->admin->post_filter->js(dcCore::app()->admin->getPageURL() . '#postslist') .
+                dcPage::jsPageTabs(dcCore::app()->admin->default_tab) .
+                dcPage::jsConfirmClose('config-form')
+            );
 
             echo dcPage::breadcrumb(
                 [
                     Html::escapeHTML(dcCore::app()->blog->name) => '',
                     __('Related posts')                         => '',
                 ]
-            );
+            ) .
+            dcPage::notices();
 
             if (isset($_GET['upd']) && $_GET['upd'] == 1) {
                 dcPage::success(__('Configuration successfully saved'));
