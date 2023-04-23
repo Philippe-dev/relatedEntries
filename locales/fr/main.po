@@ -3,7 +3,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Project-Id-Version: relatedEntries 3.6\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2023-04-23T16:03:25+00:00\n"
+"PO-Revision-Date: 2023-04-23T16:10:08+00:00\n"
 "Last-Translator: Philippe\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -28,8 +28,11 @@ msgstr "Pas de billets connexes"
 msgid "Add links to related posts"
 msgstr "Ajouter des liens vers des billets connexes"
 
-msgid "Remove all links to related posts"
-msgstr "Supprimer tous les liens vers des billets connexes"
+msgid "Add links"
+msgstr "Ajouter des liens"
+
+msgid "Remove all links"
+msgstr "Supprimer tous les liens"
 
 msgid "To get started, edit one of your posts and add links to other related posts in the block Related entries."
 msgstr "Pour commencer, éditez un de vos billets et ajoutez-y des liens vers d'autres billets dans le bloc Billets connexes."
@@ -150,6 +153,9 @@ msgstr "Supprimer tous les liens des billets sélectionnés"
 
 msgid "Related entries to current post"
 msgstr "Billets connexes au billet courant"
+
+msgid "Remove all links to related posts"
+msgstr "Supprimer tous les liens vers des billets connexes"
 
 msgid "Links to related posts:"
 msgstr "Liens vers des billets connexes :"

@@ -182,7 +182,7 @@ class Backend extends dcNsProcess
         '</script>' .
         '<style type="text/css">' . "\n" .
         'a.links-remove {' . "\n" .
-        'color : #900;' . "\n" .
+        'color : #ae323b;' . "\n" .
         '}' . "\n" .
         '</style>';
     }
@@ -242,8 +242,8 @@ class Backend extends dcNsProcess
                 '</div>';
             echo
 
-            '<p class="two-boxes"><a href="' . DC_ADMIN_URL . 'plugin.php?p=relatedEntries&amp;id=' . $id . '&amp;addlinks=1"><strong>' . __('Add links to related posts') . '</strong></a></p>' .
-            '<p class="two-boxes right"><a class="links-remove delete" href="' . DC_ADMIN_URL . 'plugin.php?p=relatedEntries&amp;id=' . $id . '&amp;r_id=' . $meta_rs . '&upd=1">' . __('Remove all links to related posts') . '</a></p>' .
+            '<p class="two-boxes"><a href="' . DC_ADMIN_URL . 'plugin.php?p=relatedEntries&amp;id=' . $id . '&amp;addlinks=1"><strong>' . __('Add links') . '</strong></a></p>' .
+            '<p class="two-boxes right"><a class="links-remove delete" href="' . DC_ADMIN_URL . 'plugin.php?p=relatedEntries&amp;id=' . $id . '&amp;r_id=' . $meta_rs . '&upd=1">' . __('Remove all links') . '</a></p>' .
 
             form::hidden(['relatedEntries'], $meta_rs) .
             '</div>' .

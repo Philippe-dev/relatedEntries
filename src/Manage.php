@@ -299,7 +299,7 @@ class Manage extends dcNsProcess
                 dcCore::app()->admin->post_filter->js(dcCore::app()->admin->getPageURL() . '&amp;id=' . $post_id . '&amp;addlinks=1')
             );
 
-            dcCore::app()->admin->page_title = __('Add links to related posts');
+            dcCore::app()->admin->page_title = __('Add links');
 
             echo dcPage::breadcrumb(
                 [
