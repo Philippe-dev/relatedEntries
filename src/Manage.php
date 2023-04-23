@@ -37,11 +37,11 @@ class Manage extends dcNsProcess
             try {
                 // Add default settings values if necessary
 
-                $settings->put('relatedEntries_enabled', false, 'boolean', 'Enable related entries', false, true);
-                $settings->put('relatedEntries_images', false, 'boolean', 'Display related entries links as images', false, true);
-                $settings->put('relatedEntries_beforePost', false, 'boolean', 'Display related entries before post content', false, true);
-                $settings->put('relatedEntries_afterPost', true, 'boolean', 'Display related entries after post content', false, true);
-                $settings->put('relatedEntries_title', __('Related posts'), 'string', 'Related entries block title', false, true);
+                dcCore::app()->blog->settings->relatedEntries->put('relatedEntries_enabled', false, 'boolean', 'Enable related entries', false, true);
+                dcCore::app()->blog->settings->relatedEntries->put('relatedEntries_images', false, 'boolean', 'Display related entries links as images', false, true);
+                dcCore::app()->blog->settings->relatedEntries->put('relatedEntries_beforePost', false, 'boolean', 'Display related entries before post content', false, true);
+                dcCore::app()->blog->settings->relatedEntries->put('relatedEntries_afterPost', true, 'boolean', 'Display related entries after post content', false, true);
+                dcCore::app()->blog->settings->relatedEntries->put('relatedEntries_title', __('Related posts'), 'string', 'Related entries block title', false, true);
 
                 $opts = [
                     'size'     => 't',
@@ -58,7 +58,7 @@ class Manage extends dcNsProcess
                     'img_dim'  => 0,
                 ];
 
-                $settings->put('relatedEntries_images_options', serialize($opts), 'string', 'Related entries images options', false, true);
+                dcCore::app()->blog->settings->relatedEntries->put('relatedEntries_images_options', serialize($opts), 'string', 'Related entries images options', false, true);
 
                 dcCore::app()->blog->triggerBlog();
                 Http::redirect(dcCore::app()->admin->getPageURL());
