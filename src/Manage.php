@@ -362,20 +362,6 @@ class Manage extends dcNsProcess
                 dcCore::app()->error->add($e->getMessage());
             }
 
-            $head = dcPage::jsLoad('js/_posts_list.js') .
-            dcCore::app()->admin->post_filter->js(dcCore::app()->admin->getPageURL() . '#postslist') .
-            dcPage::jsPageTabs(dcCore::app()->admin->default_tab) .
-            dcPage::jsConfirmClose('config-form');
-
-            dcPage::openModule(__('Related entries'), $head);
-
-            echo dcPage::breadcrumb(
-                [
-                    Html::escapeHTML(dcCore::app()->blog->name) => '',
-                    __('Related posts')                         => '',
-                ]
-            );
-
             dcPage::openModule(
                 __('Related entries'),
                 dcPage::jsLoad('js/_posts_list.js') .
