@@ -1,10 +1,10 @@
 msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
-"Project-Id-Version: relatedEntries 3.2\n"
+"Project-Id-Version: relatedEntries 3.6\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2023-04-14T05:36:31+00:00\n"
-"Last-Translator: Philippe Henaff\n"
+"PO-Revision-Date: 2023-04-23T16:03:25+00:00\n"
+"Last-Translator: Philippe\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -19,8 +19,8 @@ msgstr "Êtes-vous sûr de vouloir supprimer ce lien vers un billet connexe ?"
 msgid "Are you sure you want to remove all links to related posts?"
 msgstr "Êtes-vous sûr de vouloir supprimer tous les liens vers des billets connexes ?"
 
-msgid "Links to related posts:"
-msgstr "Liens vers des billets connexes :"
+msgid "Related entries:"
+msgstr "Billets connexes :"
 
 msgid "No related posts"
 msgstr "Pas de billets connexes"
@@ -30,9 +30,6 @@ msgstr "Ajouter des liens vers des billets connexes"
 
 msgid "Remove all links to related posts"
 msgstr "Supprimer tous les liens vers des billets connexes"
-
-msgid "Number of links"
-msgstr "Nombre de liens"
 
 msgid "To get started, edit one of your posts and add links to other related posts in the block Related entries."
 msgstr "Pour commencer, éditez un de vos billets et ajoutez-y des liens vers d'autres billets dans le bloc Billets connexes."
@@ -78,6 +75,9 @@ msgstr "tout le billet"
 
 msgid "no alt"
 msgstr "pas d'attribut"
+
+msgid "Related entries"
+msgstr "Billets connexes"
 
 msgid "Select posts related to entry:"
 msgstr "Sélectionner les billets connexes au billet :"
@@ -151,11 +151,14 @@ msgstr "Supprimer tous les liens des billets sélectionnés"
 msgid "Related entries to current post"
 msgstr "Billets connexes au billet courant"
 
+msgid "Links to related posts:"
+msgstr "Liens vers des billets connexes :"
+
+msgid "Number of links"
+msgstr "Nombre de liens"
+
 msgid "Add related posts links to entry"
 msgstr "Ajouter des liens vers des billets connexes"
-
-msgid "Related entries"
-msgstr "Billets connexes"
 
 msgid "Add links to other related posts"
 msgstr "Ajouter des liens vers des billets connexes"

@@ -208,7 +208,7 @@ class Backend extends dcNsProcess
         if (!$meta_rs) {
             echo
                 '<div class="area" id="relatedEntries-area">' .
-                '<label class="bold" for="relatedEntries-list">' . __('Links to related posts:') . '</label>' .
+                '<label class="bold" for="relatedEntries-list">' . __('Related entries:') . '</label>' .
                 '<div id="relatedEntries-list" >' .
                 '<p>' . __('No related posts') . '</p>' .
                 '<p><a href="' . DC_ADMIN_URL . 'plugin.php?p=relatedEntries&amp;id=' . $id . '&amp;upd=1&amp;addlinks=1">' . __('Add links to related posts') . '</a></p>' .
@@ -217,7 +217,7 @@ class Backend extends dcNsProcess
         } else {
             echo
                 '<div class="area" id="relatedEntries-area">' .
-                '<label class="bold" for="relatedEntries-list">' . __('Links to related posts:') . '</label>' .
+                '<label class="bold" for="relatedEntries-list">' . __('Related entries:') . '</label>' .
                 '<div id="relatedEntries-list" >';
 
             // Get related posts
