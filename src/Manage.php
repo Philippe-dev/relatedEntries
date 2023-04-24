@@ -341,7 +341,7 @@ class Manage extends dcNsProcess
                 );
             }
 
-            dcPage::helpBlock('relatedEntriesposts');
+            dcPage::helpBlock('posts');
             dcPage::closeModule();
         } else {
             /*
@@ -538,7 +538,7 @@ class Manage extends dcNsProcess
             echo
             '</div>';
 
-            dcPage::helpBlock('relatedEntries');
+            dcPage::helpBlock('config');
             dcPage::closeModule();
         }
     }

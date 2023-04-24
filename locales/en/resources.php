@@ -9,13 +9,12 @@
  *
  * @copyright GPL-2.0 [https://www.gnu.org/licenses/gpl-2.0.html]
  */
-
-if (!isset(dcCore::app()->resources['help']['relatedEntries'])) {
-    dcCore::app()->resources['help']['relatedEntries'] = dirname(__FILE__).'/help/config_help.html';
+if (!isset(dcCore::app()->resources['help']['config'])) {
+    dcCore::app()->resources['help']['config'] = dirname(__FILE__) . '/help/config_help.html';
 }
-if (!isset(dcCore::app()->resources['help']['relatedEntriesposts'])) {
-    dcCore::app()->resources['help']['relatedEntriesposts'] = dirname(__FILE__).'/help/posts_help.html';
+if (!isset(dcCore::app()->resources['help']['posts'])) {
+    dcCore::app()->resources['help']['posts'] = dirname(__FILE__) . '/help/posts_help.html';
 }
-if (!isset(dcCore::app()->resources['help']['relatedEntries_post'])) {
-    dcCore::app()->resources['help']['relatedEntries_post'] = dirname(__FILE__).'/help/relatedEntries_post.html';
+if (!isset(dcCore::app()->resources['help']['post'])) {
+    dcCore::app()->resources['help']['post'] = dirname(__FILE__) . '/help/post_help.html';
 }

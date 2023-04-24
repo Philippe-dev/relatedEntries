@@ -1,73 +1,91 @@
 <html>
-  <head>
-    <title>Configuration de l'extension</title>
-  </head>
-  <body>
-    <h4>Activation</h4>
-    <p>Cocher cette case pour commencer à utiliser l'extension sur le blog courant.</p>
-	<p><em>Note : la désactivation ne supprime pas les liens entre les billets, elle désactive simplement leur affichage en partie publique et dans la page d'édition des billets.</em></p>
-    <h4>Options d'affichage</h4>
+
+<head>
+	<title>Configuration de l'extension</title>
+</head>
+
+<body>
+	<h4>Activation</h4>
+	<p>Cocher cette case pour commencer à utiliser l'extension sur le blog courant.</p>
+	<p><em>Note : la désactivation ne supprime pas les liens entre les billets, elle désactive simplement leur affichage
+			en partie publique et dans la page d'édition des billets.</em></p>
+	<h4>Options d'affichage</h4>
 	<h5>Titre du bloc</h5>
 	<p>Le titre sera affiché avant le bloc contenant les liens. Laisser vide pour ne pas afficher de titre.</p>
 	<h5>Position du bloc</h5>
-	<p>Le bloc sera affiché au-dessus ou au-dessous du contenu des billets. Pour n'utiliser que le widget, décocher les deux cases.</p>
+	<p>Le bloc sera affiché au-dessus ou au-dessous du contenu des billets. Pour n'utiliser que le widget, décocher les
+		deux cases.</p>
 	<h4>Options d'extraction des images</h4>
-	<p><em>Note : toutes les options suivantes nécessitent d'installer l'extension listImages. Les mêmes options d'extraction seront alors aussi disponibles dans le widget de présentation.</em></p>
+	<p><em>Note : toutes les options suivantes nécessitent d'installer l'extension listImages. Les mêmes options
+			d'extraction seront alors aussi disponibles dans le widget de présentation.</em></p>
 	<h5>Extraire les images des billets connexes</h5>
-	<p>Si cette case est cochée, les liens vers les billets connexes seront affichés sous forme d'images extraites des billets. Sinon, les liens seront affichés sous forme d'une simple liste.</p>
+	<p>Si cette case est cochée, les liens vers les billets connexes seront affichés sous forme d'images extraites des
+		billets. Sinon, les liens seront affichés sous forme d'une simple liste.</p>
 	<h5>Origine des images</h5>
 	<p>Les images peuvent provenir de l'extrait du billet, de son contenu, ou du billet complet.</p>
 	<h5>Taille de l'image</h5>
-	<p>Choisir dans la liste la taille des images affichées. Si le format choisi n'est pas présent dans le gestionnaire de médias, l'image sera ignorée.</p>
+	<p>Choisir dans la liste la taille des images affichées. Si le format choisi n'est pas présent dans le gestionnaire
+		de médias, l'image sera ignorée.</p>
 	<h5>Inclure les dimensions des images</h5>
-	<p>Cocher cette case pour ajouter les attributs width et height à la balise img. Cette option ne conviendra pas si votre thème utilise des mediaqueries.</p>
+	<p>Cocher cette case pour ajouter les attributs width et height à la balise img. Cette option ne conviendra pas si
+		votre thème utilise des mediaqueries.</p>
 	<h5>Attribut alt des images</h5>
 	<p>Choisir ou non d'ajouter un attribut alt à la balise img.</p>
 	<h5>Première image à extraire</h5>
-	<p>Choisir ici le numéro d'ordre de la première image extraite du billet. Si cette valeur est supérieure au nombre total d'images dans le billet, aucune image ne sera extraite.</p>
+	<p>Choisir ici le numéro d'ordre de la première image extraite du billet. Si cette valeur est supérieure au nombre
+		total d'images dans le billet, aucune image ne sera extraite.</p>
 	<h5>Nombre d'images à extraire</h5>
-	<p>Choisir ici le nombre d'images à extraire pour chaque billet. Si cette valeur est supérieure au nombre total d'images dans le billet, toutes les images sont extraites.	Si une image ne possède pas de miniature au format demandé elle ne sera pas décomptée.</p>
+	<p>Choisir ici le nombre d'images à extraire pour chaque billet. Si cette valeur est supérieure au nombre total
+		d'images dans le billet, toutes les images sont extraites. Si une image ne possède pas de miniature au format
+		demandé elle ne sera pas décomptée.</p>
 	<h5>Légende</h5>
-	<p>Affiche ou non une légende sous l'image. Cette légende peut contenir le titre du billet ou celui de l'image originale.</p>
+	<p>Affiche ou non une légende sous l'image. Cette légende peut contenir le titre du billet ou celui de l'image
+		originale.</p>
 	<h5>Balise HTML</h5>
-	<p>Choisir la balise HTML englobant les images. Valeurs possibles : li (élément de liste), div (boîte), none (aucune balise).</p>
+	<p>Choisir la balise HTML englobant les images. Valeurs possibles : li (élément de liste), div (boîte), none (aucune
+		balise).</p>
 	<p>Un attribut CSS "portrait" ou "landscape" sera ajouté à cette balise en fonction du sens de l'image.</p>
 	<h5>Classe CSS</h5>
 	<p>Entrer ici une valeur pour ajouter un attribut class à la balise img.</p>
 	<h5>Destination des liens</h5>
 	<p>Les liens peuvent pointer vers le billet ou vers l'image originale. Il peut aussi ne pas y avoir de liens.</p>
 	<h5>Infobulle</h5>
-	<p>Affiche ou non une infobulle au passage de la souris sur l'image. Cette infobulle peut contenir le titre du billet ou celui de l'image originale.</p>
+	<p>Affiche ou non une infobulle au passage de la souris sur l'image. Cette infobulle peut contenir le titre du
+		billet ou celui de l'image originale.</p>
 	<h4>Filtres de la liste des billets</h4>
 	<dl>
-	<dt>Auteur</dt>
-	<dd>Permet de filtrer les billets par auteur.</dd> 
-	<dt>Catégorie</dt>
-	<dd>Filtrer les billets par catégorie.</dd>
-	<dt>État</dt>
-	<dd>
-	<ul>
-	<li><strong>en attente</strong>&nbsp;: en attente de publication.</li>
-	<li><strong>programmé</strong>&nbsp;: le billet sera mis en ligne aux date et heure indiquées dans le champ <em>Publié le</em>.</li>
-	<li><strong>non publié</strong>&nbsp;: billet hors ligne.</li>
-	<li><strong>publié</strong>&nbsp;: billet en ligne.</li>
-	</ul>
-	</dd>
-	<dt>Sélectionné</dt>
-	<dd>Aucun, billet marqué comme sélectionné ou non sélectionné.</dd>
-	<dt>Mois</dt>
-	<dd>Filtre les billets d'un mois d'une année donné.</dd>
-	<dt>Langue</dt>
-	<dd>Filtre les billets selon la langue indiquée dans le champ langue du  billet.</dd>
-	<dt>Trier par</dt>
-	<dd>Permet de trier les résultats de filtrage selon la date, le titre,  la catégorie, l'auteur, l'état de publication ou l'état de sélection.</dd>
-	<dt>Ordre</dt>
-	<dd>Indique l'ordre dans lequel on souhaite effectuer le tri.</dd>
-	<dt>Billets par page</dt>
-	<dd>Nombre de billets à afficher par page de résultat.</dd>
+		<dt>Auteur</dt>
+		<dd>Permet de filtrer les billets par auteur.</dd>
+		<dt>Catégorie</dt>
+		<dd>Filtrer les billets par catégorie.</dd>
+		<dt>État</dt>
+		<dd>
+			<ul>
+				<li><strong>en attente</strong>&nbsp;: en attente de publication.</li>
+				<li><strong>programmé</strong>&nbsp;: le billet sera mis en ligne aux date et heure indiquées dans le
+					champ <em>Publié le</em>.</li>
+				<li><strong>non publié</strong>&nbsp;: billet hors ligne.</li>
+				<li><strong>publié</strong>&nbsp;: billet en ligne.</li>
+			</ul>
+		</dd>
+		<dt>Sélectionné</dt>
+		<dd>Aucun, billet marqué comme sélectionné ou non sélectionné.</dd>
+		<dt>Mois</dt>
+		<dd>Filtre les billets d'un mois d'une année donné.</dd>
+		<dt>Langue</dt>
+		<dd>Filtre les billets selon la langue indiquée dans le champ langue du billet.</dd>
+		<dt>Trier par</dt>
+		<dd>Permet de trier les résultats de filtrage selon la date, le titre, la catégorie, l'auteur, l'état de
+			publication ou l'état de sélection.</dd>
+		<dt>Ordre</dt>
+		<dd>Indique l'ordre dans lequel on souhaite effectuer le tri.</dd>
+		<dt>Billets par page</dt>
+		<dd>Nombre de billets à afficher par page de résultat.</dd>
 	</dl>
 	<h4>Action par lot sur les billets</h4>
 	<p>Il est possible de supprimer la totalité des liens pour un ou plusieurs billets.</p>
-	<p>Si vous souhaitez ne supprimer qu'un seul lien d'un billet à un autre, allez dans la page d'édition de l'un des deux billets.</p>
-	</body>
+	<p>Si vous souhaitez ne supprimer qu'un seul lien d'un billet à un autre, allez dans la page d'édition de l'un des
+		deux billets.</p>
+</body>
+
 </html>

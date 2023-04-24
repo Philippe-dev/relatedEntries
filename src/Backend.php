@@ -146,7 +146,7 @@ class Backend extends dcNsProcess
     public static function adminPageHelpBlock(ArrayObject $blocks): void
     {
         if (array_search('core_post', $blocks->getArrayCopy(), true) !== false) {
-            $blocks->append('relatedEntries_post');
+            $blocks->append('post');
         }
     }
 
