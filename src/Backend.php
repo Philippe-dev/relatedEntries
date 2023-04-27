@@ -155,7 +155,7 @@ class Backend extends dcNsProcess
         $settings = dcCore::app()->blog->settings->relatedEntries;
 
         if (!$settings->relatedEntries_enabled) {
-            return false;
+            return null;
         }
 
         return
