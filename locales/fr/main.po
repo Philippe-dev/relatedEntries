@@ -34,8 +34,8 @@ msgstr "Ajouter des liens"
 msgid "Remove all links"
 msgstr "Supprimer tous les liens"
 
-msgid "To get started, edit one of your posts and add links to other related posts below the <em>Notes</em> field."
-msgstr "Pour commencer, éditez un billet et ajoutez-y, sous le champ <em>Notes</em>, des liens vers d'autres billets."
+msgid "To get started, edit one of your posts and add links to other related posts below the <em>Personal notes</em> field."
+msgstr "Pour commencer, éditez un billet et ajoutez-y, sous le champ <em>Notes personnelles</em>, des liens vers d'autres billets."
 
 msgid "Legend:"
 msgstr "Légende :"
