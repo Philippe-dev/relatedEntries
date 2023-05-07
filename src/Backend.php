@@ -158,6 +158,10 @@ class Backend extends dcNsProcess
             return '';
         }
 
+        if (isset($_GET['p'])) {
+            return '';
+        }
+
         return
         '<script>' . "\n" .
         '$(document).ready(function() {' . "\n" .
