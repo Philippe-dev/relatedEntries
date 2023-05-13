@@ -94,7 +94,7 @@ class Backend extends dcNsProcess
 
     public static function adminPostFilter(ArrayObject $filters)
     {
-        if (My::url() === 'plugin.php?p=relatedEntries') {
+        if (My::url() === dcCore::app()->adminurl->get('admin.plugin.' . My::id())) {
             $categories = null;
 
             try {
