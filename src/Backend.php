@@ -116,7 +116,7 @@ class Backend extends dcNsProcess
             return null;
         }
 
-        $combo = [
+        $my_categories_combo = [
             '-'            => '',
             __('(No cat)') => 'NULL',
         ];
@@ -130,7 +130,7 @@ class Backend extends dcNsProcess
             } catch (Exception $e) {
                 dcCore::app()->error->add($e->getMessage());
             }
-            $combo[
+            $my_categories_combo[
                 str_repeat('&nbsp;', ($categories->level - 1) * 4) .
                 Html::escapeHTML($categories->cat_title) . ' (' . dcCore::app()->admin->counter->f(0) . ')'
             ] = $categories->cat_id;
@@ -139,7 +139,7 @@ class Backend extends dcNsProcess
         $filters->append((new dcAdminFilter('cat_id'))
             ->param()
             ->title(__('Category:'))
-            ->options($combo)
+            ->options($my_categories_combo)
             ->prime(true));
     }
 
