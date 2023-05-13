@@ -22,14 +22,14 @@ class Frontend extends dcNsProcess
 {
     public static function init(): bool
     {
-        self::$init = defined('DC_RC_PATH');
+        static::$init = My::checkContext(My::FRONTEND);
 
-        return self::$init;
+        return static::$init;
     }
 
     public static function process(): bool
     {
-        if (!self::$init) {
+        if (!static::$init) {
             return false;
         }
 
@@ -47,7 +47,7 @@ class Frontend extends dcNsProcess
     {
         // Settings
 
-        $settings = dcCore::app()->blog->settings->relatedEntries;
+        $settings = dcCore::app()->blog->settings->get(My::id());
 
         if (!$settings->relatedEntries_enabled) {
             return;
@@ -61,7 +61,7 @@ class Frontend extends dcNsProcess
 
     public static function publicEntryBeforeContent()
     {
-        $settings = dcCore::app()->blog->settings->relatedEntries;
+        $settings = dcCore::app()->blog->settings->get(My::id());
 
         if ($settings->relatedEntries_enabled && $settings->relatedEntries_beforePost) {
             return FrontendTemplates::htmlBlock();
@@ -70,7 +70,7 @@ class Frontend extends dcNsProcess
 
     public static function publicEntryAfterContent()
     {
-        $settings = dcCore::app()->blog->settings->relatedEntries;
+        $settings = dcCore::app()->blog->settings->get(My::id());
 
         if ($settings->relatedEntries_enabled && $settings->relatedEntries_afterPost) {
             return FrontendTemplates::htmlBlock();

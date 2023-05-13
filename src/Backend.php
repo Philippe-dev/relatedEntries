@@ -31,33 +31,32 @@ class Backend extends dcNsProcess
 {
     public static function init(): bool
     {
-        self::$init = defined('DC_CONTEXT_ADMIN');
+        static::$init = My::checkContext(My::BACKEND);
 
-        return self::$init;
+        return static::$init;
     }
 
     public static function process(): bool
     {
-        if (!self::$init) {
+        if (!static::$init) {
             return false;
         }
 
         dcCore::app()->menu[dcAdmin::MENU_BLOG]->addItem(
-            __('Related posts'),
-            dcCore::app()->adminurl->get('admin.plugin.relatedEntries'),
-            [dcPage::getPF('relatedEntries/icon.svg'), dcPage::getPF('relatedEntries/icon-dark.svg')],
-            preg_match('/' . preg_quote(dcCore::app()->adminurl->get('admin.plugin.relatedEntries')) . '(&.*)?$/', $_SERVER['REQUEST_URI']),
-            dcCore::app()->auth->check(dcCore::app()->auth->makePermissions([dcAuth::PERMISSION_CONTENT_ADMIN]), dcCore::app()->blog->id)
+            My::name(),
+            dcCore::app()->adminurl->get('admin.plugin.' . My::id()),
+            [dcPage::getPF(My::id() . '/icon.svg'), dcPage::getPF(My::id() . '/icon-dark.svg')],
+            preg_match('/' . preg_quote(dcCore::app()->adminurl->get('admin.plugin.' . My::id())) . '(&.*)?$/', $_SERVER['REQUEST_URI']),
+            My::checkContext(My::BACKEND),
         );
 
-        /* Register favorite */
         dcCore::app()->addBehavior('adminDashboardFavoritesV2', function (dcFavorites $favs) {
-            $favs->register('relatedEntries', [
-                'title'       => __('Related posts'),
-                'url'         => dcCore::app()->adminurl->get('admin.plugin.relatedEntries'),
-                'small-icon'  => [dcPage::getPF('relatedEntries/icon.svg'), dcPage::getPF('relatedEntries/icon-dark.svg')],
-                'large-icon'  => [dcPage::getPF('relatedEntries/icon.svg'), dcPage::getPF('relatedEntries/icon-dark.svg')],
-                'permissions' => dcCore::app()->auth->makePermissions([dcAuth::PERMISSION_CONTENT_ADMIN]),
+            $favs->register(My::id(), [
+                'title'       => My::name(),
+                'url'         => dcCore::app()->adminurl->get('admin.plugin.' . My::id()),
+                'small-icon'  => [dcPage::getPF(My::id() . '/icon.svg'), dcPage::getPF(My::id() . '/icon-dark.svg')],
+                'large-icon'  => [dcPage::getPF(My::id() . '/icon.svg'), dcPage::getPF(My::id() . '/icon-dark.svg')],
+                'permissions' => My::checkContext(My::BACKEND),
             ]);
         });
 
@@ -95,52 +94,46 @@ class Backend extends dcNsProcess
 
     public static function adminPostFilter(ArrayObject $filters)
     {
-        if (dcCore::app()->admin->getPageURL() != 'plugin.php?p=relatedEntries') {
-            return null;
-        }
+        if (My::url() === 'plugin.php?p=relatedEntries') {
+            $categories = null;
 
-        if (isset($_GET['addlinks']) && $_GET['addlinks'] == 1) {
-            return null;
-        }
-
-        $categories = null;
-
-        try {
-            $categories = dcCore::app()->blog->getCategories(['post_type' => 'post']);
-            if ($categories->isEmpty()) {
-                return null;
-            }
-        } catch (Exception $e) {
-            dcCore::app()->error->add($e->getMessage());
-
-            return null;
-        }
-
-        $my_categories_combo = [
-            '-'            => '',
-            __('(No cat)') => 'NULL',
-        ];
-        while ($categories->fetch()) {
             try {
-                $params['no_content'] = true;
-                $params['cat_id']     = $categories->cat_id;
-                $params['sql']        = 'AND P.post_id IN (SELECT META.post_id FROM ' . dcCore::app()->prefix . 'meta META WHERE META.post_id = P.post_id ' . "AND META.meta_type = 'relatedEntries' ) ";
-                dcCore::app()->blog->withoutPassword(false);
-                dcCore::app()->admin->counter = dcCore::app()->blog->getPosts($params, true);
+                $categories = dcCore::app()->blog->getCategories(['post_type' => 'post']);
+                if ($categories->isEmpty()) {
+                    return null;
+                }
             } catch (Exception $e) {
                 dcCore::app()->error->add($e->getMessage());
-            }
-            $my_categories_combo[
-                str_repeat('&nbsp;', ($categories->level - 1) * 4) .
-                Html::escapeHTML($categories->cat_title) . ' (' . dcCore::app()->admin->counter->f(0) . ')'
-            ] = $categories->cat_id;
-        }
 
-        $filters->append((new dcAdminFilter('cat_id'))
-            ->param()
-            ->title(__('Category:'))
-            ->options($my_categories_combo)
-            ->prime(true));
+                return null;
+            }
+
+            $my_categories_combo = [
+                '-'            => '',
+                __('(No cat)') => 'NULL',
+            ];
+            while ($categories->fetch()) {
+                try {
+                    $params['no_content'] = true;
+                    $params['cat_id']     = $categories->cat_id;
+                    $params['sql']        = 'AND P.post_id IN (SELECT META.post_id FROM ' . dcCore::app()->prefix . 'meta META WHERE META.post_id = P.post_id ' . "AND META.meta_type = 'relatedEntries' ) ";
+                    dcCore::app()->blog->withoutPassword(false);
+                    dcCore::app()->admin->counter = dcCore::app()->blog->getPosts($params, true);
+                } catch (Exception $e) {
+                    dcCore::app()->error->add($e->getMessage());
+                }
+                $my_categories_combo[
+                    str_repeat('&nbsp;', ($categories->level - 1) * 4) .
+                    Html::escapeHTML($categories->cat_title) . ' (' . dcCore::app()->admin->counter->f(0) . ')'
+                ] = $categories->cat_id;
+            }
+
+            $filters->append((new dcAdminFilter('cat_id'))
+                ->param()
+                ->title(__('Category:'))
+                ->options($my_categories_combo)
+                ->prime(true));
+        }
     }
 
     public static function adminPageHelpBlock(ArrayObject $blocks): void
@@ -152,7 +145,7 @@ class Backend extends dcNsProcess
 
     public static function postHeaders(): string
     {
-        $settings = dcCore::app()->blog->settings->relatedEntries;
+        $settings = dcCore::app()->blog->settings->get(My::id());
 
         if (!$settings->relatedEntries_enabled) {
             return '';
@@ -196,7 +189,7 @@ class Backend extends dcNsProcess
 
     public static function adminPostForm($post)
     {
-        $settings = dcCore::app()->blog->settings->relatedEntries;
+        $settings = dcCore::app()->blog->settings->get(My::id());
 
         $postTypes = ['post'];
 

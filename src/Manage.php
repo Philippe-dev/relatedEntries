@@ -33,10 +33,12 @@ class Manage extends dcNsProcess
      */
     public static function init(): bool
     {
+        static::$init = My::checkContext(My::MANAGE);
+
         if (is_null(dcCore::app()->blog->settings->relatedEntries->relatedEntries_enabled)) {
             try {
                 // Add default settings values if necessary
-                $settings = dcCore::app()->blog->settings->relatedEntries;
+                $settings = dcCore::app()->blog->settings->get(My::id());
 
                 $settings->put('relatedEntries_enabled', false, 'boolean', 'Enable related entries', false, true);
                 $settings->put('relatedEntries_images', false, 'boolean', 'Display related entries links as images', false, true);
@@ -68,9 +70,7 @@ class Manage extends dcNsProcess
             }
         }
 
-        self::$init = true;
-
-        return self::$init;
+        return static::$init;
     }
 
     /**
@@ -78,11 +78,11 @@ class Manage extends dcNsProcess
      */
     public static function process(): bool
     {
-        if (!self::$init) {
+        if (!static::$init) {
             return false;
         }
 
-        $settings = dcCore::app()->blog->settings->relatedEntries;
+        $settings = dcCore::app()->blog->settings->get(My::id());
 
         // Image size combo
         $img_size_combo = [];
@@ -244,11 +244,11 @@ class Manage extends dcNsProcess
      */
     public static function render(): void
     {
-        if (!self::$init) {
+        if (!static::$init) {
             return;
         }
 
-        $settings = dcCore::app()->blog->settings->relatedEntries;
+        $settings = dcCore::app()->blog->settings->get(My::id());
 
         // Filters
         dcCore::app()->admin->post_filter = new adminPostFilter();
