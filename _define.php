@@ -24,6 +24,7 @@ $this->registerModule(
             dcAuth::PERMISSION_USAGE,
             dcAuth::PERMISSION_CONTENT_ADMIN,
         ]),
+        'priority' => 3000,
         'type'     => 'plugin',
         'support'    => 'https://github.com/Philippe-dev/relatedEntries',
     ]
