@@ -101,9 +101,9 @@ class FrontendTemplates
      */
     public static function htmlBlock()
     {
-        $settings       = dcCore::app()->blog->settings->relatedEntries;
-        $meta    = dcCore::app()->meta;
-        $meta_rs = $meta->getMetaStr(dcCore::app()->ctx->posts->post_meta, 'relatedEntries');
+        $settings = dcCore::app()->blog->settings->get(My::id());
+        $meta     = dcCore::app()->meta;
+        $meta_rs  = $meta->getMetaStr(dcCore::app()->ctx->posts->post_meta, 'relatedEntries');
 
         if (dcCore::app()->ctx->posts->post_type == 'post' && $meta_rs != '') {
             //related entries
