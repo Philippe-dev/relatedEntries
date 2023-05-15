@@ -15,6 +15,7 @@ declare(strict_types=1);
 namespace Dotclear\Plugin\relatedEntries;
 
 use dcCore;
+use dcUtils;
 use dcNsProcess;
 use Dotclear\Helper\L10n;
 
@@ -53,10 +54,7 @@ class Frontend extends dcNsProcess
             return;
         }
 
-        $url = dcCore::app()->blog->getQmarkURL() . 'pf=' . My::id();
-
-        echo
-        '<link rel="stylesheet" type="text/css" href="' . $url . '/css/style.css" />' . "\n";
+        echo dcUtils::cssModuleLoad(My::id() . '/css/style.css');
     }
 
     public static function publicEntryBeforeContent()
