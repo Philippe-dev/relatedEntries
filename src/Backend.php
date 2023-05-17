@@ -83,7 +83,7 @@ class Backend extends dcNsProcess
                     $meta->delPostMeta($tag, 'relatedEntries', $id);
                 }
 
-                Http::redirect(DC_ADMIN_URL . 'post.php?id=' . $id . '&del=1&upd=1');
+                Http::redirect(dcCore::app()->getPostAdminURL('post', $id) . '&del=1&upd=1');
             } catch (Exception $e) {
                 dcCore::app()->error->add($e->getMessage());
             }

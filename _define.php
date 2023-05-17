@@ -9,15 +9,11 @@
  *
  * @copyright GPL-2.0 [https://www.gnu.org/licenses/gpl-2.0.html]
  */
-if (!defined('DC_RC_PATH')) {
-    return;
-}
-
 $this->registerModule(
     'Related entries',
     'Add links to other related posts',
     'Philippe aka amalgame',
-    '3.8',
+    '3.9',
     [
         'requires'    => [['core', '2.26']],
         'permissions' => dcCore::app()->auth->makePermissions([
@@ -26,6 +22,6 @@ $this->registerModule(
         ]),
         'priority' => 3000,
         'type'     => 'plugin',
-        'support'    => 'https://github.com/Philippe-dev/relatedEntries',
+        'support'  => 'https://github.com/Philippe-dev/relatedEntries',
     ]
 );
