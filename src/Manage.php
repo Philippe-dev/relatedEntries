@@ -283,7 +283,7 @@ class Manage extends dcNsProcess
                 // Show posts
 
                 # filters
-                dcCore::app()->admin->post_filter->display('admin.plugin.relatedEntries', '<input type="hidden" name="p" value="relatedEntries" /><input type="hidden" name="addlinks" value="1" /><input type="hidden" name="id" value="' . $post_id . '" />');
+                dcCore::app()->admin->post_filter->display('admin.plugin.' . My::id(), '<input type="hidden" name="p" value="relatedEntries" /><input type="hidden" name="addlinks" value="1" /><input type="hidden" name="id" value="' . $post_id . '" />');
 
                 dcCore::app()->admin->posts_list->display(
                     dcCore::app()->admin->post_filter->page,
@@ -300,7 +300,7 @@ class Manage extends dcNsProcess
                     '<p>' .
                     form::hidden(['addlinks'], true) .
                     form::hidden(['id'], $post_id) .
-                    dcCore::app()->adminurl->getHiddenFormFields('admin.plugin.relatedEntries', dcCore::app()->admin->post_filter->values()) .
+                    dcCore::app()->adminurl->getHiddenFormFields('admin.plugin.' . My::id(), dcCore::app()->admin->post_filter->values()) .
                     dcCore::app()->formNonce() . '</p>' .
                     '</div>' .
                     '</form>',
@@ -479,7 +479,7 @@ class Manage extends dcNsProcess
 
             '<div class="multi-part" id="postslist" title="' . __('Related posts list') . '">';
 
-            dcCore::app()->admin->post_filter->display('admin.plugin.relatedEntries', '<input type="hidden" name="p" value="relatedEntries" /><input type="hidden" name="tab" value="postslist" />');
+            dcCore::app()->admin->post_filter->display('admin.plugin.' . My::id(), '<input type="hidden" name="p" value="relatedEntries" /><input type="hidden" name="tab" value="postslist" />');
 
             // Show posts
             dcCore::app()->admin->posts_list->display(
@@ -495,7 +495,7 @@ class Manage extends dcNsProcess
                 '<p class="col right">' .
                 '<input type="submit" class="delete" value="' . __('Remove all links from selected posts') . '" /></p>' .
                 '<p>' .
-                dcCore::app()->adminurl->getHiddenFormFields('admin.plugin.relatedEntries', dcCore::app()->admin->post_filter->values()) .
+                dcCore::app()->adminurl->getHiddenFormFields('admin.plugin.' . My::id(), dcCore::app()->admin->post_filter->values()) .
                 dcCore::app()->formNonce() . '</p>' .
                 '</div>' .
                 '</form>',
