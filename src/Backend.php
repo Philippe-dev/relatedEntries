@@ -212,7 +212,7 @@ class Backend extends dcNsProcess
                 '<span class="form-note">' . __('Links to related posts.') . '</span>' .
                 '<div id="relatedEntries-list" >' .
                 '<p>' . __('No related posts') . '</p>' .
-                '<p class="add"><a href="' . DC_ADMIN_URL . 'plugin.php?p=relatedEntries&amp;id=' . $id . '&amp;upd=1&amp;addlinks=1"><strong>' . __('Add links') . '</strong></a></p>' .
+                '<p class="add"><a href="' . dcCore::app()->adminurl->get('admin.plugin.' . My::id()) . '&amp;id=' . $id . '&amp;upd=1&amp;addlinks=1"><strong>' . __('Add links') . '</strong></a></p>' .
                 '</div>' .
                 '</div>';
         } else {
@@ -244,8 +244,8 @@ class Backend extends dcNsProcess
                 '</div>';
             echo
 
-            '<p class="two-boxes add"><a href="' . DC_ADMIN_URL . 'plugin.php?p=relatedEntries&amp;id=' . $id . '&amp;addlinks=1"><strong>' . __('Add links') . '</strong></a></p>' .
-            '<p class="two-boxes right"><a class="links-remove delete" href="' . DC_ADMIN_URL . 'plugin.php?p=relatedEntries&amp;id=' . $id . '&amp;r_id=' . $meta_rs . '&upd=1">' . __('Remove all links') . '</a></p>' .
+            '<p class="two-boxes add"><a href="' . dcCore::app()->adminurl->get('admin.plugin.' . My::id()) . '&amp;id=' . $id . '&amp;addlinks=1"><strong>' . __('Add links') . '</strong></a></p>' .
+            '<p class="two-boxes right"><a class="links-remove delete" href="' . dcCore::app()->adminurl->get('admin.plugin.' . My::id()) . '&amp;id=' . $id . '&amp;r_id=' . $meta_rs . '&upd=1">' . __('Remove all links') . '</a></p>' .
 
             form::hidden(['relatedEntries'], $meta_rs) .
             '</div>' .

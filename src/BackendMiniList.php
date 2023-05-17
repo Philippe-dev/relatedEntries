@@ -140,7 +140,7 @@ class BackendMiniList extends adminGenericListV2
         '<td class="nowrap">' . Date::dt2str(__('%Y-%m-%d %H:%M'), $this->rs->post_dt) . '</td>' .
         '<td class="nowrap">' . $cat_title . '</td>' .
         '<td class="nowrap status">' . $img_status . ' ' . $selected . ' ' . $protected . ' ' . $attach . '</td>' .
-        '<td class="nowrap count"><a class="link-remove metaRemove" href="' . DC_ADMIN_URL . 'plugin.php?p=relatedEntries&amp;id=' . $id . '&amp;r_id=' . $this->rs->post_id . '" title="' . __('Delete this link') . '"><img src="images/trash.png" alt="supprimer" /></a></td>' .
+        '<td class="nowrap count"><a class="link-remove metaRemove" href="' . dcCore::app()->adminurl->get('admin.plugin.' . My::id()) . '&amp;id=' . $id . '&amp;r_id=' . $this->rs->post_id . '" title="' . __('Delete this link') . '"><img src="images/trash.png" alt="supprimer" /></a></td>' .
         '</tr>';
 
         return $res;
