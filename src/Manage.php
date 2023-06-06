@@ -117,7 +117,6 @@ class Manage extends dcNsProcess
         dcCore::app()->admin->html_tag_combo = $html_tag_combo;
         dcCore::app()->admin->link_combo     = $link_combo;
         dcCore::app()->admin->bubble_combo   = $bubble_combo;
-        
 
         // Saving configurations
         if (isset($_POST['save'])) {
@@ -283,7 +282,7 @@ class Manage extends dcNsProcess
                 // Show posts
 
                 # filters
-                dcCore::app()->admin->post_filter->display('admin.plugin.' . My::id(), '<input type="hidden" name="p" value="relatedEntries" /><input type="hidden" name="addlinks" value="1" /><input type="hidden" name="id" value="' . $post_id . '" />');
+                dcCore::app()->admin->post_filter->display('admin.plugin.' . My::id(), '<input type="hidden" name="p" value="' . My::id() . '" /><input type="hidden" name="addlinks" value="1" /><input type="hidden" name="id" value="' . $post_id . '" />');
 
                 dcCore::app()->admin->posts_list->display(
                     dcCore::app()->admin->post_filter->page,
@@ -479,7 +478,7 @@ class Manage extends dcNsProcess
 
             '<div class="multi-part" id="postslist" title="' . __('Related posts list') . '">';
 
-            dcCore::app()->admin->post_filter->display('admin.plugin.' . My::id(), '<input type="hidden" name="p" value="relatedEntries" /><input type="hidden" name="tab" value="postslist" />');
+            dcCore::app()->admin->post_filter->display('admin.plugin.' . My::id(), '<input type="hidden" name="p" value="' . My::id() . '" /><input type="hidden" name="tab" value="postslist" />');
 
             // Show posts
             dcCore::app()->admin->posts_list->display(
