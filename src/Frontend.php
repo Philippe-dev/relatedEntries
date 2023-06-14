@@ -54,7 +54,7 @@ class Frontend extends dcNsProcess
             return;
         }
 
-        echo dcUtils::cssModuleLoad(My::id() . '/css/style.css');
+        echo My::cssLoad('style.css') .
     }
 
     public static function publicEntryBeforeContent()
