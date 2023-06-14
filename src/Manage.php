@@ -35,8 +35,6 @@ class Manage extends dcNsProcess
     {
         static::$init = My::checkContext(My::MANAGE);
 
-        $settings = dcCore::app()->blog->settings->get(My::id());
-
         return static::$init;
     }
 
