@@ -142,7 +142,7 @@ class Manage extends dcNsProcess
             $settings->put('relatedEntries_images_options', serialize($opts));
 
             dcCore::app()->blog->triggerBlog();
-            Http::redirect(dcCore::app()->admin->getPageURL() . '&upd=1');
+            dcCore::app()->adminurl->redirect('admin.plugin.' . My::id(), ['upd' => 1]);
         }
 
         if (isset($_POST['entries'])) {
@@ -167,8 +167,9 @@ class Manage extends dcNsProcess
                             $meta->setPostMeta($tag, 'relatedEntries', $tags);
                         }
                     }
+                    Http::redirect(dcCore::app()->getPostAdminURL('post', $id, false) . '&add=1&upd=1');
+                    
 
-                    Http::redirect(dcCore::app()->getPostAdminURL('post', $id) . '&add=1&upd=1');
                 } catch (Exception $e) {
                     dcCore::app()->error->add($e->getMessage());
                 }
@@ -193,7 +194,7 @@ class Manage extends dcNsProcess
                         }
                     }
 
-                    Http::redirect(dcCore::app()->admin->getPageURL() . '&upd=2&tab=postslist');
+                    dcCore::app()->adminurl->redirect('admin.plugin.' . My::id(), ['upd' => 2, 'tab' => 'postslist']);
                 } catch (Exception $e) {
                     dcCore::app()->error->add($e->getMessage());
                 }
