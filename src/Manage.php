@@ -142,7 +142,7 @@ class Manage extends dcNsProcess
             $settings->put('relatedEntries_images_options', serialize($opts));
 
             dcCore::app()->blog->triggerBlog();
-            dcCore::app()->adminurl->redirect('admin.plugin.' . My::id(), ['upd' => 1]);
+            My::redirect(['upd' => 1]);
         }
 
         if (isset($_POST['entries'])) {
@@ -194,7 +194,7 @@ class Manage extends dcNsProcess
                         }
                     }
 
-                    dcCore::app()->adminurl->redirect('admin.plugin.' . My::id(), ['upd' => 2, 'tab' => 'postslist']);
+                    My::redirect(['upd' => 2, 'tab' => 'postslist']);
                 } catch (Exception $e) {
                     dcCore::app()->error->add($e->getMessage());
                 }
