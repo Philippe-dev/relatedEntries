@@ -16,10 +16,8 @@ namespace Dotclear\Plugin\relatedEntries;
 
 use adminUserPref;
 use dcAdmin;
-use dcAuth;
 use dcCore;
 use dcFavorites;
-use dcPage;
 use dcNsProcess;
 use ArrayObject;
 use dcAdminFilter;
@@ -29,6 +27,7 @@ use Dotclear\Helper\Network\Http;
 
 class Backend extends dcNsProcess
 {
+    protected static $init = false; /** @deprecated since 2.27 */
     public static function init(): bool
     {
         static::$init = My::checkContext(My::BACKEND);
@@ -82,7 +81,6 @@ class Backend extends dcNsProcess
                 }
 
                 Http::redirect(dcCore::app()->getPostAdminURL('post', $id, false, ['del' => 1,'upd' => 1]));
-
             } catch (Exception $e) {
                 dcCore::app()->error->add($e->getMessage());
             }
