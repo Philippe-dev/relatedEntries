@@ -167,9 +167,8 @@ class Manage extends dcNsProcess
                             $meta->setPostMeta($tag, 'relatedEntries', $tags);
                         }
                     }
-                    Http::redirect(dcCore::app()->getPostAdminURL('post', $id, false) . '&add=1&upd=1');
-                    
 
+                    Http::redirect(dcCore::app()->getPostAdminURL('post', $id, false, ['add' => 1,'upd' => 1]));
                 } catch (Exception $e) {
                     dcCore::app()->error->add($e->getMessage());
                 }
