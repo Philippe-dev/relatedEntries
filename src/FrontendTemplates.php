@@ -101,7 +101,7 @@ class FrontendTemplates
      */
     public static function htmlBlock()
     {
-        $settings = dcCore::app()->blog->settings->get(My::id());
+        
         $meta     = dcCore::app()->meta;
         $meta_rs  = $meta->getMetaStr(dcCore::app()->ctx->posts->post_meta, 'relatedEntries');
 
@@ -113,9 +113,9 @@ class FrontendTemplates
             $params['post_type']  = ['post'];
             $rs                   = dcCore::app()->blog->getPosts($params);
 
-            if (dcCore::app()->plugins->moduleExists('listImages') && $settings->relatedEntries_images) {
+            if (dcCore::app()->plugins->moduleExists('listImages') && My::settings()->relatedEntries_images) {
                 //images display options
-                $img_options = unserialize($settings->relatedEntries_images_options);
+                $img_options = unserialize(My::settings()->relatedEntries_images_options);
 
                 $size     = $img_options['size'] ? $img_options['size'] : 't';
                 $html_tag = $img_options['html_tag'] ? $img_options['html_tag'] : 'div';
@@ -130,7 +130,7 @@ class FrontendTemplates
                 $alt      = $img_options['alt'] ? $img_options['alt'] : 'inherit';
                 $img_dim  = $img_options['img_dim'] ? $img_options['img_dim'] : 0;
                 $def_size = 'o';
-                $ret      = $settings->relatedEntries_title != '' ? '<h3>' . $settings->relatedEntries_title . '</h3>' : '';
+                $ret      = My::settings()->relatedEntries_title != '' ? '<h3>' . My::settings()->relatedEntries_title . '</h3>' : '';
                 $ret .= '<' . ($html_tag == 'li' ? 'ul' : 'div') . ' class="relatedEntries">';
 
                 //listImages plugin comes here
@@ -141,8 +141,8 @@ class FrontendTemplates
                 $ret .= '</' . ($html_tag == 'li' ? 'ul' : 'div') . '>' . "\n";
 
                 echo $ret;
-            } elseif (!dcCore::app()->plugins->moduleExists('listImages') || !$settings->relatedEntries_images) {
-                $ret = $settings->relatedEntries_title != '' ? '<h3>' . $settings->relatedEntries_title . '</h3>' : '';
+            } elseif (!dcCore::app()->plugins->moduleExists('listImages') || !My::settings()->relatedEntries_images) {
+                $ret = My::settings()->relatedEntries_title != '' ? '<h3>' . My::settings()->relatedEntries_title . '</h3>' : '';
                 $ret .= '<ul class="relatedEntries">';
 
                 while ($rs->fetch()) {

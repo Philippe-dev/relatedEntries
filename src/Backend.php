@@ -14,35 +14,32 @@ declare(strict_types=1);
 
 namespace Dotclear\Plugin\relatedEntries;
 
-use adminUserPref;
-use dcAdmin;
+use Dotclear\Core\Backend\UserPref;
+use Dotclear\Core\Backend\Utility;
 use dcCore;
-use dcFavorites;
-use dcNsProcess;
+use Dotclear\Core\Backend\Favorites;
+use Dotclear\Core\Process;
 use ArrayObject;
-use dcAdminFilter;
+use Dotclear\Core\Backend\Filter\Filter;
 use form;
 use Dotclear\Helper\Html\Html;
 use Dotclear\Helper\Network\Http;
 
-class Backend extends dcNsProcess
+class Backend extends Process
 {
-    protected static $init = false; /** @deprecated since 2.27 */
     public static function init(): bool
     {
-        static::$init = My::checkContext(My::BACKEND);
-
-        return static::$init;
+        return self::status(My::checkContext(My::BACKEND));
     }
 
     public static function process(): bool
     {
-        if (!static::$init) {
+        if (!self::status()) {
             return false;
         }
 
         dcCore::app()->addBehaviors([
-            'adminDashboardFavoritesV2' => function (dcFavorites $favs) {
+            'adminDashboardFavoritesV2' => function (Favorites $favs) {
                 $favs->register(My::id(), [
                     'title'       => My::name(),
                     'url'         => My::manageUrl(),
@@ -55,7 +52,7 @@ class Backend extends dcNsProcess
             },
         ]);
 
-        My::addBackendMenuItem(dcAdmin::MENU_BLOG);
+        My::addBackendMenuItem(Utility::MENU_BLOG);
 
         if ((isset($_GET['addlinks']) && $_GET['addlinks'] == 1) || (isset($_GET['p']) && $_GET['p'] == 'relatedEntries')) {
             dcCore::app()->addBehavior('adminColumnsListsV2', [BackendBehaviors::class, 'adminColumnsLists']);
@@ -125,7 +122,7 @@ class Backend extends dcNsProcess
                 ] = $categories->cat_id;
             }
 
-            $filters->append((new dcAdminFilter('cat_id'))
+            $filters->append((new Filter('cat_id'))
                 ->param()
                 ->title(__('Category:'))
                 ->options($my_categories_combo)
@@ -142,9 +139,9 @@ class Backend extends dcNsProcess
 
     public static function postHeaders(): string
     {
-        $settings = dcCore::app()->blog->settings->get(My::id());
+        
 
-        if (!$settings->relatedEntries_enabled) {
+        if (!My::settings()->relatedEntries_enabled) {
             return '';
         }
 
@@ -186,11 +183,11 @@ class Backend extends dcNsProcess
 
     public static function adminPostForm($post)
     {
-        $settings = dcCore::app()->blog->settings->get(My::id());
+        
 
         $postTypes = ['post'];
 
-        if (!$settings->relatedEntries_enabled) {
+        if (!My::settings()->relatedEntries_enabled) {
             return;
         }
         if (is_null($post) || !in_array($post->post_type, $postTypes)) {
@@ -233,7 +230,7 @@ class Backend extends dcNsProcess
                 dcCore::app()->error->add($e->getMessage());
             }
             dcCore::app()->admin->page        = !empty($_GET['page']) ? max(1, (int) $_GET['page']) : 1;
-            dcCore::app()->admin->nb_per_page = adminUserPref::getUserFilters('pages', 'nb');
+            dcCore::app()->admin->nb_per_page = UserPref::getUserFilters('pages', 'nb');
 
             echo
                 '<div id="form-entries">' .

@@ -14,32 +14,26 @@ declare(strict_types=1);
 
 namespace Dotclear\Plugin\relatedEntries;
 
-use dcCore;
-use dcNsProcess;
+use Dotclear\Core\Process;
 
-class Install extends dcNsProcess
+class Install extends Process
 {
-    protected static $init = false; /** @deprecated since 2.27 */
     public static function init(): bool
     {
-        static::$init = My::checkContext(My::INSTALL);
-
-        return static::$init;
+        return self::status(My::checkContext(My::INSTALL));
     }
 
     public static function process(): bool
     {
-        if (!static::$init) {
+        if (!self::status()) {
             return false;
         }
 
-        $settings = dcCore::app()->blog->settings->get(My::id());
-
-        $settings->put('relatedEntries_enabled', false, 'boolean', 'Enable related entries', false, true);
-        $settings->put('relatedEntries_images', false, 'boolean', 'Display related entries links as images', false, true);
-        $settings->put('relatedEntries_beforePost', false, 'boolean', 'Display related entries before post content', false, true);
-        $settings->put('relatedEntries_afterPost', true, 'boolean', 'Display related entries after post content', false, true);
-        $settings->put('relatedEntries_title', __('Related posts'), 'string', 'Related entries block title', false, true);
+        My::settings()->put('relatedEntries_enabled', false, 'boolean', 'Enable related entries', false, true);
+        My::settings()->put('relatedEntries_images', false, 'boolean', 'Display related entries links as images', false, true);
+        My::settings()->put('relatedEntries_beforePost', false, 'boolean', 'Display related entries before post content', false, true);
+        My::settings()->put('relatedEntries_afterPost', true, 'boolean', 'Display related entries after post content', false, true);
+        My::settings()->put('relatedEntries_title', __('Related posts'), 'string', 'Related entries block title', false, true);
 
         $opts = [
             'size'     => 't',
@@ -56,7 +50,7 @@ class Install extends dcNsProcess
             'img_dim'  => 0,
         ];
 
-        $settings->put('relatedEntries_images_options', serialize($opts), 'string', 'Related entries images options', false, true);
+        My::settings()->put('relatedEntries_images_options', serialize($opts), 'string', 'Related entries images options', false, true);
 
         return true;
     }

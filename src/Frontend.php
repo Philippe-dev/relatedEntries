@@ -15,23 +15,19 @@ declare(strict_types=1);
 namespace Dotclear\Plugin\relatedEntries;
 
 use dcCore;
-use dcUtils;
-use dcNsProcess;
+use Dotclear\Core\Process;
 use Dotclear\Helper\L10n;
 
-class Frontend extends dcNsProcess
+class Frontend extends Process
 {
-    protected static $init = false; /** @deprecated since 2.27 */
     public static function init(): bool
     {
-        static::$init = My::checkContext(My::FRONTEND);
-
-        return static::$init;
+        return self::status(My::checkContext(My::FRONTEND));
     }
 
     public static function process(): bool
     {
-        if (!static::$init) {
+        if (!self::status()) {
             return false;
         }
 
@@ -49,9 +45,9 @@ class Frontend extends dcNsProcess
     {
         // Settings
 
-        $settings = dcCore::app()->blog->settings->get(My::id());
+        
 
-        if (!$settings->relatedEntries_enabled) {
+        if (!My::settings()->relatedEntries_enabled) {
             return;
         }
 
@@ -60,18 +56,18 @@ class Frontend extends dcNsProcess
 
     public static function publicEntryBeforeContent()
     {
-        $settings = dcCore::app()->blog->settings->get(My::id());
+        
 
-        if ($settings->relatedEntries_enabled && $settings->relatedEntries_beforePost) {
+        if (My::settings()->relatedEntries_enabled && My::settings()->relatedEntries_beforePost) {
             return FrontendTemplates::htmlBlock();
         }
     }
 
     public static function publicEntryAfterContent()
     {
-        $settings = dcCore::app()->blog->settings->get(My::id());
+        
 
-        if ($settings->relatedEntries_enabled && $settings->relatedEntries_afterPost) {
+        if (My::settings()->relatedEntries_enabled && My::settings()->relatedEntries_afterPost) {
             return FrontendTemplates::htmlBlock();
         }
     }

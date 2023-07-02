@@ -14,14 +14,14 @@ declare(strict_types=1);
 
 namespace Dotclear\Plugin\relatedEntries;
 
-use adminGenericListV2;
 use dcBlog;
 use dcCore;
+use Dotclear\Core\Backend\Listing\Pager;
+use Dotclear\Core\Backend\Listing\Listing;
 use Dotclear\Helper\Date;
 use Dotclear\Helper\Html\Html;
-use dcPager;
 
-class BackendMiniList extends adminGenericListV2
+class BackendMiniList extends Listing
 {
     /**
      * Display a list of pages
@@ -35,7 +35,7 @@ class BackendMiniList extends adminGenericListV2
         if ($this->rs->isEmpty()) {
             echo '<p><strong>' . __('No entry') . '</strong></p>';
         } else {
-            $pager            = new dcPager($page, (int) $this->rs_count, $nb_per_page, 10);
+            $pager            = new Pager($page, (int) $this->rs_count, $nb_per_page, 10);
             $pager->html_prev = $this->html_prev;
             $pager->html_next = $this->html_next;
             $pager->var_page  = 'page';

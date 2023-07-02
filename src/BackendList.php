@@ -14,17 +14,17 @@ declare(strict_types=1);
 
 namespace Dotclear\Plugin\relatedEntries;
 
-use adminGenericListV2;
 use dcBlog;
 use dcCore;
 use dcAuth;
 use ArrayObject;
+use Dotclear\Core\Backend\Listing\Pager;
+use Dotclear\Core\Backend\Listing\Listing;
 use Dotclear\Helper\Date;
 use Dotclear\Helper\Html\Html;
-use dcPager;
 use form;
 
-class BackendList extends adminGenericListV2
+class BackendList extends Listing
 {
     /**
      * Display admin post list
@@ -44,7 +44,7 @@ class BackendList extends adminGenericListV2
                 '<p class="form-note info clear">' . __('To get started, edit one of your posts and add links to other related posts below the <em>Personal notes</em> field.') . '</p>';
             }
         } else {
-            $pager   = new dcPager($page, (int) $this->rs_count, $nb_per_page, 10);
+            $pager   = new Pager($page, (int) $this->rs_count, $nb_per_page, 10);
             $entries = [];
             if (isset($_REQUEST['entries'])) {
                 foreach ($_REQUEST['entries'] as $v) {
