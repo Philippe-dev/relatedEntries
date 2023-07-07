@@ -18,6 +18,7 @@ use dcCore;
 use Dotclear\Core\Process;
 use Dotclear\Core\Backend\UserPref;
 use Dotclear\Core\Backend\Page;
+use Dotclear\Core\Backend\Notices;
 use Exception;
 use form;
 use Dotclear\Helper\Html\Html;
@@ -268,7 +269,7 @@ class Manage extends Process
                     dcCore::app()->admin->page_title            => '',
                 ]
             ) .
-            Page::notices();
+            Notices::getNotices();
 
             if (!dcCore::app()->error->flag()) {
                 echo '<h3>' . __('Select posts related to entry:') . ' <a href="' . dcCore::app()->getPostAdminURL($post_type, $post_id) . '">' . $post_title . '</a></h3>';
@@ -338,12 +339,12 @@ class Manage extends Process
                     __('Related posts')                         => '',
                 ]
             ) .
-            Page::notices();
+            Notices::getNotices();
 
             if (isset($_GET['upd']) && $_GET['upd'] == 1) {
-                Page::success(__('Configuration successfully saved'));
+                Notices::success(__('Configuration successfully saved'));
             } elseif (isset($_GET['upd']) && $_GET['upd'] == 2) {
-                Page::success(__('Links have been successfully removed'));
+                Notices::success(__('Links have been successfully removed'));
             }
 
             $images = unserialize(My::settings()->relatedEntries_images_options);
