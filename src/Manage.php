@@ -23,7 +23,6 @@ use Exception;
 use form;
 use Dotclear\Helper\Html\Html;
 use Dotclear\Helper\Network\Http;
-use dcMedia;
 use Dotclear\Core\Backend\Listing\ListingPosts;
 use Dotclear\Core\Backend\Filter\FilterPosts;
 
@@ -50,7 +49,7 @@ class Manage extends Process
 
         // Image size combo
         $img_size_combo = [];
-        $media          = new dcMedia();
+        $media          = dcCore::app()->media;
 
         $img_size_combo[__('square')]    = 'sq';
         $img_size_combo[__('thumbnail')] = 't';

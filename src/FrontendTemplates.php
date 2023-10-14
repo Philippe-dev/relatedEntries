@@ -27,7 +27,7 @@ class FrontendTemplates
      *
      * @return     string
      */
-    public static function relatedEntriesWidget(WidgetsElement $widget)
+    public static function relatedEntriesWidget(WidgetsElement $widget): string
     {
         $params = [];
         if ($widget->offline) {
@@ -39,7 +39,7 @@ class FrontendTemplates
         }
 
         if (dcCore::app()->url->type != 'post') {
-            return;
+            return '';
         }
 
         $meta = dcCore::app()->meta;
