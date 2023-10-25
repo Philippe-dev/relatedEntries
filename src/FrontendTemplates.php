@@ -83,7 +83,7 @@ class FrontendTemplates
 
                 // Appel de la fonction de traitement pour chacun des billets
                 while ($rs->fetch()) {
-                    $ret .= FrontendHelper::EntryImages($size, $html_tag, $link, $exif, $legend, $bubble, $from, $start, $length, $class, $alt, $img_dim, $def_size, $rs);
+                    $ret .= FrontendHelper::EntryImages((string) $size, (string) $html_tag, (string) $link, $exif, (string) $legend, (string) $bubble, (string) $from, (int) $start, (int) $length, (string) $class, (string) $alt, (string) $img_dim, (string) $def_size, $rs);
                 }
 
                 // Fin d'affichage
@@ -135,7 +135,7 @@ class FrontendTemplates
 
                 //listImages plugin comes here
                 while ($rs->fetch()) {
-                    $ret .= FrontendHelper::EntryImages($size, $html_tag, $link, $exif, $legend, $bubble, $from, $start, $length, $class, $alt, $img_dim, $def_size, $rs);
+                    $ret .= FrontendHelper::EntryImages((string) $size, (string) $html_tag, (string) $link, $exif, (string) $legend, (string) $bubble, (string) $from, (int) $start, (int) $length, (string) $class, (string) $alt, (string) $img_dim, (string) $def_size, $rs);
                 }
 
                 $ret .= '</' . ($html_tag == 'li' ? 'ul' : 'div') . '>' . "\n";
