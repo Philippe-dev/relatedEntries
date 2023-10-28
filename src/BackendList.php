@@ -15,7 +15,7 @@ declare(strict_types=1);
 namespace Dotclear\Plugin\relatedEntries;
 
 use dcBlog;
-use dcCore;
+use Dotclear\App;
 use dcAuth;
 use ArrayObject;
 use Dotclear\Core\Backend\Listing\Pager;
@@ -40,7 +40,7 @@ class BackendList extends Listing
             if ($filter) {
                 echo '<p><strong>' . __('No entry matches the filter') . '</strong></p>';
             } else {
-                echo '<p><strong>' . __('No entry') . '</strong></p>' . 
+                echo '<p><strong>' . __('No entry') . '</strong></p>' .
                 '<p class="form-note info clear">' . __('To get started, edit one of your posts and add links to other related posts below the <em>Personal notes</em> field.') . '</p>';
             }
         } else {
@@ -73,7 +73,7 @@ class BackendList extends Listing
                 'status' => '<th scope="col">' . __('Status') . '</th>',
             ];
             $cols = new ArrayObject($cols);
-            dcCore::app()->callBehavior('adminPostListHeaderV2', $this->rs, $cols);
+            App::behavior()->callBehavior('adminPostListHeaderV2', $this->rs, $cols);
 
             // Cope with optional columns
             $this->userColumns('posts', $cols);
@@ -121,10 +121,10 @@ class BackendList extends Listing
      */
     private function postLine(bool $checked): string
     {
-        if (dcCore::app()->auth->check(dcCore::app()->auth->makePermissions([
+        if (App::auth()->check(App::auth()->makePermissions([
             dcAuth::PERMISSION_CATEGORIES,
-        ]), dcCore::app()->blog->id)) {
-            $cat_link = '<a href="' . dcCore::app()->adminurl->get('admin.category', ['id' => '%s'], '&amp;', true) . '">%s</a>';
+        ]), App::blog()->id)) {
+            $cat_link = '<a href="' . App::backend()->url()->get('admin.category', ['id' => '%s'], '&amp;', true) . '">%s</a>';
         } else {
             $cat_link = '%2$s';
         }
@@ -197,10 +197,10 @@ class BackendList extends Listing
             ) .
             '</td>',
             'title' => '<td class="maximal" scope="row"><a href="' .
-            dcCore::app()->getPostAdminURL($this->rs->post_type, $this->rs->post_id) . '">' .
+            App::postTypes()->get($this->rs->post_type)->adminUrl($this->rs->post_id) . '">' .
             Html::escapeHTML(trim(Html::clean($this->rs->post_title))) . '</a></td>',
             'date' => '<td class="nowrap count">' .
-                '<time datetime="' . Date::iso8601(strtotime($this->rs->post_dt), dcCore::app()->auth->getInfo('user_tz')) . '">' .
+                '<time datetime="' . Date::iso8601(strtotime($this->rs->post_dt), App::auth()->getInfo('user_tz')) . '">' .
                 Date::dt2str(__('%Y-%m-%d %H:%M'), $this->rs->post_dt) .
                 '</time>' .
                 '</td>',
@@ -211,7 +211,7 @@ class BackendList extends Listing
             'status'     => '<td class="nowrap status">' . $img_status . ' ' . $selected . ' ' . $protected . ' ' . $attach . '</td>',
         ];
         $cols = new ArrayObject($cols);
-        dcCore::app()->callBehavior('adminPostListValueV2', $this->rs, $cols);
+        App::behavior()->callBehavior('adminPostListValueV2', $this->rs, $cols);
 
         // Cope with optional columns
         $this->userColumns('posts', $cols);

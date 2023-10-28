@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Dotclear\Plugin\relatedEntries;
 
-use dcCore;
+use Dotclear\App;
 use Dotclear\Plugin\widgets\WidgetsElement;
 use Dotclear\Helper\Html\Html;
 use Dotclear\Plugin\listImages\FrontendHelper;
@@ -34,28 +34,28 @@ class FrontendTemplates
             return '';
         }
 
-        if (!$widget->checkHomeOnly(dcCore::app()->url->type)) {
+        if (!$widget->checkHomeOnly(App::url()->type)) {
             return '';
         }
 
-        if (dcCore::app()->url->type != 'post') {
+        if (App::url()->type != 'post') {
             return '';
         }
 
-        $meta = dcCore::app()->meta;
+        $meta = App::meta();
 
-        $meta_rs = $meta->getMetaStr(dcCore::app()->ctx->posts->post_meta, 'relatedEntries');
+        $meta_rs = $meta->getMetaStr(App::frontend()->context()->posts->post_meta, 'relatedEntries');
 
         if ($meta_rs != '') {
             //related posts
-            dcCore::app()->blog->withoutPassword(false);
+            App::blog()->withoutPassword(false);
             $params['post_id']    = $meta->splitMetaValues($meta_rs);
             $params['no_content'] = false;
             $params['post_type']  = ['post'];
-            $rs                   = dcCore::app()->blog->getPosts($params);
+            $rs                   = App::blog()->getPosts($params);
             $ret                  = ($widget->title ? $widget->renderTitle(Html::escapeHTML($widget->title)) : '');
 
-            if (!$widget->relatedEntries_images || !dcCore::app()->plugins->moduleExists('listImages')) {
+            if (!$widget->relatedEntries_images || !App::plugins()->moduleExists('listImages')) {
                 $ret .= '<ul>';
                 while ($rs->fetch()) {
                     $ret .= '<li><a href="' . $rs->getURL() . '" title="' . Html::escapeHTML($rs->post_title) . '">' . $rs->post_title . '</a></li>';
@@ -101,19 +101,18 @@ class FrontendTemplates
      */
     public static function htmlBlock()
     {
-        
-        $meta     = dcCore::app()->meta;
-        $meta_rs  = $meta->getMetaStr(dcCore::app()->ctx->posts->post_meta, 'relatedEntries');
+        $meta    = App::meta();
+        $meta_rs = $meta->getMetaStr(App::frontend()->context()->posts->post_meta, 'relatedEntries');
 
-        if (dcCore::app()->ctx->posts->post_type == 'post' && $meta_rs != '') {
+        if (App::frontend()->context()->posts->post_type == 'post' && $meta_rs != '') {
             //related entries
-            dcCore::app()->blog->withoutPassword(false);
+            App::blog()->withoutPassword(false);
             $params['post_id']    = $meta->splitMetaValues($meta_rs);
             $params['no_content'] = false;
             $params['post_type']  = ['post'];
-            $rs                   = dcCore::app()->blog->getPosts($params);
+            $rs                   = App::blog()->getPosts($params);
 
-            if (dcCore::app()->plugins->moduleExists('listImages') && My::settings()->relatedEntries_images) {
+            if (App::plugins()->moduleExists('listImages') && My::settings()->relatedEntries_images) {
                 //images display options
                 $img_options = unserialize(My::settings()->relatedEntries_images_options);
 
@@ -141,7 +140,7 @@ class FrontendTemplates
                 $ret .= '</' . ($html_tag == 'li' ? 'ul' : 'div') . '>' . "\n";
 
                 echo $ret;
-            } elseif (!dcCore::app()->plugins->moduleExists('listImages') || !My::settings()->relatedEntries_images) {
+            } elseif (!App::plugins()->moduleExists('listImages') || !My::settings()->relatedEntries_images) {
                 $ret = My::settings()->relatedEntries_title != '' ? '<h3>' . My::settings()->relatedEntries_title . '</h3>' : '';
                 $ret .= '<ul class="relatedEntries">';
 

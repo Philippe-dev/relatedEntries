@@ -14,7 +14,7 @@ declare(strict_types=1);
 
 namespace Dotclear\Plugin\relatedEntries;
 
-use dcCore;
+use Dotclear\App;
 use Dotclear\Core\Process;
 use Dotclear\Helper\L10n;
 
@@ -31,12 +31,12 @@ class Frontend extends Process
             return false;
         }
 
-        dcCore::app()->addBehavior('publicEntryBeforeContent', [self::class,  'publicEntryBeforeContent']);
-        dcCore::app()->addBehavior('publicEntryAfterContent', [self::class,  'publicEntryAfterContent']);
-        dcCore::app()->addBehavior('publicHeadContent', [self::class,  'publicHeadContent']);
-        dcCore::app()->addBehavior('initWidgets', [Widgets::class, 'initWidgets']);
+        App::behavior()->addBehavior('publicEntryBeforeContent', [self::class,  'publicEntryBeforeContent']);
+        App::behavior()->addBehavior('publicEntryAfterContent', [self::class,  'publicEntryAfterContent']);
+        App::behavior()->addBehavior('publicHeadContent', [self::class,  'publicHeadContent']);
+        App::behavior()->addBehavior('initWidgets', [Widgets::class, 'initWidgets']);
 
-        L10n::set(dirname(__FILE__) . '/locales/' . dcCore::app()->lang . '/main');
+        L10n::set(dirname(__FILE__) . '/locales/' . App::lang()->getLang() . '/main');
 
         return true;
     }
@@ -44,8 +44,6 @@ class Frontend extends Process
     public static function publicHeadContent()
     {
         // Settings
-
-        
 
         if (!My::settings()->relatedEntries_enabled) {
             return;
@@ -56,8 +54,6 @@ class Frontend extends Process
 
     public static function publicEntryBeforeContent()
     {
-        
-
         if (My::settings()->relatedEntries_enabled && My::settings()->relatedEntries_beforePost) {
             return FrontendTemplates::htmlBlock();
         }
@@ -65,8 +61,6 @@ class Frontend extends Process
 
     public static function publicEntryAfterContent()
     {
-        
-
         if (My::settings()->relatedEntries_enabled && My::settings()->relatedEntries_afterPost) {
             return FrontendTemplates::htmlBlock();
         }

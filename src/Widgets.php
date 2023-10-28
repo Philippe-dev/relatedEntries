@@ -13,8 +13,7 @@ declare(strict_types=1);
 
 namespace Dotclear\Plugin\relatedEntries;
 
-use dcCore;
-use Dotclear\Plugin\widgets\Widgets as dcWidgets;
+use Dotclear\App;
 use Dotclear\Plugin\widgets\WidgetsStack;
 
 class Widgets
@@ -26,7 +25,6 @@ class Widgets
      */
     public static function initWidgets(WidgetsStack $widgets): void
     {
-        
         $widgets->create(
             'relatedEntriesWidget',
             __('Related posts'),
@@ -39,7 +37,7 @@ class Widgets
         $widgets->relatedEntriesWidget->addTitle(__('Related posts'));
         // Only if listImages plugin
 
-        if (dcCore::app()->plugins->moduleExists('listImages')) {
+        if (App::plugins()->moduleExists('listImages')) {
             $widgets->relatedEntriesWidget->setting('relatedEntries_images', __('Extract images from related posts'), 0, 'check');
 
             $widgets->relatedEntriesWidget->setting(
@@ -111,5 +109,4 @@ class Widgets
         $widgets->relatedEntriesWidget->addClass();
         $widgets->relatedEntriesWidget->addOffline();
     }
-
 }

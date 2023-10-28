@@ -15,7 +15,7 @@ declare(strict_types=1);
 namespace Dotclear\Plugin\relatedEntries;
 
 use dcBlog;
-use dcCore;
+use Dotclear\App;
 use Dotclear\Core\Backend\Listing\Pager;
 use Dotclear\Core\Backend\Listing\Listing;
 use Dotclear\Helper\Date;
@@ -79,7 +79,7 @@ class BackendMiniList extends Listing
     {
         $id = $_GET['id'];
 
-        if (dcCore::app()->auth->check('categories', dcCore::app()->blog->id)) {
+        if (App::auth()->check('categories', App::blog()->id)) {
             $cat_link = '<a href="category.php?id=%s">%s</a>';
         } else {
             $cat_link = '%2$s';
@@ -135,12 +135,12 @@ class BackendMiniList extends Listing
         $res = '<tr class="line' . ($this->rs->post_status != 1 ? ' offline' : '') . '"' .
         ' id="p' . $this->rs->post_id . '">';
 
-        $res .= '<td class="maximal"><a href="' . dcCore::app()->getPostAdminURL($this->rs->post_type, $this->rs->post_id) . '">' .
+        $res .= '<td class="maximal"><a href="' . App::postTypes()->get($this->rs->post_type)->adminUrl($this->rs->post_id) . '">' .
         Html::escapeHTML($this->rs->post_title) . '</a></td>' .
         '<td class="nowrap">' . Date::dt2str(__('%Y-%m-%d %H:%M'), $this->rs->post_dt) . '</td>' .
         '<td class="nowrap">' . $cat_title . '</td>' .
         '<td class="nowrap status">' . $img_status . ' ' . $selected . ' ' . $protected . ' ' . $attach . '</td>' .
-        '<td class="nowrap count"><a class="link-remove metaRemove" href="' . dcCore::app()->adminurl->get('admin.plugin.' . My::id()) . '&amp;id=' . $id . '&amp;r_id=' . $this->rs->post_id . '" title="' . __('Delete this link') . '"><img src="images/trash.png" alt="supprimer" /></a></td>' .
+        '<td class="nowrap count"><a class="link-remove metaRemove" href="' . App::backend()->url()->get('admin.plugin.' . My::id()) . '&amp;id=' . $id . '&amp;r_id=' . $this->rs->post_id . '" title="' . __('Delete this link') . '"><img src="images/trash.png" alt="supprimer" /></a></td>' .
         '</tr>';
 
         return $res;

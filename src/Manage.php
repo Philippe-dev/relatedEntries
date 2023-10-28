@@ -14,7 +14,7 @@ declare(strict_types=1);
 
 namespace Dotclear\Plugin\relatedEntries;
 
-use dcCore;
+use Dotclear\App;
 use Dotclear\Core\Process;
 use Dotclear\Core\Backend\UserPref;
 use Dotclear\Core\Backend\Page;
@@ -49,7 +49,7 @@ class Manage extends Process
 
         // Image size combo
         $img_size_combo = [];
-        $media          = dcCore::app()->media;
+        $media          = App::media();
 
         $img_size_combo[__('square')]    = 'sq';
         $img_size_combo[__('thumbnail')] = 't';
@@ -101,18 +101,18 @@ class Manage extends Process
             __('no alt')      => 'none',
         ];
 
-        dcCore::app()->admin->default_tab = empty($_REQUEST['tab']) ? '' : $_REQUEST['tab'];
+        App::backend()->default_tab = empty($_REQUEST['tab']) ? '' : $_REQUEST['tab'];
 
         /*
          * Admin page params.
          */
-        dcCore::app()->admin->from_combo     = $from_combo;
-        dcCore::app()->admin->img_size_combo = $img_size_combo;
-        dcCore::app()->admin->alt_combo      = $alt_combo;
-        dcCore::app()->admin->legend_combo   = $legend_combo;
-        dcCore::app()->admin->html_tag_combo = $html_tag_combo;
-        dcCore::app()->admin->link_combo     = $link_combo;
-        dcCore::app()->admin->bubble_combo   = $bubble_combo;
+        App::backend()->from_combo     = $from_combo;
+        App::backend()->img_size_combo = $img_size_combo;
+        App::backend()->alt_combo      = $alt_combo;
+        App::backend()->legend_combo   = $legend_combo;
+        App::backend()->html_tag_combo = $html_tag_combo;
+        App::backend()->link_combo     = $link_combo;
+        App::backend()->bubble_combo   = $bubble_combo;
 
         // Saving configurations
         if (isset($_POST['save'])) {
@@ -139,7 +139,7 @@ class Manage extends Process
 
             My::settings()->put('relatedEntries_images_options', serialize($opts));
 
-            dcCore::app()->blog->triggerBlog();
+            App::blog()->triggerBlog();
             My::redirect(['upd' => 1]);
         }
 
@@ -147,7 +147,7 @@ class Manage extends Process
             if (isset($_POST['id'])) {
                 // Save Post relatedEntries
                 try {
-                    $meta    = dcCore::app()->meta;
+                    $meta    = App::meta();
                     $entries = implode(', ', $_POST['entries']);
                     $id      = $_POST['id'];
 
@@ -166,15 +166,15 @@ class Manage extends Process
                         }
                     }
 
-                    Http::redirect(dcCore::app()->getPostAdminURL('post', $id, false, ['add' => 1,'upd' => 1]));
+                    Http::redirect(App::postTypes()->get('post')->adminUrl($id, false, ['add' => 1,'upd' => 1]));
                 } catch (Exception $e) {
-                    dcCore::app()->error->add($e->getMessage());
+                    App::error()->add($e->getMessage());
                 }
             } else {
                 //Remove related posts links
                 try {
                     $tags = [];
-                    $meta = dcCore::app()->meta;
+                    $meta = App::meta();
 
                     foreach ($_POST['entries'] as $id) {
                         // Get tags for post
@@ -193,7 +193,7 @@ class Manage extends Process
 
                     My::redirect(['upd' => 2, 'tab' => 'postslist']);
                 } catch (Exception $e) {
-                    dcCore::app()->error->add($e->getMessage());
+                    App::error()->add($e->getMessage());
                 }
             }
         }
@@ -211,16 +211,16 @@ class Manage extends Process
         }
 
         // Filters
-        dcCore::app()->admin->post_filter = new FilterPosts();
+        App::backend()->post_filter = new FilterPosts();
 
         // get list params
-        $params = dcCore::app()->admin->post_filter->params();
+        $params = App::backend()->post_filter->params();
 
-        dcCore::app()->admin->posts      = null;
-        dcCore::app()->admin->posts_list = null;
+        App::backend()->posts      = null;
+        App::backend()->posts_list = null;
 
-        dcCore::app()->admin->page        = !empty($_GET['page']) ? max(1, (int) $_GET['page']) : 1;
-        dcCore::app()->admin->nb_per_page = UserPref::getUserFilters('pages', 'nb');
+        App::backend()->page        = !empty($_GET['page']) ? max(1, (int) $_GET['page']) : 1;
+        App::backend()->nb_per_page = UserPref::getUserFilters('pages', 'nb');
 
         if (isset($_GET['id']) && isset($_GET['addlinks']) && $_GET['addlinks'] == 1) {
             /*
@@ -234,54 +234,54 @@ class Manage extends Process
                 $my_params['post_id']    = $post_id;
                 $my_params['no_content'] = true;
                 $my_params['post_type']  = ['post'];
-                $rs                      = dcCore::app()->blog->getPosts($my_params);
+                $rs                      = App::blog()->getPosts($my_params);
                 $post_title              = $rs->post_title;
                 $post_type               = $rs->post_type;
             } catch (Exception $e) {
-                dcCore::app()->error->add($e->getMessage());
+                App::error()->add($e->getMessage());
             }
 
             // Get posts without current
 
             try {
-                $params['no_content']            = true;
-                $params['exclude_post_id']       = $post_id;
-                dcCore::app()->admin->posts      = dcCore::app()->blog->getPosts($params);
-                dcCore::app()->admin->counter    = dcCore::app()->blog->getPosts($params, true);
-                dcCore::app()->admin->posts_list = new ListingPosts(dcCore::app()->admin->posts, dcCore::app()->admin->counter->f(0));
+                $params['no_content']      = true;
+                $params['exclude_post_id'] = $post_id;
+                App::backend()->posts      = App::blog()->getPosts($params);
+                App::backend()->counter    = App::blog()->getPosts($params, true);
+                App::backend()->posts_list = new ListingPosts(App::backend()->posts, App::backend()->counter->f(0));
             } catch (Exception $e) {
-                dcCore::app()->error->add($e->getMessage());
+                App::error()->add($e->getMessage());
             }
 
             Page::openModule(
                 __('Related entries'),
                 Page::jsLoad('js/_posts_list.js') .
-                dcCore::app()->admin->post_filter->js(dcCore::app()->admin->getPageURL() . '&amp;id=' . $post_id . '&amp;addlinks=1')
+                App::backend()->post_filter->js(App::backend()->getPageURL() . '&amp;id=' . $post_id . '&amp;addlinks=1')
             );
 
-            dcCore::app()->admin->page_title = __('Add links');
+            App::backend()->page_title = __('Add links');
 
             echo Page::breadcrumb(
                 [
-                    Html::escapeHTML(dcCore::app()->blog->name) => '',
-                    __('Related posts')                         => dcCore::app()->admin->getPageURL(),
-                    dcCore::app()->admin->page_title            => '',
+                    Html::escapeHTML(App::blog()->name) => '',
+                    __('Related posts')                 => App::backend()->getPageURL(),
+                    App::backend()->page_title          => '',
                 ]
             ) .
             Notices::getNotices();
 
-            if (!dcCore::app()->error->flag()) {
-                echo '<h3>' . __('Select posts related to entry:') . ' <a href="' . dcCore::app()->getPostAdminURL($post_type, $post_id) . '">' . $post_title . '</a></h3>';
+            if (!App::error()->flag()) {
+                echo '<h3>' . __('Select posts related to entry:') . ' <a href="' . App::postTypes()->get($post_type)->adminUrl($post_id) . '">' . $post_title . '</a></h3>';
 
                 // Show posts
 
                 # filters
-                dcCore::app()->admin->post_filter->display('admin.plugin.' . My::id(), '<input type="hidden" name="p" value="' . My::id() . '" /><input type="hidden" name="addlinks" value="1" /><input type="hidden" name="id" value="' . $post_id . '" />');
+                App::backend()->post_filter->display('admin.plugin.' . My::id(), '<input type="hidden" name="p" value="' . My::id() . '" /><input type="hidden" name="addlinks" value="1" /><input type="hidden" name="id" value="' . $post_id . '" />');
 
-                dcCore::app()->admin->posts_list->display(
-                    dcCore::app()->admin->post_filter->page,
-                    dcCore::app()->admin->post_filter->nb,
-                    '<form action="' . dcCore::app()->admin->getPageURL() . '" method="post" id="form-entries">' .
+                App::backend()->posts_list->display(
+                    App::backend()->post_filter->page,
+                    App::backend()->post_filter->nb,
+                    '<form action="' . App::backend()->getPageURL() . '" method="post" id="form-entries">' .
 
                     '%s' .
 
@@ -293,11 +293,11 @@ class Manage extends Process
                     '<p>' .
                     form::hidden(['addlinks'], true) .
                     form::hidden(['id'], $post_id) .
-                    dcCore::app()->adminurl->getHiddenFormFields('admin.plugin.' . My::id(), dcCore::app()->admin->post_filter->values()) .
-                    dcCore::app()->formNonce() . '</p>' .
+                    App::backend()->url()->getHiddenFormFields('admin.plugin.' . My::id(), App::backend()->post_filter->values()) .
+                    App::nonce()->getFormNonce() . '</p>' .
                     '</div>' .
                     '</form>',
-                    dcCore::app()->admin->post_filter->show()
+                    App::backend()->post_filter->show()
                 );
             }
 
@@ -309,33 +309,33 @@ class Manage extends Process
             */
 
             if (isset($_GET['page'])) {
-                dcCore::app()->admin->default_tab = 'postslist';
+                App::backend()->default_tab = 'postslist';
             }
 
             // Get posts with related posts
 
             try {
-                $params['no_content']            = true;
-                $params['sql']                   = 'AND P.post_id IN (SELECT META.post_id FROM ' . dcCore::app()->prefix . 'meta META WHERE META.post_id = P.post_id ' . "AND META.meta_type = 'relatedEntries' ) ";
-                dcCore::app()->admin->posts      = dcCore::app()->blog->getPosts($params);
-                dcCore::app()->admin->counter    = dcCore::app()->blog->getPosts($params, true);
-                dcCore::app()->admin->posts_list = new BackendList(dcCore::app()->admin->posts, dcCore::app()->admin->counter->f(0));
+                $params['no_content']      = true;
+                $params['sql']             = 'AND P.post_id IN (SELECT META.post_id FROM ' . App::con()->prefix() . 'meta META WHERE META.post_id = P.post_id ' . "AND META.meta_type = 'relatedEntries' ) ";
+                App::backend()->posts      = App::blog()->getPosts($params);
+                App::backend()->counter    = App::blog()->getPosts($params, true);
+                App::backend()->posts_list = new BackendList(App::backend()->posts, App::backend()->counter->f(0));
             } catch (Exception $e) {
-                dcCore::app()->error->add($e->getMessage());
+                App::error()->add($e->getMessage());
             }
 
             Page::openModule(
                 __('Related entries'),
                 Page::jsLoad('js/_posts_list.js') .
-                dcCore::app()->admin->post_filter->js(dcCore::app()->admin->getPageURL() . '#postslist') .
-                Page::jsPageTabs(dcCore::app()->admin->default_tab) .
+                App::backend()->post_filter->js(App::backend()->getPageURL() . '#postslist') .
+                Page::jsPageTabs(App::backend()->default_tab) .
                 Page::jsConfirmClose('config-form')
             );
 
             echo Page::breadcrumb(
                 [
-                    Html::escapeHTML(dcCore::app()->blog->name) => '',
-                    __('Related posts')                         => '',
+                    Html::escapeHTML(App::blog()->name) => '',
+                    __('Related posts')                 => '',
                 ]
             ) .
             Notices::getNotices();
@@ -352,7 +352,7 @@ class Manage extends Process
 
             echo
             '<div class="multi-part" id="parameters" title="' . __('Parameters') . '">' .
-            '<form action="' . dcCore::app()->admin->getPageURL() . '" method="post" id="config-form">' .
+            '<form action="' . App::backend()->getPageURL() . '" method="post" id="config-form">' .
             '<div class="fieldset"><h3>' . __('Activation') . '</h3>' .
                 '<p><label class="classic" for="relatedEntries_enabled">' .
                 form::checkbox('relatedEntries_enabled', '1', My::settings()->relatedEntries_enabled) .
@@ -372,7 +372,7 @@ class Manage extends Process
             '</div>' .
             '<div class="fieldset"><h3>' . __('Images extracting options') . '</h3>';
 
-            if (dcCore::app()->plugins->moduleExists('listImages')) {
+            if (App::plugins()->moduleExists('listImages')) {
                 echo
                 '<p><label class="classic" for="relatedEntries_images">' .
                 form::checkbox('relatedEntries_images', '1', My::settings()->relatedEntries_images) .
@@ -383,7 +383,7 @@ class Manage extends Process
                 '<p><label for="from">' . __('Images origin:') . '</label>' .
                 form::combo(
                     'from',
-                    dcCore::app()->admin->from_combo,
+                    App::backend()->from_combo,
                     ($images['from'] != '' ? $images['from'] : 'image')
                 ) .
                 '</p>' .
@@ -391,7 +391,7 @@ class Manage extends Process
                 '<p><label for="size">' . __('Image size:') . '</label>' .
                 form::combo(
                     'size',
-                    dcCore::app()->admin->img_size_combo,
+                    App::backend()->img_size_combo,
                     ($images['size'] != '' ? $images['size'] : 't')
                 ) .
                 '</p>' .
@@ -403,7 +403,7 @@ class Manage extends Process
                 '<p><label for="alt">' . __('Images alt attribute:') . '</label>' .
                 form::combo(
                     'alt',
-                    dcCore::app()->admin->alt_combo,
+                    App::backend()->alt_combo,
                     ($images['alt'] != '' ? $images['alt'] : 'inherit')
                 ) .
                 '</p>' .
@@ -421,7 +421,7 @@ class Manage extends Process
                 '<p><label for="legend">' . __('Legend:') . '</label>' .
                 form::combo(
                     'legend',
-                    dcCore::app()->admin->legend_combo,
+                    App::backend()->legend_combo,
                     ($images['legend'] != '' ? $images['legend'] : 'none')
                 ) .
                 '</p>' .
@@ -429,7 +429,7 @@ class Manage extends Process
                 '<p><label for="html_tag">' . __('HTML tag around image:') . '</label>' .
                 form::combo(
                     'html_tag',
-                    dcCore::app()->admin->html_tag_combo,
+                    App::backend()->html_tag_combo,
                     ($images['html_tag'] != '' ? $images['html_tag'] : 'div')
                 ) .
                 '</p>' .
@@ -441,7 +441,7 @@ class Manage extends Process
                 '<p><label for="link">' . __('Links destination:') . '</label>' .
                 form::combo(
                     'link',
-                    dcCore::app()->admin->link_combo,
+                    App::backend()->link_combo,
                     ($images['link'] != '' ? $images['link'] : 'entry')
                 ) .
                 '</p>' .
@@ -449,7 +449,7 @@ class Manage extends Process
                 '<p><label for="bubble">' . __('Bubble:') . '</label>' .
                 form::combo(
                     'bubble',
-                    dcCore::app()->admin->bubble_combo,
+                    App::backend()->bubble_combo,
                     ($images['bubble'] != '' ? $images['bubble'] : 'image')
                 ) .
                 '</p>' .
@@ -464,7 +464,7 @@ class Manage extends Process
             }
 
             echo
-            '<p class="clear"><input type="submit" name="save" value="' . __('Save configuration') . '" />' . dcCore::app()->formNonce() . '</p>' .
+            '<p class="clear"><input type="submit" name="save" value="' . __('Save configuration') . '" />' . App::nonce()->getFormNonce() . '</p>' .
             '</form>' .
             '</div>' .
 
@@ -472,13 +472,13 @@ class Manage extends Process
 
             '<div class="multi-part" id="postslist" title="' . __('Related posts list') . '">';
 
-            dcCore::app()->admin->post_filter->display('admin.plugin.' . My::id(), '<input type="hidden" name="p" value="' . My::id() . '" /><input type="hidden" name="tab" value="postslist" />');
+            App::backend()->post_filter->display('admin.plugin.' . My::id(), '<input type="hidden" name="p" value="' . My::id() . '" /><input type="hidden" name="tab" value="postslist" />');
 
             // Show posts
-            dcCore::app()->admin->posts_list->display(
-                dcCore::app()->admin->post_filter->page,
-                dcCore::app()->admin->post_filter->nb,
-                '<form action="' . dcCore::app()->admin->getPageURL() . '" method="post" id="form-entries">' .
+            App::backend()->posts_list->display(
+                App::backend()->post_filter->page,
+                App::backend()->post_filter->nb,
+                '<form action="' . App::backend()->getPageURL() . '" method="post" id="form-entries">' .
 
                 '%s' .
 
@@ -488,11 +488,11 @@ class Manage extends Process
                 '<p class="col right">' .
                 '<input type="submit" class="delete" value="' . __('Remove all links from selected posts') . '" /></p>' .
                 '<p>' .
-                dcCore::app()->adminurl->getHiddenFormFields('admin.plugin.' . My::id(), dcCore::app()->admin->post_filter->values()) .
-                dcCore::app()->formNonce() . '</p>' .
+                App::backend()->url()->getHiddenFormFields('admin.plugin.' . My::id(), App::backend()->post_filter->values()) .
+                App::nonce()->getFormNonce() . '</p>' .
                 '</div>' .
                 '</form>',
-                dcCore::app()->admin->post_filter->show()
+                App::backend()->post_filter->show()
             );
 
             echo

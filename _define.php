@@ -16,12 +16,9 @@ $this->registerModule(
     '4.0',
     [
         'requires'    => [['core', '2.28']],
-        'permissions' => dcCore::app()->auth->makePermissions([
-            dcAuth::PERMISSION_USAGE,
-            dcAuth::PERMISSION_CONTENT_ADMIN,
-        ]),
-        'priority' => 3000,
-        'type'     => 'plugin',
-        'support'  => 'https://github.com/Philippe-dev/relatedEntries',
+        'permissions' => 'My',
+        'priority'    => 3000,
+        'type'        => 'plugin',
+        'support'     => 'https://github.com/Philippe-dev/relatedEntries',
     ]
 );

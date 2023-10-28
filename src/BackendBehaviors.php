@@ -14,7 +14,7 @@ declare(strict_types=1);
 
 namespace Dotclear\Plugin\relatedEntries;
 
-use dcCore;
+use Dotclear\App;
 
 class BackendBehaviors
 {
@@ -23,23 +23,23 @@ class BackendBehaviors
         $cols['posts'][1]['Links'] = [true, __('Links')];
     }
 
-    private static function adminEntryListHeader($core, $rs, $cols)
+    private static function adminEntryListHeader($rs, $cols)
     {
         $cols['Links'] = '<th scope="col">' . __('Links') . '</th>';
     }
 
     public static function adminPostListHeader($rs, $cols)
     {
-        self::adminEntryListHeader(dcCore::app(), $rs, $cols);
+        self::adminEntryListHeader($rs, $cols);
     }
 
-    public static function adminEntryListValue($core, $rs, $cols)
+    public static function adminEntryListValue($rs, $cols)
     {
-        $cols['Links'] = '<td class="nowrap">' . dcCore::app()->meta->getMetaRecordset($rs->post_meta, 'relatedEntries')->count() . '</td>';
+        $cols['Links'] = '<td class="nowrap">' . App::meta()->getMetaRecordset($rs->post_meta, 'relatedEntries')->count() . '</td>';
     }
 
     public static function adminPostListValue($rs, $cols)
     {
-        self::adminEntryListValue(dcCore::app(), $rs, $cols);
+        self::adminEntryListValue($rs, $cols);
     }
 }
