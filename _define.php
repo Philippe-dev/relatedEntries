@@ -13,7 +13,7 @@ $this->registerModule(
     'Related entries',
     'Add links to other related posts',
     'Philippe aka amalgame',
-    '4.0',
+    '4.0.1',
     [
         'requires'    => [['core', '2.28']],
         'permissions' => 'My',
