@@ -27,7 +27,7 @@ class FrontendTemplates
      *
      * @return     string
      */
-    public static function relatedEntriesWidget(WidgetsElement $widget): string
+    public static function relatedEntriesWidget(WidgetsElement $widget)
     {
         $params = [];
         if ($widget->offline) {
