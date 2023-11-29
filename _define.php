@@ -9,6 +9,7 @@
  *
  * @copyright GPL-2.0 [https://www.gnu.org/licenses/gpl-2.0.html]
  */
+
 $this->registerModule(
     'Related entries',
     'Add links to other related posts',
@@ -17,7 +18,6 @@ $this->registerModule(
     [
         'requires'    => [['core', '2.28']],
         'permissions' => 'My',
-        'priority'    => 3000,
         'type'        => 'plugin',
         'support'     => 'https://github.com/Philippe-dev/relatedEntries',
     ]
