@@ -94,41 +94,41 @@ class BackendMiniList extends Listing
             $cat_title = __('None');
         }
 
-        $img = '<img alt="%1$s" title="%1$s" src="images/%2$s" />';
+        $img = '<img style="width: 1.4em; vertical-align: middle" alt="%1$s" title="%1$s" src="images/%2$s" />';
         switch ($this->rs->post_status) {
             case App::blog()::POST_PUBLISHED:
-                $img_status = sprintf($img, __('published'), 'check-on.png');
+                $img_status = sprintf($img, __('published'), 'check-on.svg');
 
                 break;
             case App::blog()::POST_UNPUBLISHED:
-                $img_status = sprintf($img, __('unpublished'), 'check-off.png');
+                $img_status = sprintf($img, __('unpublished'), 'check-off.svg');
 
                 break;
             case App::blog()::POST_SCHEDULED:
-                $img_status = sprintf($img, __('scheduled'), 'scheduled.png');
+                $img_status = sprintf($img, __('scheduled'), 'scheduled.svg');
 
                 break;
             case App::blog()::POST_PENDING:
-                $img_status = sprintf($img, __('pending'), 'check-wrn.png');
+                $img_status = sprintf($img, __('pending'), 'check-wrn.svg');
 
                 break;
         }
 
         $protected = '';
         if ($this->rs->post_password) {
-            $protected = sprintf($img, __('protected'), 'locker.png');
+            $protected = sprintf($img, __('protected'), 'locker.svg');
         }
 
         $selected = '';
         if ($this->rs->post_selected) {
-            $selected = sprintf($img, __('selected'), 'selected.png');
+            $selected = sprintf($img, __('selected'), 'selected.svg');
         }
 
         $attach   = '';
         $nb_media = $this->rs->countMedia();
         if ($nb_media > 0) {
             $attach_str = $nb_media == 1 ? __('%d attachment') : __('%d attachments');
-            $attach     = sprintf($img, sprintf($attach_str, $nb_media), 'attach.png');
+            $attach     = sprintf($img, sprintf($attach_str, $nb_media), 'attach.svg');
         }
 
         $res = '<tr class="line' . ($this->rs->post_status != 1 ? ' offline' : '') . '"' .
@@ -139,7 +139,7 @@ class BackendMiniList extends Listing
         '<td class="nowrap">' . Date::dt2str(__('%Y-%m-%d %H:%M'), $this->rs->post_dt) . '</td>' .
         '<td class="nowrap">' . $cat_title . '</td>' .
         '<td class="nowrap status">' . $img_status . ' ' . $selected . ' ' . $protected . ' ' . $attach . '</td>' .
-        '<td class="nowrap count"><a class="link-remove metaRemove" href="' . App::backend()->url()->get('admin.plugin.' . My::id()) . '&amp;id=' . $id . '&amp;r_id=' . $this->rs->post_id . '" title="' . __('Delete this link') . '"><img src="images/trash.png" alt="supprimer" /></a></td>' .
+        '<td class="nowrap count"><a class="link-remove metaRemove" href="' . App::backend()->url()->get('admin.plugin.' . My::id()) . '&amp;id=' . $id . '&amp;r_id=' . $this->rs->post_id . '" title="' . __('Delete this link') . '"><img src="images/trash.svg" alt="supprimer" /></a></td>' .
         '</tr>';
 
         return $res;
