@@ -142,7 +142,7 @@ class BackendMiniList extends Listing
         '<td class="nowrap">' . Date::dt2str(__('%Y-%m-%d %H:%M'), $this->rs->post_dt) . '</td>' .
         '<td class="nowrap">' . $cat_title . '</td>' .
         '<td class="nowrap status">' . $img_status . ' ' . $selected . ' ' . $protected . ' ' . $attach . '</td>' .
-        '<td class="nowrap count"><a class="link-remove metaRemove mark element-remove" href="' . App::backend()->url()->get('admin.plugin.' . My::id()) . '&amp;id=' . $id . '&amp;r_id=' . $this->rs->post_id . '" title="' . __('Delete this link') . '"><img style="width: 1.4em" class="mark element-remove" src="images/trash.svg" alt="supprimer" /></a></td>' .
+        '<td class="nowrap count"><a class="link-remove metaRemove" href="' . App::backend()->url()->get('admin.plugin.' . My::id()) . '&amp;id=' . $id . '&amp;r_id=' . $this->rs->post_id . '" title="' . __('Delete this link') . '"><img class="mark element-remove" src="images/trash.svg" alt="supprimer" /></a></td>' .
         '</tr>';
 
         return $res;
