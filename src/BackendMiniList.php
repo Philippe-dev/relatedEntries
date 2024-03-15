@@ -74,7 +74,7 @@ class BackendMiniList extends Listing
      *
      * @return     string
      */
-    private function postLine(int $count, bool $checked): string
+    private function postLine(int $count, bool $checked, string $id = '', string $type = ''): string
     {
         $id = $_GET['id'];
 
@@ -94,44 +94,47 @@ class BackendMiniList extends Listing
             $cat_title = __('None');
         }
 
-        $img = '<img style="width: 1.4em; vertical-align: middle" alt="%1$s" title="%1$s" src="images/%2$s" />';
+        $img = '<img alt="%1$s" src="images/%2$s" class="mark mark-%3$s">';
         switch ($this->rs->post_status) {
             case App::blog()::POST_PUBLISHED:
-                $img_status = sprintf($img, __('published'), 'check-on.svg');
+                $img_status = sprintf($img, __('Published'), 'published.svg', 'published');
+                $sts_class  = 'sts-online';
 
                 break;
             case App::blog()::POST_UNPUBLISHED:
-                $img_status = sprintf($img, __('unpublished'), 'check-off.svg');
+                $img_status = sprintf($img, __('Unpublished'), 'unpublished.svg', 'unpublished');
+                $sts_class  = 'sts-offline';
 
                 break;
             case App::blog()::POST_SCHEDULED:
-                $img_status = sprintf($img, __('scheduled'), 'scheduled.svg');
+                $img_status = sprintf($img, __('Scheduled'), 'scheduled.svg', 'scheduled');
+                $sts_class  = 'sts-scheduled';
 
                 break;
             case App::blog()::POST_PENDING:
-                $img_status = sprintf($img, __('pending'), 'check-wrn.svg');
+                $img_status = sprintf($img, __('Pending'), 'pending.svg', 'pending');
+                $sts_class  = 'sts-pending';
 
                 break;
-        }
-
+            }
         $protected = '';
         if ($this->rs->post_password) {
-            $protected = sprintf($img, __('protected'), 'locker.svg');
+            $protected = sprintf($img, __('protected'), 'locker.svg', 'locked');
         }
 
         $selected = '';
         if ($this->rs->post_selected) {
-            $selected = sprintf($img, __('selected'), 'selected.svg');
+            $selected = sprintf($img, __('selected'), 'selected.svg', 'selected');
         }
 
         $attach   = '';
         $nb_media = $this->rs->countMedia();
         if ($nb_media > 0) {
             $attach_str = $nb_media == 1 ? __('%d attachment') : __('%d attachments');
-            $attach     = sprintf($img, sprintf($attach_str, $nb_media), 'attach.svg');
+            $attach     = sprintf($img, sprintf($attach_str, $nb_media), 'attach.svg', 'attach');
         }
 
-        $res = '<tr class="line' . ($this->rs->post_status != 1 ? ' offline' : '') . '"' .
+        $res = '<tr class="line ' . ($this->rs->post_status != App::blog()::POST_PUBLISHED ? 'offline ' : '') . $sts_class . '"' .
         ' id="p' . $this->rs->post_id . '">';
 
         $res .= '<td class="maximal"><a href="' . App::postTypes()->get($this->rs->post_type)->adminUrl($this->rs->post_id) . '">' .
@@ -139,7 +142,7 @@ class BackendMiniList extends Listing
         '<td class="nowrap">' . Date::dt2str(__('%Y-%m-%d %H:%M'), $this->rs->post_dt) . '</td>' .
         '<td class="nowrap">' . $cat_title . '</td>' .
         '<td class="nowrap status">' . $img_status . ' ' . $selected . ' ' . $protected . ' ' . $attach . '</td>' .
-        '<td class="nowrap count"><a class="link-remove metaRemove" href="' . App::backend()->url()->get('admin.plugin.' . My::id()) . '&amp;id=' . $id . '&amp;r_id=' . $this->rs->post_id . '" title="' . __('Delete this link') . '"><img src="images/trash.svg" alt="supprimer" /></a></td>' .
+        '<td class="nowrap count"><a class="link-remove metaRemove mark element-remove" href="' . App::backend()->url()->get('admin.plugin.' . My::id()) . '&amp;id=' . $id . '&amp;r_id=' . $this->rs->post_id . '" title="' . __('Delete this link') . '"><img style="width: 1.4em" class="mark element-remove" src="images/trash.svg" alt="supprimer" /></a></td>' .
         '</tr>';
 
         return $res;
