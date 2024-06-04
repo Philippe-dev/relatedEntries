@@ -256,7 +256,7 @@ class Manage extends Process
             Page::openModule(
                 __('Related entries'),
                 Page::jsLoad('js/_posts_list.js') .
-                App::backend()->post_filter->js(App::backend()->getPageURL() . '&amp;id=' . $post_id . '&amp;addlinks=1')
+                App::backend()->post_filter->js(App::backend()->url()->get('admin.plugin'). '&p=' . My::id() . '&id=' . $post_id . '&addlinks=1')
             );
 
             App::backend()->page_title = __('Add links');
@@ -327,7 +327,7 @@ class Manage extends Process
             Page::openModule(
                 __('Related entries'),
                 Page::jsLoad('js/_posts_list.js') .
-                App::backend()->post_filter->js(App::backend()->getPageURL() . '#postslist') .
+                App::backend()->post_filter->js(App::backend()->url()->get('admin.plugin'). '&p=' . My::id() . '#postslist') .
                 Page::jsPageTabs(App::backend()->default_tab) .
                 Page::jsConfirmClose('config-form')
             );
@@ -374,11 +374,13 @@ class Manage extends Process
 
             if (App::plugins()->moduleExists('listImages')) {
                 echo
+                '<div class="three-boxes">' .
                 '<p><label class="classic" for="relatedEntries_images">' .
                 form::checkbox('relatedEntries_images', '1', My::settings()->relatedEntries_images) .
                 __('Extract images from related posts') . '</label></p>' .
-
-                '<div class="two-boxes odd">' .
+                '</div>' .
+                
+                '<div class="three-boxes">' .
 
                 '<p><label for="from">' . __('Images origin:') . '</label>' .
                 form::combo(
@@ -416,7 +418,7 @@ class Manage extends Process
                     form::field('length', 3, 3, $images['length']) .
                 '</p>' .
 
-                '</div><div class="two-boxes even">' .
+                '</div><div class="three-boxes">' .
 
                 '<p><label for="legend">' . __('Legend:') . '</label>' .
                 form::combo(

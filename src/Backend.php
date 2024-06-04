@@ -169,14 +169,7 @@ class Backend extends Process
             '});' . "\n" .
         '});' . "\n" .
         '</script>' .
-        '<style type="text/css">' . "\n" .
-        'a.links-remove {' . "\n" .
-        'color : #c44d58;' . "\n" .
-        '}' . "\n" .
-        '.add {' . "\n" .
-            'font-size : 1.5rem;' . "\n" .
-            '}' . "\n" .
-        '</style>';
+        My::cssLoad('admin-post.css') . "\n";
     }
 
     public static function adminPostForm($post)
@@ -233,10 +226,10 @@ class Backend extends Process
                 App::backend()->post_list->display(App::backend()->page, App::backend()->nb_per_page) .
                 '</div>';
             echo
-
-            '<p class="two-boxes add"><a href="' . App::backend()->url()->get('admin.plugin.' . My::id()) . '&amp;id=' . $id . '&amp;addlinks=1"><strong>' . __('Add links') . '</strong></a></p>' .
-            '<p class="two-boxes right"><a class="links-remove delete" href="' . App::backend()->url()->get('admin.plugin.' . My::id()) . '&amp;id=' . $id . '&amp;r_id=' . $meta_rs . '&upd=1">' . __('Remove all links') . '</a></p>' .
-
+            '<ul>' .
+            '<li class="add"><a href="' . App::backend()->url()->get('admin.plugin.' . My::id()) . '&amp;id=' . $id . '&amp;addlinks=1"><strong>' . __('Add links') . '</strong></a></li>' .
+            '<li class="right"><a class="links-remove delete" href="' . App::backend()->url()->get('admin.plugin.' . My::id()) . '&amp;id=' . $id . '&amp;r_id=' . $meta_rs . '&upd=1">' . __('Remove all links') . '</a></li>' .
+            '</ul>' .
             form::hidden(['relatedEntries'], $meta_rs) .
             '</div>' .
             '</div>';

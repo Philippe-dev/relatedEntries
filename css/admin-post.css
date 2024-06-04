@@ -1,0 +1,20 @@
+a.links-remove {
+    color: #c44d58;
+    font-size: .9em
+}
+
+#relatedEntries-area ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+#relatedEntries-area li {
+    width: 50%;
+    display: inline-block;
+    font-weight: bold;
+}
+
+#relatedEntries-area li.right {
+    text-align: right;
+}

@@ -13,9 +13,9 @@ $this->registerModule(
     'Related entries',
     'Add links to other related posts',
     'Philippe aka amalgame',
-    '4.0.2',
+    '4.1',
     [
-        'requires'    => [['core', '2.28']],
+        'requires'    => [['core', '2.30']],
         'permissions' => 'My',
         'priority'    => 3000,
         'type'        => 'plugin',
