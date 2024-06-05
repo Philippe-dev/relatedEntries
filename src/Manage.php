@@ -281,7 +281,7 @@ class Manage extends Process
                 App::backend()->posts_list->display(
                     App::backend()->post_filter->page,
                     App::backend()->post_filter->nb,
-                    '<form action="' . App::backend()->getPageURL() . '" method="post" id="form-entries">' .
+                    '<form action="' . My::manageUrl() . '" method="post" id="form-entries">' .
 
                     '%s' .
 
@@ -480,7 +480,7 @@ class Manage extends Process
             App::backend()->posts_list->display(
                 App::backend()->post_filter->page,
                 App::backend()->post_filter->nb,
-                '<form action="' . App::backend()->getPageURL() . '" method="post" id="form-entries">' .
+                '<form action="' . My::manageUrl() . '" method="post" id="form-entries">' .
 
                 '%s' .
 
