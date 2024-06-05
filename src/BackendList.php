@@ -122,7 +122,7 @@ class BackendList extends Listing
         if (App::auth()->check(App::auth()->makePermissions([
             App::auth()::PERMISSION_CATEGORIES,
         ]), App::blog()->id)) {
-            $cat_link = '<a href="' . App::backend()->url()->get('admin.category', ['id' => '%s'], '&amp;', true) . '">%s</a>';
+            $cat_link = '<a href="' . App::backend()->url()->get('admin.category', ['id' => '%s'], '&', true) . '">%s</a>';
         } else {
             $cat_link = '%2$s';
         }

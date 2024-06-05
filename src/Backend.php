@@ -195,7 +195,7 @@ class Backend extends Process
                 '<span class="form-note">' . __('Links to related posts.') . '</span>' .
                 '<div id="relatedEntries-list" >' .
                 '<p>' . __('No related posts') . '</p>' .
-                '<p class="add"><a href="' . App::backend()->url()->get('admin.plugin.' . My::id()) . '&amp;id=' . $id . '&amp;upd=1&amp;addlinks=1"><strong>' . __('Add links') . '</strong></a></p>' .
+                '<p class="add"><a href="' . App::backend()->url()->get('admin.plugin.' . My::id()) . '&id=' . $id . '&upd=1&addlinks=1"><strong>' . __('Add links') . '</strong></a></p>' .
                 '</div>' .
                 '</div>';
         } else {
@@ -227,8 +227,8 @@ class Backend extends Process
                 '</div>';
             echo
             '<ul>' .
-            '<li class="add"><a href="' . App::backend()->url()->get('admin.plugin.' . My::id()) . '&amp;id=' . $id . '&amp;addlinks=1"><strong>' . __('Add links') . '</strong></a></li>' .
-            '<li class="right"><a class="links-remove delete" href="' . App::backend()->url()->get('admin.plugin.' . My::id()) . '&amp;id=' . $id . '&amp;r_id=' . $meta_rs . '&upd=1">' . __('Remove all links') . '</a></li>' .
+            '<li class="add"><a href="' . App::backend()->url()->get('admin.plugin.' . My::id()) . '&id=' . $id . '&addlinks=1"><strong>' . __('Add links') . '</strong></a></li>' .
+            '<li class="right"><a class="links-remove delete" href="' . App::backend()->url()->get('admin.plugin.' . My::id()) . '&id=' . $id . '&r_id=' . $meta_rs . '&upd=1">' . __('Remove all links') . '</a></li>' .
             '</ul>' .
             form::hidden(['relatedEntries'], $meta_rs) .
             '</div>' .
