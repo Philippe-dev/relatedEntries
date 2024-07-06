@@ -88,7 +88,7 @@ class Backend extends Process
 
     public static function adminPostFilter(ArrayObject $filters)
     {
-        if (My::url() === App::backend()->url()->get('admin.plugin.' . My::id())) {
+        if (App::backend()->getPageURL() === App::backend()->url()->get('admin.plugin.' . My::id())) {
             $categories = null;
 
             try {
