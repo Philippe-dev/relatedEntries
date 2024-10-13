@@ -32,7 +32,7 @@ class BackendList extends Listing
      * @param      string  $enclose_block  The enclose block
      * @param      bool    $filter         The filter
      */
-    public function display(int $page, int $nb_per_page, string $enclose_block = '', bool $filter = false)
+    public function display(int $page, int $nb_per_page, string $enclose_block = '', bool $filter = false): void
     {
         if ($this->rs->isEmpty()) {
             if ($filter) {
@@ -53,7 +53,10 @@ class BackendList extends Listing
                 '<table>';
 
             if ($filter) {
-                $html_block .= '<caption>' . sprintf(__('List of %s entries matching the filter.'), $this->rs_count) . '</caption>';
+                $html_block .= '<caption>' . sprintf(
+                    __('List of %s entry matching the filter.', 'List of %s entries matching the filter.', $this->rs_count),
+                    $this->rs_count
+                ) . '</caption>';
             } else {
                 $html_block .= '<caption>' .
                 sprintf(__('List of entries (%s)'), $this->rs_count) . '</caption>';
