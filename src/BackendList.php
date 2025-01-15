@@ -209,7 +209,7 @@ class BackendList extends Listing
             'author'     => '<td class="nowrap">' . Html::escapeHTML($this->rs->user_id) . '</td>',
             'comments'   => '<td class="nowrap count">' . $this->rs->nb_comment . '</td>',
             'trackbacks' => '<td class="nowrap count">' . $this->rs->nb_trackback . '</td>',
-            'status'     => '<td class="nowrap status">' . $img_status . ' ' . $selected . ' ' . $protected . ' ' . $attach . '</td>',
+            'status'     => '<td class="nowrap status count">' . $img_status . ' ' . $selected . ' ' . $protected . ' ' . $attach . '</td>',
         ];
         $cols = new ArrayObject($cols);
         App::behavior()->callBehavior('adminPostListValueV2', $this->rs, $cols);
