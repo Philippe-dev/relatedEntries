@@ -5,7 +5,7 @@
  * @package    Dotclear
  * @subpackage Plugins
  *
- * @author Philippe aka amalgame <philippe@dissitou.org>
+ * @author Philippe aka amalgame
  *
  * @copyright GPL-2.0 [https://www.gnu.org/licenses/gpl-2.0.html]
  */
@@ -13,7 +13,7 @@ $this->registerModule(
     'Related entries',
     'Add links to other related posts',
     'Philippe aka amalgame',
-    '4.3',
+    '4.4',
     [
         'requires'    => [['core', '2.33']],
         'permissions' => 'My',

@@ -5,7 +5,7 @@
  * @package    Dotclear
  * @subpackage Plugins
  *
- * @author Philippe aka amalgame <philippe@dissitou.org>
+ * @author Philippe aka amalgame
  *
  * @copyright GPL-2.0 [https://www.gnu.org/licenses/gpl-2.0.html]
  */
