@@ -191,8 +191,8 @@ class Backend extends Process
         if (!$meta_rs) {
             echo
                 '<div class="area" id="relatedEntries-area">' .
-                '<label class="bold" for="relatedEntries-list">' . __('Related entries:') . '</label>' .
-                '<span class="form-note">' . __('Links to related posts.') . '</span>' .
+                '<label class="bold" for="relatedEntries-list">' . __('Related entries:') . ' ' .
+                '<span class="form-note">' . __('Links to related posts.') . '</span>' . '</label>' .
                 '<div id="relatedEntries-list" >' .
                 '<p>' . __('No related posts') . '</p>' .
                 '<p class="add"><a href="' . App::backend()->url()->get('admin.plugin.' . My::id()) . '&id=' . $id . '&upd=1&addlinks=1"><strong>' . __('Add links') . '</strong></a></p>' .
@@ -201,8 +201,8 @@ class Backend extends Process
         } else {
             echo
                 '<div class="area" id="relatedEntries-area">' .
-                '<label class="bold" for="relatedEntries-list">' . __('Related entries:') . '</label>' .
-                '<span class="form-note">' . __('Links to related posts.') . '</span>' .
+                '<label class="bold" for="relatedEntries-list">' . __('Related entries:') . ' ' .
+                '<span class="form-note">' . __('Links to related posts.') . '</span>' . '</label>' .
                 '<div id="relatedEntries-list" >';
 
             // Get related posts
