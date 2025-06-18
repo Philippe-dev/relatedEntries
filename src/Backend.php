@@ -60,7 +60,7 @@ class Backend extends Process
             App::behavior()->addBehavior('adminPostListValueV2', [BackendBehaviors::class, 'adminPostListValue']);
         }
 
-        App::behavior()->addBehavior('adminPostFilterV2', [self::class,  'adminPostFilter']);
+        //App::behavior()->addBehavior('adminPostFilterV2', [self::class,  'adminPostFilter']);
         App::behavior()->addBehavior('adminPageHelpBlock', [self::class,  'adminPageHelpBlock']);
         App::behavior()->addBehavior('adminPostHeaders', [self::class,  'postHeaders']);
         App::behavior()->addBehavior('adminPostForm', [self::class,  'adminPostForm']);
@@ -86,7 +86,7 @@ class Backend extends Process
         return true;
     }
 
-    public static function adminPostFilter(ArrayObject $filters)
+    /*public static function adminPostFilter(ArrayObject $filters)
     {
         if (App::backend()->getPageURL() === App::backend()->url()->get('admin.plugin.' . My::id())) {
             $categories = null;
@@ -128,7 +128,7 @@ class Backend extends Process
                 ->options($my_categories_combo)
                 ->prime(true));
         }
-    }
+    }*/
 
     public static function adminPageHelpBlock(ArrayObject $blocks): void
     {

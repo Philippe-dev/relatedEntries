@@ -15,16 +15,22 @@ declare(strict_types=1);
 namespace Dotclear\Plugin\relatedEntries;
 
 use Dotclear\App;
-use Dotclear\Core\Process;
-use Dotclear\Core\Backend\UserPref;
-use Dotclear\Core\Backend\Page;
+use Dotclear\Core\Backend\Filter\FilterPosts;
+use Dotclear\Core\Backend\Listing\ListingPosts;
 use Dotclear\Core\Backend\Notices;
-use Exception;
-use form;
+use Dotclear\Core\Backend\Page;
+use Dotclear\Core\Backend\UserPref;
+use Dotclear\Core\Process;
+use Dotclear\Helper\Html\Form\Div;
+use Dotclear\Helper\Html\Form\Form;
+use Dotclear\Helper\Html\Form\Hidden;
+use Dotclear\Helper\Html\Form\Link;
+use Dotclear\Helper\Html\Form\Para;
+use Dotclear\Helper\Html\Form\Submit;
+use Dotclear\Helper\Html\Form\Text;
 use Dotclear\Helper\Html\Html;
 use Dotclear\Helper\Network\Http;
-use Dotclear\Core\Backend\Listing\ListingPosts;
-use Dotclear\Core\Backend\Filter\FilterPosts;
+use Exception;
 
 class Manage extends Process
 {
@@ -160,7 +166,7 @@ class Manage extends Process
             Page::openModule(
                 __('Related entries'),
                 Page::jsLoad('js/_posts_list.js') .
-                App::backend()->post_filter->js(App::backend()->url()->get('admin.plugin'). '&p=' . My::id() . '&id=' . $post_id . '&addlinks=1')
+                App::backend()->post_filter->js(App::backend()->url()->get('admin.plugin') . '&p=' . My::id() . '&id=' . $post_id . '&addlinks=1')
             );
 
             App::backend()->page_title = __('Add links');
@@ -175,32 +181,49 @@ class Manage extends Process
             Notices::getNotices();
 
             if (!App::error()->flag()) {
-                echo '<h3>' . __('Select posts related to entry:') . ' <a href="' . App::postTypes()->get($post_type)->adminUrl($post_id) . '">' . $post_title . '</a></h3>';
+                echo
+                (new Text('h3', __('Select posts related to entry:') . '&nbsp;'))
+                ->items([
+                    (new Link())
+                        ->href(App::postTypes()->get($post_type)->adminUrl($post_id))
+                        ->text($post_title),
+                ])
+                ->render();
 
-                // Show posts
+                $hidden = (new Para())
+                    ->items([(new Hidden('addlinks', '1')),
+                        (new Hidden('id', (string) $post_id)),
+                        (new Hidden('p', (string) My::id())),
+                    ])
+                ->render();
 
-                # filters
-                App::backend()->post_filter->display('admin.plugin.' . My::id(), '<input type="hidden" name="p" value="' . My::id() . '" /><input type="hidden" name="addlinks" value="1" /><input type="hidden" name="id" value="' . $post_id . '" />');
+                App::backend()->post_filter->display('admin.plugin.' . My::id(), $hidden);
+
+                $block = (new Form('form-entries'))
+                    ->method('post')
+                    ->action(My::manageUrl())
+                    ->fields([
+                        (new Text(null, '%s')), // Here will go the posts list
+                        (new Div())
+                            ->class('two-cols')
+                            ->items([
+                                (new Para())->class(['col', 'checkboxes-helpers']),
+                                (new Para())
+                                    ->class(['col', 'right', 'form-buttons'])
+                                    ->items([
+                                        (new Hidden('id', (string) $post_id)),
+                                        (new Submit('delete', __('Add links to selected posts')))->id('do-action'),
+                                        App::nonce()->formNonce(),
+                                        ... App::backend()->url()->hiddenFormFields('admin.plugin.' . My::id(), App::backend()->post_filter->values()),
+                                    ]),
+                            ]),
+                    ])
+                ->render();
 
                 App::backend()->posts_list->display(
                     App::backend()->post_filter->page,
                     App::backend()->post_filter->nb,
-                    '<form action="' . My::manageUrl() . '" method="post" id="form-entries">' .
-
-                    '%s' .
-
-                    '<div class="two-cols">' .
-                    '<p class="col checkboxes-helpers"></p>' .
-
-                    '<p class="col right">' .
-                    '<input type="submit" value="' . __('Add links to selected posts') . '" /> <a class="button reset" href="post.php?id=' . $post_id . '">' . __('Cancel') . '</a></p>' .
-                    '<p>' .
-                    form::hidden(['addlinks'], true) .
-                    form::hidden(['id'], $post_id) .
-                    App::backend()->url()->getHiddenFormFields('admin.plugin.' . My::id(), App::backend()->post_filter->values()) .
-                    App::nonce()->getFormNonce() . '</p>' .
-                    '</div>' .
-                    '</form>',
+                    $block,
                     App::backend()->post_filter->show()
                 );
             }
@@ -209,12 +232,8 @@ class Manage extends Process
             Page::closeModule();
         } else {
             /*
-            * Config and list of related posts tabs
+            * List of related posts
             */
-
-            if (isset($_GET['page'])) {
-                App::backend()->default_tab = 'postslist';
-            }
 
             // Get posts with related posts
 
@@ -231,7 +250,7 @@ class Manage extends Process
             Page::openModule(
                 __('Related entries'),
                 Page::jsLoad('js/_posts_list.js') .
-                App::backend()->post_filter->js(App::backend()->url()->get('admin.plugin'). '&p=' . My::id() . '#postslist') .
+                App::backend()->post_filter->js(App::backend()->url()->get('admin.plugin') . '&p=' . My::id() . '#postslist') .
                 Page::jsPageTabs(App::backend()->default_tab) .
                 Page::jsConfirmClose('config-form')
             );
@@ -248,36 +267,37 @@ class Manage extends Process
                 Notices::success(__('Links have been successfully removed'));
             }
 
-            
+            // Related posts list
 
-            // Related posts list tab
+            App::backend()->post_filter->display('admin.plugin.' . My::id());
 
-            '<div class="multi-part" id="postslist" title="' . __('Related posts list') . '">';
+            $block = (new Form('form-entries'))
+                ->method('post')
+                ->action(My::manageUrl())
+                ->fields([
+                    (new Text(null, '%s')), // Here will go the posts list
+                    (new Div())
+                        ->class('two-cols')
+                        ->items([
+                            (new Para())->class(['col', 'checkboxes-helpers']),
+                            (new Para())
+                                ->class(['col', 'right', 'form-buttons'])
+                                ->items([
 
-            App::backend()->post_filter->display('admin.plugin.' . My::id(), '<input type="hidden" name="p" value="' . My::id() . '" /><input type="hidden" name="tab" value="postslist" />');
+                                    (new Submit('delete', __('Remove all links from selected posts')))->id('do-action'),
+                                    App::nonce()->formNonce(),
+                                    ... App::backend()->url()->hiddenFormFields('admin.plugin.' . My::id(), App::backend()->post_filter->values()),
+                                ]),
+                        ]),
+                ])
+            ->render();
 
-            // Show posts
             App::backend()->posts_list->display(
                 App::backend()->post_filter->page,
                 App::backend()->post_filter->nb,
-                '<form action="' . My::manageUrl() . '" method="post" id="form-entries">' .
-
-                '%s' .
-
-                '<div class="two-cols">' .
-                '<p class="col checkboxes-helpers"></p>' .
-
-                '<p class="col right">' .
-                '<input type="submit" class="delete" value="' . __('Remove all links from selected posts') . '" /></p>' .
-                '<p>' .
-                App::backend()->url()->getHiddenFormFields('admin.plugin.' . My::id(), App::backend()->post_filter->values()) .
-                App::nonce()->getFormNonce() . '</p>' .
-                '</div>' .
-                '</form>',
+                $block,
                 App::backend()->post_filter->show()
             );
-
-           
 
             Page::helpBlock('manage');
             Page::closeModule();
