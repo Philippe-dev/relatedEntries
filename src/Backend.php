@@ -14,16 +14,27 @@ declare(strict_types=1);
 
 namespace Dotclear\Plugin\relatedEntries;
 
-use Dotclear\Core\Backend\UserPref;
 use Dotclear\Core\Backend\Utility;
+use form;
+
+use ArrayObject;
 use Dotclear\App;
 use Dotclear\Core\Backend\Favorites;
+use Dotclear\Core\Backend\Page;
+use Dotclear\Core\Backend\UserPref;
 use Dotclear\Core\Process;
-use ArrayObject;
-use Dotclear\Helper\Stack\Filter;
-use form;
-use Dotclear\Helper\Html\Html;
+use Dotclear\Helper\Html\Form\Capture;
+use Dotclear\Helper\Html\Form\Div;
+use Dotclear\Helper\Html\Form\Label;
+use Dotclear\Helper\Html\Form\Li;
+use Dotclear\Helper\Html\Form\Link;
+use Dotclear\Helper\Html\Form\Para;
+use Dotclear\Helper\Html\Form\Span;
+use Dotclear\Helper\Html\Form\Strong;
+use Dotclear\Helper\Html\Form\Text;
+use Dotclear\Helper\Html\Form\Ul;
 use Dotclear\Helper\Network\Http;
+use Exception;
 
 class Backend extends Process
 {
@@ -143,33 +154,51 @@ class Backend extends Process
         $meta    = App::meta();
         $meta_rs = $meta->getMetaStr($post->post_meta, 'relatedEntries');
 
+        $addlinksurl = App::backend()->url()->get('admin.plugin', ['p' => My::id(),'id' => $id, 'upd' => '1','addlinks' => '1'], '&');
+        $removelinksurl = App::backend()->url()->get('admin.plugin', ['p' => My::id(),'id' => $id, 'upd' => '1','r_id' => $meta_rs], '&');
+
+        $form_note = (new Span(__('Links to related posts.')))->class('form-note')->render();
+
+        $addlinks_message = (new Para())
+        ->items([
+            (new Link())
+                ->class('add')
+                ->href($addlinksurl)
+                ->items([
+                    ((new Strong(__('Add links')))),
+                ]),
+        ]);
+
         if (!$meta_rs) {
             echo
-                '<div class="area" id="relatedEntries-area">' .
-                '<label class="bold" for="relatedEntries-list">' . __('Related entries:') . ' ' .
-                '<span class="form-note">' . __('Links to related posts.') . '</span>' . '</label>' .
-                '<div id="relatedEntries-list" >' .
-                '<p>' . __('No related posts') . '</p>' .
-                '<p class="add"><a href="' . App::backend()->url()->get('admin.plugin.' . My::id()) . '&id=' . $id . '&upd=1&addlinks=1"><strong>' . __('Add links') . '</strong></a></p>' .
-                '</div>' .
-                '</div>';
+            (new Div())->class('area')->id('relatedEntries-area')->items([
+                (new Label(__('Related entries:') . ' ' . $form_note))
+                    ->class('bold')
+                    ->for('relatedEntries-list'),
+                (new Div())->id('relatedEntries-list')->items([
+                    (new Para())
+                        ->items([
+                            (new Text('span', __('No related posts')))
+                            ->class(['form-note', 'info', 'maximal']),
+                        ])
+                        ->class('elements-list'),
+                    $addlinks_message,
+                ]),
+            ])->render();
         } else {
-            echo
-                '<div class="area" id="relatedEntries-area">' .
-                '<label class="bold" for="relatedEntries-list">' . __('Related entries:') . ' ' .
-                '<span class="form-note">' . __('Links to related posts.') . '</span>' . '</label>' .
-                '<div id="relatedEntries-list" >';
-
             // Get related posts
             try {
                 App::blog()->withoutPassword(false);
 
-                $params['post_id']        = $meta->splitMetaValues($meta_rs);
-                $params['no_content']     = true;
-                $params['post_type']      = ['post'];
-                $posts                    = App::blog()->getPosts($params);
-                $counter                  = App::blog()->getPosts($params, true);
-                App::backend()->post_list = new BackendMiniList($posts, $counter->f(0));
+                $params['post_id']    = $meta->splitMetaValues($meta_rs);
+                $params['no_content'] = true;
+                $params['post_type']  = ['post'];
+
+                $post_type = 'post';
+
+                $posts     = App::blog()->getPosts($params);
+                $counter   = App::blog()->getPosts($params, true);
+                $post_list = new BackendMiniList($posts, $counter->f(0));
             } catch (Exception $e) {
                 App::error()->add($e->getMessage());
             }
@@ -177,17 +206,36 @@ class Backend extends Process
             App::backend()->nb_per_page = UserPref::getUserFilters('pages', 'nb');
 
             echo
-                '<div id="form-entries">' .
-                App::backend()->post_list->display(App::backend()->page, App::backend()->nb_per_page) .
-                '</div>';
-            echo
-            '<ul>' .
-            '<li class="add"><a href="' . App::backend()->url()->get('admin.plugin.' . My::id()) . '&id=' . $id . '&addlinks=1"><strong>' . __('Add links') . '</strong></a></li>' .
-            '<li class="right"><a class="links-remove delete" href="' . App::backend()->url()->get('admin.plugin.' . My::id()) . '&id=' . $id . '&r_id=' . $meta_rs . '&upd=1">' . __('Remove all links') . '</a></li>' .
-            '</ul>' .
-            form::hidden(['relatedEntries'], $meta_rs) .
-            '</div>' .
-            '</div>';
+            (new Div())->class('area')->id('relatedEntries-area')->items([
+                (new Label(__('Related entries:') . ' ' . $form_note))
+                    ->class('bold')
+                    ->for('relatedEntries-list'),
+                (new Div())->id('relatedEntries-list')->items([
+                    (new Div())->items([
+                        (new Capture($post_list->display(...), [App::backend()->page, App::backend()->nb_per_page, $enclose_block = '', (string) $post_type])),
+                        (new Ul())
+                        ->class('minilist')
+                        ->items([
+                            (new Li())->items([
+                                (new Link())
+                                    ->class('add')
+                                    ->href(App::backend()->url()->get('admin.plugin', ['p' => My::id(),'id' => $id, 'addlinks' => '1'], '&'))
+                                    ->items([
+                                        ((new Strong(__('Add links')))),
+                                    ]),
+                            ]),
+                            (new Li())->class('right')->items([
+                                (new Link())->href($removelinksurl)
+                                    ->class(['links-remove', 'delete'])
+                                    ->items([
+                                        ((new Strong(__('Remove all links')))),
+                                    ]),
+                            ]),
+                        ]),
+                    ]),
+                    
+                ]),
+            ])->render();
         }
     }
 }
