@@ -21,18 +21,14 @@ use Dotclear\Core\Process;
 use Dotclear\Helper\Html\Form\Checkbox;
 use Dotclear\Helper\Html\Form\Div;
 use Dotclear\Helper\Html\Form\Fieldset;
-use Dotclear\Helper\Html\Form\Hidden;
 use Dotclear\Helper\Html\Form\Input;
 use Dotclear\Helper\Html\Form\Label;
 use Dotclear\Helper\Html\Form\Legend;
-use Dotclear\Helper\Html\Form\None;
 use Dotclear\Helper\Html\Form\Note;
 use Dotclear\Helper\Html\Form\Para;
+use Dotclear\Helper\Html\Form\Select;
 use Dotclear\Helper\Html\Form\Text;
 use Dotclear\Helper\Html\Html;
-use Dotclear\Helper\Network\Http;
-use Exception;
-use form;
 
 class Config extends Process
 {
@@ -136,9 +132,9 @@ class Config extends Process
                 'legend'   => !empty($_POST['legend']) ? $_POST['legend'] : 'none',
                 'bubble'   => !empty($_POST['bubble']) ? $_POST['bubble'] : 'image',
                 'from'     => !empty($_POST['from']) ? $_POST['from'] : 'full',
-                'start'    => !empty($_POST['start']) ? $_POST['start'] : 1,
-                'length'   => !empty($_POST['length']) ? $_POST['length'] : 1,
-                'class'    => !empty($_POST['class']) ? $_POST['class'] : '',
+                'start'    => !empty($_POST['start']) ? (int) $_POST['start'] : 1,
+                'length'   => !empty($_POST['length']) ? (int) $_POST['length'] : 1,
+                'class'    => !empty($_POST['class']) ? (string) $_POST['class'] : '',
                 'alt'      => !empty($_POST['alt']) ? $_POST['alt'] : 'inherit',
                 'img_dim'  => !empty($_POST['img_dim']) ? $_POST['img_dim'] : 0,
             ];
@@ -169,117 +165,156 @@ class Config extends Process
         $images = unserialize(My::settings()->relatedEntries_images_options);
 
         echo
+        (new Div())->items([
+            (new Fieldset())->class('fieldset')->legend((new Legend(__('Activation'))))->fields([
+                (new Para())->items([
+                    (new Checkbox('relatedEntries_enabled', (bool) My::settings()->relatedEntries_enabled)),
+                    (new Label(__('Enable related posts on this blog'), Label::OUTSIDE_LABEL_AFTER))
+                        ->for('relatedEntries_enabled')
+                        ->class('classic'),
+                ]),
+            ]),
+            (new Fieldset())->class('fieldset')->legend((new Legend(__('Display options'))))->fields([
+                (new Para())->items([
+                    (new Input('relatedEntries_title'))
+                        ->class('classic')
+                        ->size(50)
+                        ->maxlength(255)
+                        ->value(My::settings()->relatedEntries_title)
+                        ->label((new Label(
+                            __('Block title:'),
+                            Label::OUTSIDE_TEXT_BEFORE
+                        ))),
+                ]),
+                (new Para())->items([
+                    (new Checkbox('relatedEntries_beforePost', (bool) My::settings()->relatedEntries_beforePost)),
+                    (new Label(__('Display block before post content'), Label::OUTSIDE_LABEL_AFTER))
+                        ->for('relatedEntries_beforePost')
+                        ->class('classic'),
 
-        '<div class="fieldset"><h3>' . __('Activation') . '</h3>' .
-            '<p><label class="classic" for="relatedEntries_enabled">' .
-            form::checkbox('relatedEntries_enabled', '1', My::settings()->relatedEntries_enabled) .
-            __('Enable related posts on this blog') . '</label></p>' .
-        '</div>' .
-        '<div class="fieldset"><h3>' . __('Display options') . '</h3>' .
-            '<p class="field"><label class="maximal" for="relatedEntries_title">' . __('Block title:') . '&nbsp;' .
-            form::field('relatedEntries_title', 40, 255, Html::escapeHTML(My::settings()->relatedEntries_title)) .
-            '</label></p>' .
-            '<p><label class="classic" for="relatedEntries_beforePost">' .
-            form::checkbox('relatedEntries_beforePost', '1', My::settings()->relatedEntries_beforePost) .
-            __('Display block before post content') . '</label></p>' .
-            '<p><label class="classic" for="relatedEntries_afterPost">' .
-            form::checkbox('relatedEntries_afterPost', '1', My::settings()->relatedEntries_afterPost) .
-            __('Display block after post content') . '</label></p>' .
-            '<p class="form-note info clear">' . __('Uncheck both boxes to use only the presentation widget.') . '</p>' .
-        '</div>' .
-        '<div class="fieldset"><h3>' . __('Images extracting options') . '</h3>';
+                ]),
+                (new Para())->items([
+                    (new Checkbox('relatedEntries_afterPost', (bool) My::settings()->relatedEntries_afterPost)),
+                    (new Label(__('Display block after post content'), Label::OUTSIDE_LABEL_AFTER))
+                        ->for('relatedEntries_afterPost')
+                        ->class('classic'),
+
+                ]),
+                (new Note())
+                    ->class(['form-note', 'info', 'clear'])
+                    ->text(__('Uncheck both boxes to use only the presentation widget.')),
+
+            ]),
+        ])
+        ->render();
 
         if (App::plugins()->moduleExists('listImages')) {
             echo
-            '<div class="three-boxes">' .
-            '<p><label class="classic" for="relatedEntries_images">' .
-            form::checkbox('relatedEntries_images', '1', My::settings()->relatedEntries_images) .
-            __('Extract images from related posts') . '</label></p>' .
-            '</div>' .
+            (new Div())->items([
+                (new Fieldset())->class('fieldset')->legend((new Legend(__('Images extracting options'))))->fields([
+                    (new Div())->class(['three-boxes'])->items([
+                        (new Para())->items([
+                            (new Checkbox('relatedEntries_images', (bool) My::settings()->relatedEntries_images)),
+                            (new Label(__('Extract images from related posts'), Label::OUTSIDE_LABEL_AFTER))
+                                ->for('relatedEntries_images')
+                                ->class(['classic']),
+                        ]),
+                    ]),
 
-            '<div class="three-boxes">' .
+                    (new Div())->class(['three-boxes'])->items([
+                        (new Para())->items([
+                            (new Select('from'))
+                                ->items(App::backend()->from_combo)
+                                ->default(($images['from'] != '' ? $images['from'] : 'image'))
+                                ->label(new Label(__('Images origin:'), Label::OUTSIDE_LABEL_BEFORE)),
+                        ]),
+                        (new Para())->items([
+                            (new Select('size'))
+                                ->items(App::backend()->img_size_combo)
+                                ->default(($images['size'] != '' ? $images['size'] : 't'))
+                                ->label(new Label(__('Image size:'), Label::OUTSIDE_LABEL_BEFORE)),
+                        ]),
+                        (new Para())->items([
+                            (new Checkbox('img_dim', (bool) $images['img_dim']))
+                                ->label(new Label(__('Include images dimensions'), Label::INSIDE_LABEL_AFTER))
+                                ->for('img_dim')
+                                ->class(['classic']),
+                        ]),
+                        (new Para())->items([
+                            (new Select('alt'))
+                                ->items(App::backend()->alt_combo)
+                                ->default(($images['alt'] != '' ? $images['alt'] : 'inherit'))
+                                ->label(new Label(__('Images alt attribute:'), Label::OUTSIDE_LABEL_BEFORE)),
+                        ]),
+                        (new Para())->items([
+                            (new Input('start'))
+                                ->type('number')
+                                ->min(1)
+                                ->max(1000)
+                                ->size(3)
+                                ->maxlength(3)
+                                ->value($images['start'])
+                                ->label(new Label(__('First image to extract:'), Label::OUTSIDE_LABEL_BEFORE)),
+                        ]),
+                        (new Para())->items([
+                            (new Input('length'))
+                                ->type('number')
+                                ->min(1)
+                                ->max(1000)
+                                ->size(3)
+                                ->maxlength(3)
+                                ->value($images['length'])
+                                ->label(new Label(__('Number of images to extract:'), Label::OUTSIDE_LABEL_BEFORE)),
+                        ]),
+                    ]),
 
-            '<p><label for="from">' . __('Images origin:') . '</label>' .
-            form::combo(
-                'from',
-                App::backend()->from_combo,
-                ($images['from'] != '' ? $images['from'] : 'image')
-            ) .
-            '</p>' .
-
-            '<p><label for="size">' . __('Image size:') . '</label>' .
-            form::combo(
-                'size',
-                App::backend()->img_size_combo,
-                ($images['size'] != '' ? $images['size'] : 't')
-            ) .
-            '</p>' .
-
-            '<p><label for="img_dim">' .
-            form::checkbox('img_dim', '1', $images['img_dim']) .
-            __('Include images dimensions') . '</label></p>' .
-
-            '<p><label for="alt">' . __('Images alt attribute:') . '</label>' .
-            form::combo(
-                'alt',
-                App::backend()->alt_combo,
-                ($images['alt'] != '' ? $images['alt'] : 'inherit')
-            ) .
-            '</p>' .
-
-            '<p><label for="start">' . __('First image to extract:') . '</label>' .
-                form::field('start', 3, 3, $images['start']) .
-            '</p>' .
-
-            '<p><label for="length">' . __('Number of images to extract:') . '</label>' .
-                form::field('length', 3, 3, $images['length']) .
-            '</p>' .
-
-            '</div><div class="three-boxes">' .
-
-            '<p><label for="legend">' . __('Legend:') . '</label>' .
-            form::combo(
-                'legend',
-                App::backend()->legend_combo,
-                ($images['legend'] != '' ? $images['legend'] : 'none')
-            ) .
-            '</p>' .
-
-            '<p><label for="html_tag">' . __('HTML tag around image:') . '</label>' .
-            form::combo(
-                'html_tag',
-                App::backend()->html_tag_combo,
-                ($images['html_tag'] != '' ? $images['html_tag'] : 'div')
-            ) .
-            '</p>' .
-
-            '<p><label for="class">' . __('CSS class on images:') . '</label>' .
-                form::field('class', 10, 10, $images['class']) .
-            '</p>' .
-
-            '<p><label for="link">' . __('Links destination:') . '</label>' .
-            form::combo(
-                'link',
-                App::backend()->link_combo,
-                ($images['link'] != '' ? $images['link'] : 'entry')
-            ) .
-            '</p>' .
-
-            '<p><label for="bubble">' . __('Bubble:') . '</label>' .
-            form::combo(
-                'bubble',
-                App::backend()->bubble_combo,
-                ($images['bubble'] != '' ? $images['bubble'] : 'image')
-            ) .
-            '</p>' .
-
-            '</div>' .
-
-            '</div>';
+                    (new Div())->class(['three-boxes'])->items([
+                        (new Para())->items([
+                            (new Select('legend'))
+                            ->items(App::backend()->legend_combo)
+                            ->default(($images['legend'] != '' ? $images['legend'] : 'none'))
+                            ->label(new Label(__('Legend:'), Label::OUTSIDE_LABEL_BEFORE)),
+                        ]),
+                        (new Para())->items([
+                            (new Select('html_tag'))
+                                ->items(App::backend()->html_tag_combo)
+                                ->default(($images['html_tag'] != '' ? $images['html_tag'] : 'div'))
+                                ->label(new Label(__('HTML tag around image:'), Label::OUTSIDE_LABEL_BEFORE)),
+                        ]),
+                        (new Para())->items([
+                            (new Input('class'))
+                              ->class('classic')
+                              ->size(10)
+                              ->maxlength(255)
+                              ->value($images['class'])
+                              ->label(new Label(__('CSS class on images:'), Label::OUTSIDE_LABEL_BEFORE)),
+                        ]),
+                        (new Para())->items([
+                            (new Select('link'))
+                                ->items(App::backend()->link_combo)
+                                ->default(($images['link'] != '' ? $images['link'] : 'entry'))
+                                ->label(new Label(__('Links destination:'), Label::OUTSIDE_LABEL_BEFORE)),
+                        ]),
+                        (new Para())->items([
+                            (new Select('bubble'))
+                                ->items(App::backend()->bubble_combo)
+                                ->default(($images['bubble'] != '' ? $images['bubble'] : 'image'))
+                                ->label(new Label(__('Bubble:'), Label::OUTSIDE_LABEL_BEFORE)),
+                        ]),
+                    ]),
+                ]),
+            ])
+            ->render();
         } else {
             echo
-            '<p class="form-note info clear">' . __('Install or activate listImages plugin to be able to display links to related entries as images') . '</p>' .
-            '</div>';
+            (new Fieldset())->class('fieldset')->legend((new Legend(__('Images extracting options'))))->fields([
+                (new Para())
+                    ->class(['form-note', 'info', 'clear'])
+                    ->items([
+                        (new Text('span', __('Install or activate listImages plugin to be able to display links to related entries as images'))),
+                    ]),
+            ])
+            ->render();
         }
 
         Page::helpBlock('config');
