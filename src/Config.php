@@ -212,96 +212,90 @@ class Config extends Process
             echo
             (new Div())->items([
                 (new Fieldset())->class('fieldset')->legend((new Legend(__('Images extracting options'))))->fields([
-                    (new Div())->class(['three-boxes'])->items([
-                        (new Para())->items([
-                            (new Checkbox('relatedEntries_images', (bool) My::settings()->relatedEntries_images)),
-                            (new Label(__('Extract images from related posts'), Label::OUTSIDE_LABEL_AFTER))
-                                ->for('relatedEntries_images')
-                                ->class(['classic']),
-                        ]),
+                    (new Para())->items([
+                        (new Checkbox('relatedEntries_images', (bool) My::settings()->relatedEntries_images)),
+                        (new Label(__('Extract images from related posts'), Label::OUTSIDE_LABEL_AFTER))
+                            ->for('relatedEntries_images')
+                            ->class(['classic']),
+                    ]),
+                    (new Para())->items([
+                        (new Select('from'))
+                            ->items(App::backend()->from_combo)
+                            ->default(($images['from'] != '' ? $images['from'] : 'image'))
+                            ->label(new Label(__('Images origin:'), Label::OUTSIDE_LABEL_BEFORE)),
+                    ]),
+                    (new Para())->items([
+                        (new Select('size'))
+                            ->items(App::backend()->img_size_combo)
+                            ->default(($images['size'] != '' ? $images['size'] : 't'))
+                            ->label(new Label(__('Image size:'), Label::OUTSIDE_LABEL_BEFORE)),
+                    ]),
+                    (new Para())->items([
+                        (new Checkbox('img_dim', (bool) $images['img_dim']))
+                            ->label(new Label(__('Include images dimensions'), Label::INSIDE_LABEL_AFTER))
+                            ->for('img_dim')
+                            ->class(['classic']),
+                    ]),
+                    (new Para())->items([
+                        (new Select('alt'))
+                            ->items(App::backend()->alt_combo)
+                            ->default(($images['alt'] != '' ? $images['alt'] : 'inherit'))
+                            ->label(new Label(__('Images alt attribute:'), Label::OUTSIDE_LABEL_BEFORE)),
+                    ]),
+                    (new Para())->items([
+                        (new Input('start'))
+                            ->type('number')
+                            ->min(1)
+                            ->max(1000)
+                            ->size(3)
+                            ->maxlength(3)
+                            ->value($images['start'])
+                            ->label(new Label(__('First image to extract:'), Label::OUTSIDE_LABEL_BEFORE)),
+                    ]),
+                    (new Para())->items([
+                        (new Input('length'))
+                            ->type('number')
+                            ->min(1)
+                            ->max(1000)
+                            ->size(3)
+                            ->maxlength(3)
+                            ->value($images['length'])
+                            ->label(new Label(__('Number of images to extract:'), Label::OUTSIDE_LABEL_BEFORE)),
                     ]),
 
-                    (new Div())->class(['three-boxes'])->items([
-                        (new Para())->items([
-                            (new Select('from'))
-                                ->items(App::backend()->from_combo)
-                                ->default(($images['from'] != '' ? $images['from'] : 'image'))
-                                ->label(new Label(__('Images origin:'), Label::OUTSIDE_LABEL_BEFORE)),
-                        ]),
-                        (new Para())->items([
-                            (new Select('size'))
-                                ->items(App::backend()->img_size_combo)
-                                ->default(($images['size'] != '' ? $images['size'] : 't'))
-                                ->label(new Label(__('Image size:'), Label::OUTSIDE_LABEL_BEFORE)),
-                        ]),
-                        (new Para())->items([
-                            (new Checkbox('img_dim', (bool) $images['img_dim']))
-                                ->label(new Label(__('Include images dimensions'), Label::INSIDE_LABEL_AFTER))
-                                ->for('img_dim')
-                                ->class(['classic']),
-                        ]),
-                        (new Para())->items([
-                            (new Select('alt'))
-                                ->items(App::backend()->alt_combo)
-                                ->default(($images['alt'] != '' ? $images['alt'] : 'inherit'))
-                                ->label(new Label(__('Images alt attribute:'), Label::OUTSIDE_LABEL_BEFORE)),
-                        ]),
-                        (new Para())->items([
-                            (new Input('start'))
-                                ->type('number')
-                                ->min(1)
-                                ->max(1000)
-                                ->size(3)
-                                ->maxlength(3)
-                                ->value($images['start'])
-                                ->label(new Label(__('First image to extract:'), Label::OUTSIDE_LABEL_BEFORE)),
-                        ]),
-                        (new Para())->items([
-                            (new Input('length'))
-                                ->type('number')
-                                ->min(1)
-                                ->max(1000)
-                                ->size(3)
-                                ->maxlength(3)
-                                ->value($images['length'])
-                                ->label(new Label(__('Number of images to extract:'), Label::OUTSIDE_LABEL_BEFORE)),
-                        ]),
+                    (new Para())->items([
+                        (new Select('legend'))
+                        ->items(App::backend()->legend_combo)
+                        ->default(($images['legend'] != '' ? $images['legend'] : 'none'))
+                        ->label(new Label(__('Legend:'), Label::OUTSIDE_LABEL_BEFORE)),
+                    ]),
+                    (new Para())->items([
+                        (new Select('html_tag'))
+                            ->items(App::backend()->html_tag_combo)
+                            ->default(($images['html_tag'] != '' ? $images['html_tag'] : 'div'))
+                            ->label(new Label(__('HTML tag around image:'), Label::OUTSIDE_LABEL_BEFORE)),
+                    ]),
+                    (new Para())->items([
+                        (new Input('class'))
+                          ->class('classic')
+                          ->size(10)
+                          ->maxlength(255)
+                          ->value($images['class'])
+                          ->label(new Label(__('CSS class on images:'), Label::OUTSIDE_LABEL_BEFORE)),
+                    ]),
+                    (new Para())->items([
+                        (new Select('link'))
+                            ->items(App::backend()->link_combo)
+                            ->default(($images['link'] != '' ? $images['link'] : 'entry'))
+                            ->label(new Label(__('Links destination:'), Label::OUTSIDE_LABEL_BEFORE)),
+                    ]),
+                    (new Para())->items([
+                        (new Select('bubble'))
+                            ->items(App::backend()->bubble_combo)
+                            ->default(($images['bubble'] != '' ? $images['bubble'] : 'image'))
+                            ->label(new Label(__('Bubble:'), Label::OUTSIDE_LABEL_BEFORE)),
                     ]),
 
-                    (new Div())->class(['three-boxes'])->items([
-                        (new Para())->items([
-                            (new Select('legend'))
-                            ->items(App::backend()->legend_combo)
-                            ->default(($images['legend'] != '' ? $images['legend'] : 'none'))
-                            ->label(new Label(__('Legend:'), Label::OUTSIDE_LABEL_BEFORE)),
-                        ]),
-                        (new Para())->items([
-                            (new Select('html_tag'))
-                                ->items(App::backend()->html_tag_combo)
-                                ->default(($images['html_tag'] != '' ? $images['html_tag'] : 'div'))
-                                ->label(new Label(__('HTML tag around image:'), Label::OUTSIDE_LABEL_BEFORE)),
-                        ]),
-                        (new Para())->items([
-                            (new Input('class'))
-                              ->class('classic')
-                              ->size(10)
-                              ->maxlength(255)
-                              ->value($images['class'])
-                              ->label(new Label(__('CSS class on images:'), Label::OUTSIDE_LABEL_BEFORE)),
-                        ]),
-                        (new Para())->items([
-                            (new Select('link'))
-                                ->items(App::backend()->link_combo)
-                                ->default(($images['link'] != '' ? $images['link'] : 'entry'))
-                                ->label(new Label(__('Links destination:'), Label::OUTSIDE_LABEL_BEFORE)),
-                        ]),
-                        (new Para())->items([
-                            (new Select('bubble'))
-                                ->items(App::backend()->bubble_combo)
-                                ->default(($images['bubble'] != '' ? $images['bubble'] : 'image'))
-                                ->label(new Label(__('Bubble:'), Label::OUTSIDE_LABEL_BEFORE)),
-                        ]),
-                    ]),
                 ]),
             ])
             ->render();

@@ -17,7 +17,6 @@ namespace Dotclear\Plugin\relatedEntries;
 use ArrayObject;
 use Dotclear\App;
 use Dotclear\Core\Backend\Favorites;
-use Dotclear\Core\Backend\Page;
 use Dotclear\Core\Backend\UserPref;
 use Dotclear\Core\Backend\Utility;
 use Dotclear\Core\Process;
@@ -152,7 +151,7 @@ class Backend extends Process
         $meta    = App::meta();
         $meta_rs = $meta->getMetaStr($post->post_meta, 'relatedEntries');
 
-        $addlinksurl = App::backend()->url()->get('admin.plugin', ['p' => My::id(),'id' => $id, 'upd' => '1','addlinks' => '1'], '&');
+        $addlinksurl    = App::backend()->url()->get('admin.plugin', ['p' => My::id(),'id' => $id, 'upd' => '1','addlinks' => '1'], '&');
         $removelinksurl = App::backend()->url()->get('admin.plugin', ['p' => My::id(),'id' => $id, 'upd' => '1','r_id' => $meta_rs], '&');
 
         $form_note = (new Span(__('Links to related posts.')))->class('form-note')->render();
@@ -231,7 +230,7 @@ class Backend extends Process
                             ]),
                         ]),
                     ]),
-                    
+
                 ]),
             ])->render();
         }
