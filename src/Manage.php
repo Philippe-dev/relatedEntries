@@ -166,7 +166,7 @@ class Manage extends Process
             Page::openModule(
                 __('Related entries'),
                 Page::jsLoad('js/_posts_list.js') .
-                App::backend()->post_filter->js(App::backend()->url()->get('admin.plugin'), ['p' => My::id(), 'id' => $post_id])
+                App::backend()->post_filter->js(App::backend()->url()->get('admin.plugin', ['p' => My::id(),'id' => $post_id, 'addlinks' => '1'], '&'))
             );
 
             App::backend()->page_title = __('Add links');
@@ -191,7 +191,7 @@ class Manage extends Process
                 ->render();
 
                 $hidden = (new Para())
-                    ->items([
+                    ->items([(new Hidden('addlinks', '1')),
                         (new Hidden('id', (string) $post_id)),
                         (new Hidden('p', (string) My::id())),
                     ])
@@ -250,7 +250,7 @@ class Manage extends Process
             Page::openModule(
                 __('Related entries'),
                 Page::jsLoad('js/_posts_list.js') .
-                App::backend()->post_filter->js(App::backend()->url()->get('admin.plugin', ['p' => My::id()], '&'))            
+                App::backend()->post_filter->js(App::backend()->url()->get('admin.plugin', ['p' => My::id()], '&'))
             );
 
             echo Page::breadcrumb(
@@ -268,7 +268,6 @@ class Manage extends Process
             // Related posts list
 
             App::backend()->post_filter->display('admin.plugin.' . My::id());
-            
 
             $block = (new Form('form-entries'))
                 ->method('post')

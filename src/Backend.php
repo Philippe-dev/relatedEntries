@@ -60,7 +60,6 @@ class Backend extends Process
             App::behavior()->addBehavior('adminPostListValueV2', [BackendBehaviors::class, 'adminPostListValue']);
         }
 
-        //App::behavior()->addBehavior('adminPostFilterV2', [self::class,  'adminPostFilter']);
         App::behavior()->addBehavior('adminPageHelpBlock', [self::class,  'adminPageHelpBlock']);
         App::behavior()->addBehavior('adminPostHeaders', [self::class,  'postHeaders']);
         App::behavior()->addBehavior('adminPostForm', [self::class,  'adminPostForm']);
@@ -85,50 +84,6 @@ class Backend extends Process
 
         return true;
     }
-
-    /*public static function adminPostFilter(ArrayObject $filters)
-    {
-        if (App::backend()->getPageURL() === App::backend()->url()->get('admin.plugin.' . My::id())) {
-            $categories = null;
-
-            try {
-                $categories = App::blog()->getCategories(['post_type' => 'post']);
-                if ($categories->isEmpty()) {
-                    return null;
-                }
-            } catch (Exception $e) {
-                App::error()->add($e->getMessage());
-
-                return null;
-            }
-
-            $my_categories_combo = [
-                '-'            => '',
-                __('(No cat)') => 'NULL',
-            ];
-            while ($categories->fetch()) {
-                try {
-                    $params['no_content'] = true;
-                    $params['cat_id']     = $categories->cat_id;
-                    $params['sql']        = 'AND P.post_id IN (SELECT META.post_id FROM ' . App::con()->prefix() . 'meta META WHERE META.post_id = P.post_id ' . "AND META.meta_type = 'relatedEntries' ) ";
-                    App::blog()->withoutPassword(false);
-                    App::backend()->counter = App::blog()->getPosts($params, true);
-                } catch (Exception $e) {
-                    App::error()->add($e->getMessage());
-                }
-                $my_categories_combo[
-                    str_repeat('&nbsp;', ($categories->level - 1) * 4) .
-                    Html::escapeHTML($categories->cat_title) . ' (' . App::backend()->counter->f(0) . ')'
-                ] = $categories->cat_id;
-            }
-
-            $filters->append((new Filter('cat_id'))
-                ->param()
-                ->title(__('Category:'))
-                ->options($my_categories_combo)
-                ->prime(true));
-        }
-    }*/
 
     public static function adminPageHelpBlock(ArrayObject $blocks): void
     {
