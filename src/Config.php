@@ -7,7 +7,7 @@
  *
  * @author Philippe aka amalgame
  *
- * @copyright GPL-2.0 [https://www.gnu.org/licenses/gpl-2.0.html]
+ * @copyright AGPL-3.0
  */
 
 declare(strict_types=1);
@@ -15,16 +15,24 @@ declare(strict_types=1);
 namespace Dotclear\Plugin\relatedEntries;
 
 use Dotclear\App;
-use Dotclear\Core\Process;
-use Dotclear\Core\Backend\UserPref;
-use Dotclear\Core\Backend\Page;
 use Dotclear\Core\Backend\Notices;
-use Exception;
-use form;
+use Dotclear\Core\Backend\Page;
+use Dotclear\Core\Process;
+use Dotclear\Helper\Html\Form\Checkbox;
+use Dotclear\Helper\Html\Form\Div;
+use Dotclear\Helper\Html\Form\Fieldset;
+use Dotclear\Helper\Html\Form\Hidden;
+use Dotclear\Helper\Html\Form\Input;
+use Dotclear\Helper\Html\Form\Label;
+use Dotclear\Helper\Html\Form\Legend;
+use Dotclear\Helper\Html\Form\None;
+use Dotclear\Helper\Html\Form\Note;
+use Dotclear\Helper\Html\Form\Para;
+use Dotclear\Helper\Html\Form\Text;
 use Dotclear\Helper\Html\Html;
 use Dotclear\Helper\Network\Http;
-use Dotclear\Core\Backend\Listing\ListingPosts;
-use Dotclear\Core\Backend\Filter\FilterPosts;
+use Exception;
+use form;
 
 class Config extends Process
 {
@@ -101,11 +109,9 @@ class Config extends Process
             __('no alt')      => 'none',
         ];
 
-        App::backend()->default_tab = empty($_REQUEST['tab']) ? '' : $_REQUEST['tab'];
-
         /*
-         * Admin page params.
-         */
+        * Admin page params.
+        */
         App::backend()->from_combo     = $from_combo;
         App::backend()->img_size_combo = $img_size_combo;
         App::backend()->alt_combo      = $alt_combo;
@@ -139,11 +145,12 @@ class Config extends Process
 
             My::settings()->put('relatedEntries_images_options', serialize($opts));
 
-            App::blog()->triggerBlog();
-            My::redirect(['upd' => 1]);
-        }
+            Notices::addSuccessNotice(__('Configuration has been updated.'));
 
-        
+            App::blog()->triggerBlog();
+
+            App::backend()->url()->redirect('admin.plugins', ['module' => My::id(), 'conf' => '1', 'redir' => $_REQUEST['redir']]);
+        }
 
         return true;
     }
@@ -157,134 +164,124 @@ class Config extends Process
             return;
         }
 
-       
+        echo Page::jsConfirmClose('module_config');
 
-        
+        $images = unserialize(My::settings()->relatedEntries_images_options);
 
-            $images = unserialize(My::settings()->relatedEntries_images_options);
+        echo
 
-            // Config tab
+        '<div class="fieldset"><h3>' . __('Activation') . '</h3>' .
+            '<p><label class="classic" for="relatedEntries_enabled">' .
+            form::checkbox('relatedEntries_enabled', '1', My::settings()->relatedEntries_enabled) .
+            __('Enable related posts on this blog') . '</label></p>' .
+        '</div>' .
+        '<div class="fieldset"><h3>' . __('Display options') . '</h3>' .
+            '<p class="field"><label class="maximal" for="relatedEntries_title">' . __('Block title:') . '&nbsp;' .
+            form::field('relatedEntries_title', 40, 255, Html::escapeHTML(My::settings()->relatedEntries_title)) .
+            '</label></p>' .
+            '<p><label class="classic" for="relatedEntries_beforePost">' .
+            form::checkbox('relatedEntries_beforePost', '1', My::settings()->relatedEntries_beforePost) .
+            __('Display block before post content') . '</label></p>' .
+            '<p><label class="classic" for="relatedEntries_afterPost">' .
+            form::checkbox('relatedEntries_afterPost', '1', My::settings()->relatedEntries_afterPost) .
+            __('Display block after post content') . '</label></p>' .
+            '<p class="form-note info clear">' . __('Uncheck both boxes to use only the presentation widget.') . '</p>' .
+        '</div>' .
+        '<div class="fieldset"><h3>' . __('Images extracting options') . '</h3>';
 
+        if (App::plugins()->moduleExists('listImages')) {
             echo
-            
-            '<div class="fieldset"><h3>' . __('Activation') . '</h3>' .
-                '<p><label class="classic" for="relatedEntries_enabled">' .
-                form::checkbox('relatedEntries_enabled', '1', My::settings()->relatedEntries_enabled) .
-                __('Enable related posts on this blog') . '</label></p>' .
+            '<div class="three-boxes">' .
+            '<p><label class="classic" for="relatedEntries_images">' .
+            form::checkbox('relatedEntries_images', '1', My::settings()->relatedEntries_images) .
+            __('Extract images from related posts') . '</label></p>' .
             '</div>' .
-            '<div class="fieldset"><h3>' . __('Display options') . '</h3>' .
-                '<p class="field"><label class="maximal" for="relatedEntries_title">' . __('Block title:') . '&nbsp;' .
-                form::field('relatedEntries_title', 40, 255, Html::escapeHTML(My::settings()->relatedEntries_title)) .
-                '</label></p>' .
-                '<p><label class="classic" for="relatedEntries_beforePost">' .
-                form::checkbox('relatedEntries_beforePost', '1', My::settings()->relatedEntries_beforePost) .
-                __('Display block before post content') . '</label></p>' .
-                '<p><label class="classic" for="relatedEntries_afterPost">' .
-                form::checkbox('relatedEntries_afterPost', '1', My::settings()->relatedEntries_afterPost) .
-                __('Display block after post content') . '</label></p>' .
-                '<p class="form-note info clear">' . __('Uncheck both boxes to use only the presentation widget.') . '</p>' .
+
+            '<div class="three-boxes">' .
+
+            '<p><label for="from">' . __('Images origin:') . '</label>' .
+            form::combo(
+                'from',
+                App::backend()->from_combo,
+                ($images['from'] != '' ? $images['from'] : 'image')
+            ) .
+            '</p>' .
+
+            '<p><label for="size">' . __('Image size:') . '</label>' .
+            form::combo(
+                'size',
+                App::backend()->img_size_combo,
+                ($images['size'] != '' ? $images['size'] : 't')
+            ) .
+            '</p>' .
+
+            '<p><label for="img_dim">' .
+            form::checkbox('img_dim', '1', $images['img_dim']) .
+            __('Include images dimensions') . '</label></p>' .
+
+            '<p><label for="alt">' . __('Images alt attribute:') . '</label>' .
+            form::combo(
+                'alt',
+                App::backend()->alt_combo,
+                ($images['alt'] != '' ? $images['alt'] : 'inherit')
+            ) .
+            '</p>' .
+
+            '<p><label for="start">' . __('First image to extract:') . '</label>' .
+                form::field('start', 3, 3, $images['start']) .
+            '</p>' .
+
+            '<p><label for="length">' . __('Number of images to extract:') . '</label>' .
+                form::field('length', 3, 3, $images['length']) .
+            '</p>' .
+
+            '</div><div class="three-boxes">' .
+
+            '<p><label for="legend">' . __('Legend:') . '</label>' .
+            form::combo(
+                'legend',
+                App::backend()->legend_combo,
+                ($images['legend'] != '' ? $images['legend'] : 'none')
+            ) .
+            '</p>' .
+
+            '<p><label for="html_tag">' . __('HTML tag around image:') . '</label>' .
+            form::combo(
+                'html_tag',
+                App::backend()->html_tag_combo,
+                ($images['html_tag'] != '' ? $images['html_tag'] : 'div')
+            ) .
+            '</p>' .
+
+            '<p><label for="class">' . __('CSS class on images:') . '</label>' .
+                form::field('class', 10, 10, $images['class']) .
+            '</p>' .
+
+            '<p><label for="link">' . __('Links destination:') . '</label>' .
+            form::combo(
+                'link',
+                App::backend()->link_combo,
+                ($images['link'] != '' ? $images['link'] : 'entry')
+            ) .
+            '</p>' .
+
+            '<p><label for="bubble">' . __('Bubble:') . '</label>' .
+            form::combo(
+                'bubble',
+                App::backend()->bubble_combo,
+                ($images['bubble'] != '' ? $images['bubble'] : 'image')
+            ) .
+            '</p>' .
+
             '</div>' .
-            '<div class="fieldset"><h3>' . __('Images extracting options') . '</h3>';
 
-            if (App::plugins()->moduleExists('listImages')) {
-                echo
-                '<div class="three-boxes">' .
-                '<p><label class="classic" for="relatedEntries_images">' .
-                form::checkbox('relatedEntries_images', '1', My::settings()->relatedEntries_images) .
-                __('Extract images from related posts') . '</label></p>' .
-                '</div>' .
-                
-                '<div class="three-boxes">' .
-
-                '<p><label for="from">' . __('Images origin:') . '</label>' .
-                form::combo(
-                    'from',
-                    App::backend()->from_combo,
-                    ($images['from'] != '' ? $images['from'] : 'image')
-                ) .
-                '</p>' .
-
-                '<p><label for="size">' . __('Image size:') . '</label>' .
-                form::combo(
-                    'size',
-                    App::backend()->img_size_combo,
-                    ($images['size'] != '' ? $images['size'] : 't')
-                ) .
-                '</p>' .
-
-                '<p><label for="img_dim">' .
-                form::checkbox('img_dim', '1', $images['img_dim']) .
-                __('Include images dimensions') . '</label></p>' .
-
-                '<p><label for="alt">' . __('Images alt attribute:') . '</label>' .
-                form::combo(
-                    'alt',
-                    App::backend()->alt_combo,
-                    ($images['alt'] != '' ? $images['alt'] : 'inherit')
-                ) .
-                '</p>' .
-
-                '<p><label for="start">' . __('First image to extract:') . '</label>' .
-                    form::field('start', 3, 3, $images['start']) .
-                '</p>' .
-
-                '<p><label for="length">' . __('Number of images to extract:') . '</label>' .
-                    form::field('length', 3, 3, $images['length']) .
-                '</p>' .
-
-                '</div><div class="three-boxes">' .
-
-                '<p><label for="legend">' . __('Legend:') . '</label>' .
-                form::combo(
-                    'legend',
-                    App::backend()->legend_combo,
-                    ($images['legend'] != '' ? $images['legend'] : 'none')
-                ) .
-                '</p>' .
-
-                '<p><label for="html_tag">' . __('HTML tag around image:') . '</label>' .
-                form::combo(
-                    'html_tag',
-                    App::backend()->html_tag_combo,
-                    ($images['html_tag'] != '' ? $images['html_tag'] : 'div')
-                ) .
-                '</p>' .
-
-                '<p><label for="class">' . __('CSS class on images:') . '</label>' .
-                    form::field('class', 10, 10, $images['class']) .
-                '</p>' .
-
-                '<p><label for="link">' . __('Links destination:') . '</label>' .
-                form::combo(
-                    'link',
-                    App::backend()->link_combo,
-                    ($images['link'] != '' ? $images['link'] : 'entry')
-                ) .
-                '</p>' .
-
-                '<p><label for="bubble">' . __('Bubble:') . '</label>' .
-                form::combo(
-                    'bubble',
-                    App::backend()->bubble_combo,
-                    ($images['bubble'] != '' ? $images['bubble'] : 'image')
-                ) .
-                '</p>' .
-
-                '</div>' .
-
-                '</div>';
-            } else {
-                echo
-                '<p class="form-note info clear">' . __('Install or activate listImages plugin to be able to display links to related entries as images') . '</p>' .
-                '</div>';
-            }
-
-
-
-            
-
-            Page::helpBlock('config');
-
+            '</div>';
+        } else {
+            echo
+            '<p class="form-note info clear">' . __('Install or activate listImages plugin to be able to display links to related entries as images') . '</p>' .
+            '</div>';
         }
-    }
 
+        Page::helpBlock('config');
+    }
+}
