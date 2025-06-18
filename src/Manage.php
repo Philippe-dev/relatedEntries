@@ -279,7 +279,7 @@ class Manage extends Process
 
            
 
-            Page::helpBlock('config');
+            Page::helpBlock('manage');
             Page::closeModule();
         }
     }
