@@ -14,14 +14,12 @@ declare(strict_types=1);
 
 namespace Dotclear\Plugin\relatedEntries;
 
-use Dotclear\Core\Backend\Utility;
-use form;
-
 use ArrayObject;
 use Dotclear\App;
 use Dotclear\Core\Backend\Favorites;
 use Dotclear\Core\Backend\Page;
 use Dotclear\Core\Backend\UserPref;
+use Dotclear\Core\Backend\Utility;
 use Dotclear\Core\Process;
 use Dotclear\Helper\Html\Form\Capture;
 use Dotclear\Helper\Html\Form\Div;
@@ -219,7 +217,7 @@ class Backend extends Process
                             (new Li())->items([
                                 (new Link())
                                     ->class('add')
-                                    ->href(App::backend()->url()->get('admin.plugin', ['p' => My::id(),'id' => $id, 'addlinks' => '1'], '&'))
+                                    ->href($addlinksurl)
                                     ->items([
                                         ((new Strong(__('Add links')))),
                                     ]),
