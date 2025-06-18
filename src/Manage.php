@@ -282,7 +282,7 @@ class Manage extends Process
                                 ->class(['col', 'right', 'form-buttons'])
                                 ->items([
 
-                                    (new Submit('delete', __('Remove all links from selected posts')))->id('do-action'),
+                                    (new Submit('delete', __('Remove all links from selected posts')))->class(['delete'])->id('do-action'),
                                     App::nonce()->formNonce(),
                                     ... App::backend()->url()->hiddenFormFields('admin.plugin.' . My::id(), App::backend()->post_filter->values()),
                                 ]),
