@@ -17,3 +17,7 @@ a.links-remove {
 #relatedEntries-area li.right {
     text-align: right;
 }
+
+#relatedEntries-area caption {
+    margin-top: 1em
+}

@@ -147,7 +147,7 @@ class Backend extends Process
         }
 
         $id      = $post->post_id;
-        $type    = $post->post_type;
+        $post_type    = $post->post_type;
         $meta    = App::meta();
         $meta_rs = $meta->getMetaStr($post->post_meta, 'relatedEntries');
 
@@ -209,7 +209,7 @@ class Backend extends Process
                     ->for('relatedEntries-list'),
                 (new Div())->id('relatedEntries-list')->items([
                     (new Div())->items([
-                        (new Capture($post_list->display(...), [App::backend()->page, App::backend()->nb_per_page, $enclose_block = '', (string) $post_type])),
+                        (new Capture($post_list->display(...), [App::backend()->page, App::backend()->nb_per_page, (int) $id, $enclose_block = '', (string) $post_type])),
                         (new Ul())
                         ->class('minilist')
                         ->items([

@@ -1,17 +1,14 @@
 msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
-"Project-Id-Version: relatedEntries 3.6\n"
+"Project-Id-Version: relatedEntries 4.4\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2023-04-23T17:07:54+00:00\n"
+"PO-Revision-Date: 2025-06-19T17:02:15+00:00\n"
 "Last-Translator: Philippe\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-
-msgid "Related posts"
-msgstr "Billets connexes"
 
 msgid "Are you sure you want to remove this link to a related post?"
 msgstr "Êtes-vous sûr de vouloir supprimer ce lien vers un billet connexe ?"
@@ -19,26 +16,23 @@ msgstr "Êtes-vous sûr de vouloir supprimer ce lien vers un billet connexe ?"
 msgid "Are you sure you want to remove all links to related posts?"
 msgstr "Êtes-vous sûr de vouloir supprimer tous les liens vers des billets connexes ?"
 
-msgid "Related entries:"
-msgstr "Billets connexes :"
-
 msgid "Links to related posts."
 msgstr "Liens vers d'autres billets."
-
-msgid "No related posts"
-msgstr "Pas de billets connexes"
 
 msgid "Add links"
 msgstr "Ajouter des liens"
 
+msgid "Related entries:"
+msgstr "Billets connexes :"
+
+msgid "No related posts"
+msgstr "Pas de billets connexes"
+
 msgid "Remove all links"
 msgstr "Supprimer tous les liens"
 
-msgid "To get started, edit one of your posts and add links to other related posts below the <em>Personal notes</em> field."
-msgstr "Pour commencer, éditez un billet et ajoutez-y, sous le champ <em>Notes personnelles</em>, des liens vers d'autres billets."
-
-msgid "Legend:"
-msgstr "Légende :"
+msgid "List of links (%s)"
+msgstr "Liste des liens (%s)"
 
 msgid "Delete this link"
 msgstr "Supprimer ce lien"
@@ -78,21 +72,6 @@ msgstr "tout le billet"
 
 msgid "no alt"
 msgstr "pas d'attribut"
-
-msgid "Related entries"
-msgstr "Billets connexes"
-
-msgid "Select posts related to entry:"
-msgstr "Sélectionner les billets connexes au billet :"
-
-msgid "Add links to selected posts"
-msgstr "Ajouter les liens vers les billets sélectionnés"
-
-msgid "Configuration successfully saved"
-msgstr "Configuration enregistrée avec succès"
-
-msgid "Links have been successfully removed"
-msgstr "Les liens ont été supprimés avec succès"
 
 msgid "Enable related posts on this blog"
 msgstr "Activer les billets connexes sur ce blog"
@@ -145,8 +124,20 @@ msgstr "Infobulle :"
 msgid "Install or activate listImages plugin to be able to display links to related entries as images"
 msgstr "Installez ou activez l'extension listImages pour pouvoir afficher les liens vers des billets connexes en tant qu'images"
 
-msgid "Related posts list"
-msgstr "Liste des billets connexes"
+msgid "Related posts"
+msgstr "Billets connexes"
+
+msgid "Related entries"
+msgstr "Billets connexes"
+
+msgid "Select posts related to entry:"
+msgstr "Sélectionner les billets connexes au billet :"
+
+msgid "Add links to selected posts"
+msgstr "Ajouter les liens vers les billets sélectionnés"
+
+msgid "Links have been successfully removed"
+msgstr "Les liens ont été supprimés avec succès"
 
 msgid "Remove all links from selected posts"
 msgstr "Supprimer tous les liens des billets sélectionnés"
@@ -156,6 +147,15 @@ msgstr "Billets connexes au billet courant"
 
 msgid "Image size"
 msgstr "Taille de l'image"
+
+msgid "To get started, edit one of your posts and add links to other related posts below the <em>Personal notes</em> field."
+msgstr "Pour commencer, éditez un billet et ajoutez-y, sous le champ <em>Notes personnelles</em>, des liens vers d'autres billets."
+
+msgid "Configuration successfully saved"
+msgstr "Configuration enregistrée avec succès"
+
+msgid "Related posts list"
+msgstr "Liste des billets connexes"
 
 msgid "Add links to related posts"
 msgstr "Ajouter des liens vers des billets connexes"
