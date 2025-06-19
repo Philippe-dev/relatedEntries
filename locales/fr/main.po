@@ -1,9 +1,9 @@
 msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
-"Project-Id-Version: relatedEntries 4.4\n"
+"Project-Id-Version: relatedEntries 5.0\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2025-06-19T17:02:15+00:00\n"
+"PO-Revision-Date: 2025-06-19T19:01:44+00:00\n"
 "Last-Translator: Philippe\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -30,6 +30,12 @@ msgstr "Pas de billets connexes"
 
 msgid "Remove all links"
 msgstr "Supprimer tous les liens"
+
+msgid "List of linked posts (%s)"
+msgstr "Liste des billets liés (%s)"
+
+msgid "List of posts (%s)"
+msgstr "Liste des billets (%s)"
 
 msgid "List of links (%s)"
 msgstr "Liste des liens (%s)"

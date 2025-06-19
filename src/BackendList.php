@@ -153,7 +153,7 @@ class BackendList extends Listing
             );
         } elseif (count($types) === 1) {
             $stats = [
-                (new Text(null, sprintf(__('List of entries (%s)'), $this->rs_count))),
+                (new Text(null, sprintf((!isset($_GET['id']) ? __('List of linked posts (%s)') : __('List of posts (%s)')), $this->rs_count))),
             ];
             foreach (App::status()->post()->dump(false) as $status) {
                 $nb = (int) App::blog()->getPosts(['post_status' => $status->level()], true)->f(0);

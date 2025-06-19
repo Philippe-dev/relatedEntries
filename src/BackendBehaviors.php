@@ -35,7 +35,7 @@ class BackendBehaviors
 
     public static function adminEntryListValue($rs, $cols)
     {
-        $cols['Links'] = '<td class="nowrap">' . App::meta()->getMetaRecordset($rs->post_meta, 'relatedEntries')->count() . '</td>';
+        $cols['Links'] = '<td class="nowrap count">' . App::meta()->getMetaRecordset($rs->post_meta, 'relatedEntries')->count() . '</td>';
     }
 
     public static function adminPostListValue($rs, $cols)
