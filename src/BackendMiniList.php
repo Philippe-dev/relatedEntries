@@ -245,7 +245,7 @@ class BackendMiniList extends Listing
                 ->separator(' ')
                 ->items([
                     (new Link())
-                        ->href(App::backend()->url()->get('admin.plugin.' . My::id()) . '&id=' . $id . '&r_id=' . $this->rs->post_id)
+                        ->href(App::backend()->url()->get('admin.plugin', ['p' => My::id(),'id' => $id, 'r_id' => $this->rs->post_id], '&'))
                         ->title(__('Delete this link') . ': ' . Html::escapeHTML($this->rs->post_title))
                         ->class(['mark', 'element-remove'])
                         ->items([
