@@ -232,11 +232,10 @@ class Manage extends Process
             Page::closeModule();
         } else {
             /*
-            * List of related posts
+            * List of linked posts
             */
 
             // Get posts with related posts
-
             try {
                 $params['no_content']      = true;
                 $params['sql']             = 'AND P.post_id IN (SELECT META.post_id FROM ' . App::con()->prefix() . 'meta META WHERE META.post_id = P.post_id ' . "AND META.meta_type = 'relatedEntries' ) ";
@@ -266,7 +265,6 @@ class Manage extends Process
             }
 
             // Related posts list
-
             App::backend()->post_filter->display('admin.plugin.' . My::id());
 
             $block = (new Form('form-entries'))
