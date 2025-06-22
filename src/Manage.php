@@ -212,6 +212,10 @@ class Manage extends Process
                                     ->items([
                                         (new Hidden('id', (string) $post_id)),
                                         (new Submit('delete', __('Add links to selected posts')))->id('do-action'),
+                                        (new Link())
+                                            ->class(['button','reset'])
+                                            ->href(App::postTypes()->get($post_type)->adminUrl($post_id))
+                                            ->text(__('Cancel')),
                                         App::nonce()->formNonce(),
                                         ... App::backend()->url()->hiddenFormFields('admin.plugin.' . My::id(), App::backend()->post_filter->values()),
                                     ]),
