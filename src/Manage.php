@@ -193,7 +193,6 @@ class Manage extends Process
                 $hidden = (new Para())
                     ->items([(new Hidden('addlinks', '1')),
                         (new Hidden('id', (string) $post_id)),
-                        (new Hidden('p', (string) My::id())),
                     ])
                 ->render();
 
