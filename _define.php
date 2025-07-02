@@ -13,9 +13,9 @@ $this->registerModule(
     'Related entries',
     'Add links to other related posts',
     'Philippe aka amalgame',
-    '5.1',
+    '5.2',
     [
-        'date'        => '2025-06-21T00:00:13+0100',
+        'date'        => '2025-07-02T00:00:13+0100',
         'requires'    => [['core', '2.34']],
         'permissions' => 'My',
         'priority'    => 3000,
