@@ -13,10 +13,10 @@ $this->registerModule(
     'Related entries',
     'Add links to other related posts',
     'Philippe aka amalgame',
-    '5.2',
+    '5.3',
     [
-        'date'        => '2025-07-02T00:00:13+0100',
-        'requires'    => [['core', '2.34']],
+        'date'        => '2025-09-08T00:00:08+0100',
+        'requires'    => [['core', '2.36']],
         'permissions' => 'My',
         'priority'    => 3000,
         'type'        => 'plugin',
