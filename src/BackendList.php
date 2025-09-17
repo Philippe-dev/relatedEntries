@@ -158,7 +158,7 @@ class BackendList extends Listing
             }
 
             $caption = (new Set())
-                ->separator(', ')
+                ->separator(' ')
                 ->items($stats)
                 ->render();
         }
