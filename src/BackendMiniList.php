@@ -56,8 +56,7 @@ class BackendMiniList extends Listing
             echo (new Para())
                 ->items([
                     (new Strong(__('No links'))),
-                ])
-            ->render();
+                ]);
 
             return;
         }
@@ -74,34 +73,30 @@ class BackendMiniList extends Listing
             'title' => (new Th())
                 ->scope('col')
                 ->class('first')
-                ->text(__('Title'))
-            ->render(),
+                ->text(__('Title')),
 
             'date' => (new Th())
                 ->scope('col')
-                ->text(__('Date'))
-            ->render(),
+                ->text(__('Date')),
 
             'category' => (new Th())
                 ->scope('col')
-                ->text(__('Category'))
-            ->render(),
+                ->text(__('Category')),
 
             'status' => (new Th())
                 ->scope('col')
-                ->text(__('Status'))
-            ->render(),
+                ->text(__('Status')),
 
             'actions' => (new Th())
                 ->scope('col')
                 ->class('last')
-                ->text(__('Action'))
-            ->render(),
+                ->text(__('Action')),
         ];
 
         $cols = new ArrayObject($cols);
-        # --BEHAVIOR-- adminPostMiniListHeaderV2 -- MetaRecord, ArrayObject
-        App::behavior()->callBehavior('adminPostMiniListHeaderV2', $this->rs, $cols);
+
+        # --BEHAVIOR-- adminPostMiniListHeaderV2 -- MetaRecord, ArrayObject<string, mixed>, bool
+        App::behavior()->callBehavior('adminPostMiniListHeaderV2', $this->rs, $cols, true);
 
         // Prepare listing
 
@@ -118,26 +113,24 @@ class BackendMiniList extends Listing
         }
 
         $buffer = (new Div())
-                    ->class('table-outer')
+            ->class('table-outer')
+            ->items([
+                (new Table())
+                    ->class(['maximal', 'dragable'])
+                    ->caption(new Caption(sprintf(__('List of links (%s)'), $this->rs_count)))
                     ->items([
-                        (new Table())
-                            ->class(['maximal', 'dragable'])
-                            ->caption(new Caption(sprintf(__('List of links (%s)'), $this->rs_count)))
-                            ->items([
-                                (new Thead())
-                                    ->rows([
-                                        (new Tr())
-                                            ->items([
-                                                (new Text(null, implode('', iterator_to_array($cols)))),
-                                            ]),
-                                    ]),
-                                (new Tbody())
-                                    ->id('pageslist')
-                                    ->rows($lines),
+                        (new Thead())
+                            ->rows([
+                                (new Tr())
+                                    ->items($cols),
                             ]),
+                        (new Tbody())
+                            ->id('pageslist')
+                            ->rows($lines),
+                    ]),
 
-                    ])
-                ->render();
+            ])
+        ->render();
 
         if ($enclose_block !== '') {
             $buffer = sprintf($enclose_block, $buffer);
@@ -215,30 +208,26 @@ class BackendMiniList extends Listing
                         ->href(App::postTypes()->get($this->rs->post_type)->adminUrl($this->rs->post_id))
                         ->title(Html::escapeHTML($this->rs->getURL()))
                         ->text(Html::escapeHTML(trim(Html::clean($this->rs->post_title)))),
-                ])
-            ->render(),
+                ]),
             'date' => (new Td())
                 ->class(['nowrap', 'count'])
                 ->items([
                     (new Timestamp(Date::dt2str(__('%Y-%m-%d %H:%M'), $this->rs->post_dt)))
                         ->datetime(Date::iso8601((int) strtotime($this->rs->post_dt), App::auth()->getInfo('user_tz'))),
-                ])
-            ->render(),
+                ]),
 
             'category' => (new Td())
                 ->class('nowrap')
                 ->items([
                     $category,
-                ])
-            ->render(),
+                ]),
 
             'status' => (new Td())
                 ->class(['nowrap', 'status'])
                 ->separator(' ')
                 ->items([
                     ... $status,
-                ])
-            ->render(),
+                ]),
 
             'actions' => (new Td())
                 ->class(['nowrap', 'count'])
@@ -251,20 +240,17 @@ class BackendMiniList extends Listing
                         ->items([
                             self::getMyRowImage(__('Delete this link') . ': ' . Html::escapeHTML($this->rs->post_title), 'images/trash.svg', 'remove'),
                         ]),
-                ])
-            ->render(),
+                ]),
         ];
 
         $cols = new ArrayObject($cols);
-        # --BEHAVIOR-- adminPostListValueV2 -- MetaRecord, ArrayObject
-        App::behavior()->callBehavior('adminPostMiniListValueV2', $this->rs, $cols);
+        # --BEHAVIOR-- adminPostMiniListValueV2 -- MetaRecord, ArrayObject<string, mixed>, bool
+        App::behavior()->callBehavior('adminPostMiniListValueV2', $this->rs, $cols, true);
 
         return (new Tr())
             ->id('p' . $this->rs->post_id)
             ->class($post_classes)
-            ->items([
-                (new Text(null, implode('', iterator_to_array($cols)))),
-            ]);
+            ->items($cols);
     }
 
     /**
