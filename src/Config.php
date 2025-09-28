@@ -15,8 +15,6 @@ declare(strict_types=1);
 namespace Dotclear\Plugin\relatedEntries;
 
 use Dotclear\App;
-use Dotclear\Core\Backend\Notices;
-use Dotclear\Core\Backend\Page;
 use Dotclear\Helper\Process\TraitProcess;
 use Dotclear\Helper\Html\Form\Checkbox;
 use Dotclear\Helper\Html\Form\Div;
@@ -143,7 +141,7 @@ class Config
 
             My::settings()->put('relatedEntries_images_options', serialize($opts));
 
-            Notices::addSuccessNotice(__('Configuration has been updated.'));
+            App::backend()->notices()->addSuccessNotice(__('Configuration has been updated.'));
 
             App::blog()->triggerBlog();
 
@@ -162,7 +160,7 @@ class Config
             return;
         }
 
-        echo Page::jsConfirmClose('module_config');
+        echo App::backend()->page()->jsConfirmClose('module_config');
 
         $images = unserialize(My::settings()->relatedEntries_images_options);
 
@@ -313,6 +311,6 @@ class Config
             ->render();
         }
 
-        Page::helpBlock('config');
+        App::backend()->page()->helpBlock('config');
     }
 }

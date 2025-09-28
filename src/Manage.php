@@ -17,8 +17,6 @@ namespace Dotclear\Plugin\relatedEntries;
 use Dotclear\App;
 use Dotclear\Core\Backend\Filter\FilterPosts;
 use Dotclear\Core\Backend\Listing\ListingPosts;
-use Dotclear\Core\Backend\Notices;
-use Dotclear\Core\Backend\Page;
 use Dotclear\Core\Backend\UserPref;
 use Dotclear\Helper\Process\TraitProcess;
 use Dotclear\Helper\Html\Form\Div;
@@ -165,22 +163,22 @@ class Manage
                 App::error()->add($e->getMessage());
             }
 
-            Page::openModule(
+            App::backend()->page()->openModule(
                 __('Related entries'),
-                Page::jsLoad('js/_posts_list.js') .
+                App::backend()->page()->jsLoad('js/_posts_list.js') .
                 App::backend()->post_filter->js(App::backend()->url()->get('admin.plugin', ['p' => My::id(),'id' => $post_id, 'addlinks' => '1'], '&'))
             );
 
             App::backend()->page_title = __('Add links');
 
-            echo Page::breadcrumb(
+            echo App::backend()->page()->breadcrumb(
                 [
                     Html::escapeHTML(App::blog()->name) => '',
                     __('Related posts')                 => App::backend()->getPageURL(),
                     App::backend()->page_title          => '',
                 ]
             ) .
-            Notices::getNotices();
+            App::backend()->notices()->getNotices();
 
             if (!App::error()->flag()) {
                 echo
@@ -233,8 +231,8 @@ class Manage
                 );
             }
 
-            Page::helpBlock('posts');
-            Page::closeModule();
+            App::backend()->page()->helpBlock('posts');
+            App::backend()->page()->closeModule();
         } else {
             /*
             * List of linked posts
@@ -251,22 +249,22 @@ class Manage
                 App::error()->add($e->getMessage());
             }
 
-            Page::openModule(
+            App::backend()->page()->openModule(
                 __('Related entries'),
-                Page::jsLoad('js/_posts_list.js') .
+                App::backend()->page()->jsLoad('js/_posts_list.js') .
                 App::backend()->post_filter->js(App::backend()->url()->get('admin.plugin', ['p' => My::id()], '&'))
             );
 
-            echo Page::breadcrumb(
+            echo App::backend()->page()->breadcrumb(
                 [
                     Html::escapeHTML(App::blog()->name) => '',
                     __('Related posts')                 => '',
                 ]
             ) .
-            Notices::getNotices();
+            App::backend()->notices()->getNotices();
 
             if (isset($_GET['upd']) && $_GET['upd'] == 2) {
-                Notices::success(__('Links have been successfully removed'));
+                App::backend()->notices()->success(__('Links have been successfully removed'));
             }
 
             // Related posts list
@@ -300,8 +298,8 @@ class Manage
                 App::backend()->post_filter->show()
             );
 
-            Page::helpBlock('manage');
-            Page::closeModule();
+            App::backend()->page()->helpBlock('manage');
+            App::backend()->page()->closeModule();
         }
     }
 }
