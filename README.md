@@ -1,5 +1,4 @@
-# relatedEntries
-Add links to related posts in Dotclear blogs 
+# Billets connexes 
 
 Cette extension permet d'afficher, avant ou après le contenu de vos billets, des liens vers les billets connexes que vous aurez choisis. Si vous avez installé préalablement l'extension listImages, les liens seront présentés sous forme d'images extraites des billets.
 
