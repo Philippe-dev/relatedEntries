@@ -241,7 +241,7 @@ class Manage
             // Get posts with related posts
             try {
                 $params['no_content']      = true;
-                $params['sql']             = 'AND P.post_id IN (SELECT META.post_id FROM ' . App::con()->prefix() . 'meta META WHERE META.post_id = P.post_id ' . "AND META.meta_type = 'relatedEntries' ) ";
+                $params['sql']             = 'AND P.post_id IN (SELECT META.post_id FROM ' . App::db()->con()->prefix() . 'meta META WHERE META.post_id = P.post_id ' . "AND META.meta_type = 'relatedEntries' ) ";
                 App::backend()->posts      = App::blog()->getPosts($params);
                 App::backend()->counter    = App::blog()->getPosts($params, true);
                 App::backend()->posts_list = new BackendList(App::backend()->posts, App::backend()->counter->f(0));
