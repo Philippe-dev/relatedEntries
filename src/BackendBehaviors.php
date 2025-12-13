@@ -17,10 +17,7 @@ namespace Dotclear\Plugin\relatedEntries;
 use ArrayObject;
 use Dotclear\App;
 use Dotclear\Database\MetaRecord;
-use Dotclear\Helper\Html\Form\Link;
-use Dotclear\Helper\Html\Form\Para;
 use Dotclear\Helper\Html\Form\Td;
-use Dotclear\Helper\Html\Form\Text;
 use Dotclear\Helper\Html\Form\Th;
 
 class BackendBehaviors

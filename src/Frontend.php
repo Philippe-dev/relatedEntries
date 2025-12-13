@@ -20,7 +20,7 @@ use Dotclear\Helper\Process\TraitProcess;
 class Frontend
 {
     use TraitProcess;
-    
+
     public static function init(): bool
     {
         return self::status(My::checkContext(My::FRONTEND));

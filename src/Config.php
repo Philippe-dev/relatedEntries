@@ -31,7 +31,7 @@ use Dotclear\Helper\Html\Html;
 class Config
 {
     use TraitProcess;
-    
+
     /**
      * Initializes the page.
      */

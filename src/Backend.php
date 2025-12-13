@@ -36,7 +36,7 @@ use Exception;
 class Backend
 {
     use TraitProcess;
-    
+
     public static function init(): bool
     {
         return self::status(My::checkContext(My::BACKEND));
@@ -148,10 +148,10 @@ class Backend
             return;
         }
 
-        $id      = $post->post_id;
-        $post_type    = $post->post_type;
-        $meta    = App::meta();
-        $meta_rs = $meta->getMetaStr($post->post_meta, 'relatedEntries');
+        $id        = $post->post_id;
+        $post_type = $post->post_type;
+        $meta      = App::meta();
+        $meta_rs   = $meta->getMetaStr($post->post_meta, 'relatedEntries');
 
         $addlinksurl    = App::backend()->url()->get('admin.plugin', ['p' => My::id(),'id' => $id, 'upd' => '1','addlinks' => '1'], '&');
         $removelinksurl = App::backend()->url()->get('admin.plugin', ['p' => My::id(),'id' => $id, 'upd' => '1','r_id' => $meta_rs], '&');

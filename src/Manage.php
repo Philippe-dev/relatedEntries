@@ -16,7 +16,6 @@ namespace Dotclear\Plugin\relatedEntries;
 
 use Dotclear\App;
 use Dotclear\Core\Backend\Filter\FilterPosts;
-use Dotclear\Core\Backend\Listing\ListingPosts;
 use Dotclear\Core\Backend\UserPref;
 use Dotclear\Helper\Process\TraitProcess;
 use Dotclear\Helper\Html\Form\Div;
@@ -33,7 +32,7 @@ use Exception;
 class Manage
 {
     use TraitProcess;
-    
+
     /**
      * Initializes the page.
      */
