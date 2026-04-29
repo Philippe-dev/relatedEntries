@@ -116,13 +116,15 @@ class Config
         App::backend()->link_combo     = $link_combo;
         App::backend()->bubble_combo   = $bubble_combo;
 
+        // init
+        $settings = My::settings();
         // Saving configurations
         if (isset($_POST['save'])) {
-            My::settings()->put('relatedEntries_enabled', !empty($_POST['relatedEntries_enabled']));
-            My::settings()->put('relatedEntries_title', Html::escapeHTML($_POST['relatedEntries_title']));
-            My::settings()->put('relatedEntries_beforePost', !empty($_POST['relatedEntries_beforePost']));
-            My::settings()->put('relatedEntries_afterPost', !empty($_POST['relatedEntries_afterPost']));
-            My::settings()->put('relatedEntries_images', !empty($_POST['relatedEntries_images']));
+            $settings->put('enabled', !empty($_POST['enabled']), App::blogWorkspace()::NS_BOOL, 'Enable related entries');
+            $settings->put('title', Html::escapeHTML($_POST['title']), App::blogWorkspace()::NS_STRING, 'Title for related entries');
+            $settings->put('beforePost', !empty($_POST['beforePost']), App::blogWorkspace()::NS_BOOL, 'Display related entries before post content');
+            $settings->put('afterPost', !empty($_POST['afterPost']), App::blogWorkspace()::NS_BOOL, 'Display related entries after post content');
+            $settings->put('images', !empty($_POST['images']), App::blogWorkspace()::NS_BOOL, 'Display images for related entries');
 
             $opts = [
                 'size'     => !empty($_POST['size']) ? $_POST['size'] : 't',
@@ -139,7 +141,7 @@ class Config
                 'img_dim'  => !empty($_POST['img_dim']) ? $_POST['img_dim'] : 0,
             ];
 
-            My::settings()->put('relatedEntries_images_options', serialize($opts));
+            $settings->put('images_options', serialize($opts), App::blogWorkspace()::NS_STRING, 'Related entries images options');
 
             App::backend()->notices()->addSuccessNotice(__('Configuration has been updated.'));
 
@@ -162,41 +164,41 @@ class Config
 
         echo App::backend()->page()->jsConfirmClose('module_config');
 
-        $images = unserialize(My::settings()->relatedEntries_images_options);
+        $images = unserialize(My::settings()->images_options);
 
         echo
         (new Div())->items([
             (new Fieldset())->class('fieldset')->legend((new Legend(__('Activation'))))->fields([
                 (new Para())->items([
-                    (new Checkbox('relatedEntries_enabled', (bool) My::settings()->relatedEntries_enabled)),
+                    (new Checkbox('enabled', (bool) My::settings()->enabled)),
                     (new Label(__('Enable related posts on this blog'), Label::OUTSIDE_LABEL_AFTER))
-                        ->for('relatedEntries_enabled')
+                        ->for('enabled')
                         ->class('classic'),
                 ]),
             ]),
             (new Fieldset())->class('fieldset')->legend((new Legend(__('Display options'))))->fields([
                 (new Para())->items([
-                    (new Input('relatedEntries_title'))
+                    (new Input('title'))
                         ->class('classic')
                         ->size(50)
                         ->maxlength(255)
-                        ->value(My::settings()->relatedEntries_title)
+                        ->value(My::settings()->title)
                         ->label((new Label(
                             __('Block title:'),
                             Label::OUTSIDE_TEXT_BEFORE
                         ))),
                 ]),
                 (new Para())->items([
-                    (new Checkbox('relatedEntries_beforePost', (bool) My::settings()->relatedEntries_beforePost)),
+                    (new Checkbox('beforePost', (bool) My::settings()->beforePost)),
                     (new Label(__('Display block before post content'), Label::OUTSIDE_LABEL_AFTER))
-                        ->for('relatedEntries_beforePost')
+                        ->for('beforePost')
                         ->class('classic'),
 
                 ]),
                 (new Para())->items([
-                    (new Checkbox('relatedEntries_afterPost', (bool) My::settings()->relatedEntries_afterPost)),
+                    (new Checkbox('afterPost', (bool) My::settings()->afterPost)),
                     (new Label(__('Display block after post content'), Label::OUTSIDE_LABEL_AFTER))
-                        ->for('relatedEntries_afterPost')
+                        ->for('afterPost')
                         ->class('classic'),
 
                 ]),
@@ -213,9 +215,9 @@ class Config
             (new Div())->items([
                 (new Fieldset())->class('fieldset')->legend((new Legend(__('Images extracting options'))))->fields([
                     (new Para())->items([
-                        (new Checkbox('relatedEntries_images', (bool) My::settings()->relatedEntries_images)),
+                        (new Checkbox('images', (bool) My::settings()->images)),
                         (new Label(__('Extract images from related posts'), Label::OUTSIDE_LABEL_AFTER))
-                            ->for('relatedEntries_images')
+                            ->for('images')
                             ->class(['classic']),
                     ]),
                     (new Para())->items([

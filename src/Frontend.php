@@ -32,12 +32,10 @@ class Frontend
             return false;
         }
 
-        App::behavior()->addBehavior('publicEntryBeforeContent', [self::class,  'publicEntryBeforeContent']);
-        App::behavior()->addBehavior('publicEntryAfterContent', [self::class,  'publicEntryAfterContent']);
-        App::behavior()->addBehavior('publicHeadContent', [self::class,  'publicHeadContent']);
-        App::behavior()->addBehavior('initWidgets', [Widgets::class, 'initWidgets']);
-
-        App::lang()->set(dirname(__FILE__) . '/locales/' . App::lang()->getLang() . '/main');
+        App::behavior()->addBehavior('publicEntryBeforeContent', self::publicEntryBeforeContent(...));
+        App::behavior()->addBehavior('publicEntryAfterContent', self::publicEntryAfterContent(...));
+        App::behavior()->addBehavior('publicHeadContent', self::publicHeadContent(...));
+        App::behavior()->addBehavior('initWidgets', Widgets::initWidgets(...));
 
         return true;
     }
@@ -46,7 +44,7 @@ class Frontend
     {
         // Settings
 
-        if (!My::settings()->relatedEntries_enabled) {
+        if (!My::settings()->enabled) {
             return;
         }
 
@@ -55,14 +53,14 @@ class Frontend
 
     public static function publicEntryBeforeContent()
     {
-        if (My::settings()->relatedEntries_enabled && My::settings()->relatedEntries_beforePost) {
+        if (My::settings()->enabled && My::settings()->beforePost) {
             return FrontendTemplates::htmlBlock();
         }
     }
 
     public static function publicEntryAfterContent()
     {
-        if (My::settings()->relatedEntries_enabled && My::settings()->relatedEntries_afterPost) {
+        if (My::settings()->enabled && My::settings()->afterPost) {
             return FrontendTemplates::htmlBlock();
         }
     }

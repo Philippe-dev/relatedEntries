@@ -55,7 +55,7 @@ class FrontendTemplates
             $rs                   = App::blog()->getPosts($params);
             $ret                  = ($widget->title ? $widget->renderTitle(Html::escapeHTML($widget->title)) : '');
 
-            if (!$widget->relatedEntries_images || !App::plugins()->moduleExists('listImages')) {
+            if (!$widget->images || !App::plugins()->moduleExists('listImages')) {
                 $ret .= '<ul>';
                 while ($rs->fetch()) {
                     $ret .= '<li><a href="' . $rs->getURL() . '" title="' . Html::escapeHTML($rs->post_title) . '">' . $rs->post_title . '</a></li>';
@@ -112,9 +112,9 @@ class FrontendTemplates
             $params['post_type']  = ['post'];
             $rs                   = App::blog()->getPosts($params);
 
-            if (App::plugins()->moduleExists('listImages') && My::settings()->relatedEntries_images) {
+            if (App::plugins()->moduleExists('listImages') && My::settings()->images) {
                 //images display options
-                $img_options = unserialize(My::settings()->relatedEntries_images_options);
+                $img_options = unserialize(My::settings()->images_options);
 
                 $size     = $img_options['size'] ? $img_options['size'] : 't';
                 $html_tag = $img_options['html_tag'] ? $img_options['html_tag'] : 'div';
@@ -129,7 +129,7 @@ class FrontendTemplates
                 $alt      = $img_options['alt'] ? $img_options['alt'] : 'inherit';
                 $img_dim  = $img_options['img_dim'] ? $img_options['img_dim'] : 0;
                 $def_size = 'o';
-                $ret      = My::settings()->relatedEntries_title != '' ? '<h3>' . My::settings()->relatedEntries_title . '</h3>' : '';
+                $ret      = My::settings()->title != '' ? '<h3>' . My::settings()->title . '</h3>' : '';
                 $ret .= '<' . ($html_tag == 'li' ? 'ul' : 'div') . ' class="relatedEntries">';
 
                 //listImages plugin comes here
@@ -140,8 +140,8 @@ class FrontendTemplates
                 $ret .= '</' . ($html_tag == 'li' ? 'ul' : 'div') . '>' . "\n";
 
                 echo $ret;
-            } elseif (!App::plugins()->moduleExists('listImages') || !My::settings()->relatedEntries_images) {
-                $ret = My::settings()->relatedEntries_title != '' ? '<h3>' . My::settings()->relatedEntries_title . '</h3>' : '';
+            } elseif (!App::plugins()->moduleExists('listImages') || !My::settings()->images) {
+                $ret = My::settings()->title != '' ? '<h3>' . My::settings()->title . '</h3>' : '';
                 $ret .= '<ul class="relatedEntries">';
 
                 while ($rs->fetch()) {

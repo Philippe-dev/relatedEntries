@@ -38,7 +38,7 @@ class Widgets
         // Only if listImages plugin
 
         if (App::plugins()->moduleExists('listImages')) {
-            $widgets->relatedEntriesWidget->setting('relatedEntries_images', __('Extract images from related posts'), 0, 'check');
+            $widgets->relatedEntriesWidget->setting('images', __('Extract images from related posts'), 0, 'check');
 
             $widgets->relatedEntriesWidget->setting(
                 'from',

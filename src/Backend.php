@@ -65,15 +65,15 @@ class Backend
         My::addBackendMenuItem(Utility::MENU_BLOG);
 
         if ((isset($_GET['addlinks']) && $_GET['addlinks'] == 1) || (isset($_GET['p']) && $_GET['p'] == 'relatedEntries')) {
-            App::behavior()->addBehavior('adminColumnsListsV2', [BackendBehaviors::class, 'adminColumnsLists']);
-            App::behavior()->addBehavior('adminPostListHeaderV2', [BackendBehaviors::class, 'adminPostListHeader']);
-            App::behavior()->addBehavior('adminPostListValueV2', [BackendBehaviors::class, 'adminPostListValue']);
+            App::behavior()->addBehavior('adminColumnsListsV2', BackendBehaviors::adminColumnsLists(...));
+            App::behavior()->addBehavior('adminPostListHeaderV2', BackendBehaviors::adminPostListHeader(...));
+            App::behavior()->addBehavior('adminPostListValueV2', BackendBehaviors::adminPostListValue(...));
         }
 
-        App::behavior()->addBehavior('adminPageHelpBlock', [self::class,  'adminPageHelpBlock']);
-        App::behavior()->addBehavior('adminPostHeaders', [self::class,  'postHeaders']);
-        App::behavior()->addBehavior('adminPostForm', [self::class,  'adminPostForm']);
-        App::behavior()->addBehavior('initWidgets', [Widgets::class, 'initWidgets']);
+        App::behavior()->addBehavior('adminPageHelpBlock', self::adminPageHelpBlock(...));
+        App::behavior()->addBehavior('adminPostHeaders', self::postHeaders(...));
+        App::behavior()->addBehavior('adminPostForm', self::adminPostForm(...));
+        App::behavior()->addBehavior('initWidgets', Widgets::initWidgets(...));
 
         if (isset($_GET['id']) && isset($_GET['r_id'])) {
             try {
@@ -104,7 +104,7 @@ class Backend
 
     public static function postHeaders(): string
     {
-        if (!My::settings()->relatedEntries_enabled) {
+        if (!My::settings()->enabled) {
             return '';
         }
 
@@ -141,7 +141,7 @@ class Backend
     {
         $postTypes = ['post'];
 
-        if (!My::settings()->relatedEntries_enabled) {
+        if (!My::settings()->enabled) {
             return;
         }
         if (is_null($post) || !in_array($post->post_type, $postTypes)) {
