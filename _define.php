@@ -15,7 +15,7 @@ $this->registerModule(
     'Philippe aka amalgame',
     '6.1',
     [
-        'date'        => '2025-12-22T00:00:08+0100',
+        'date'        => '2026-04-29T00:00:16+0100',
         'requires'    => [['core', '2.36']],
         'permissions' => 'My',
         'priority'    => 3000,
