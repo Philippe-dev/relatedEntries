@@ -1,156 +1,238 @@
+# Language: Français
+# Module: relatedEntries - 6.1
+# Date: 2026-04-29 15:29:37
+# Translated with translater 2025.09.11
+
 msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
-"Project-Id-Version: relatedEntries 5.0\n"
+"Project-Id-Version: relatedEntries 6.1\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2025-06-19T19:01:44+00:00\n"
+"PO-Revision-Date: 2026-04-29T15:29:37+00:00\n"
 "Last-Translator: Philippe\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
+#: src/Backend.php:124
 msgid "Are you sure you want to remove this link to a related post?"
 msgstr "Êtes-vous sûr de vouloir supprimer ce lien vers un billet connexe ?"
 
+#: src/Backend.php:130
 msgid "Are you sure you want to remove all links to related posts?"
 msgstr "Êtes-vous sûr de vouloir supprimer tous les liens vers des billets connexes ?"
 
+#: src/Backend.php:159
 msgid "Links to related posts."
 msgstr "Liens vers d'autres billets."
 
+#: src/Backend.php:167
+#: src/Manage.php:171
 msgid "Add links"
 msgstr "Ajouter des liens"
 
+#: src/Backend.php:174
 msgid "Related entries:"
 msgstr "Billets connexes :"
 
+#: src/Backend.php:180
 msgid "No related posts"
 msgstr "Pas de billets connexes"
 
+#: src/Backend.php:230
 msgid "Remove all links"
 msgstr "Supprimer tous les liens"
 
+#: src/BackendList.php:148
 msgid "List of linked posts (%s)"
 msgstr "Liste des billets liés (%s)"
 
+#: src/BackendList.php:148
 msgid "List of posts (%s)"
 msgstr "Liste des billets (%s)"
 
+#: src/BackendMiniList.php:57
+msgid "No links"
+msgstr "Pas de liens"
+
+#: src/BackendMiniList.php:119
 msgid "List of links (%s)"
 msgstr "Liste des liens (%s)"
 
+#: src/BackendMiniList.php:237
 msgid "Delete this link"
 msgstr "Supprimer ce lien"
 
+#: src/Config.php:71
+#: src/Widgets.php:86
 msgid "no tag"
 msgstr "aucune balise"
 
+#: src/Config.php:76
+#: src/Widgets.php:96
 msgid "related posts"
 msgstr "les billets connexes"
 
+#: src/Config.php:77
+#: src/Widgets.php:96
 msgid "original images"
 msgstr "les images originales"
 
+#: src/Config.php:78
+#: src/Widgets.php:96
 msgid "no link"
 msgstr "pas de lien"
 
+#: src/Config.php:83
+#: src/Widgets.php:78
 msgid "entry title"
 msgstr "titre du billet"
 
+#: src/Config.php:84
+#: src/Widgets.php:66
 msgid "image title"
 msgstr "titre de l'image"
 
+#: src/Config.php:85
+#: src/Widgets.php:78
 msgid "no legend"
 msgstr "pas de légende"
 
+#: src/Config.php:92
+#: src/Widgets.php:104
 msgid "no bubble"
 msgstr "pas d'infobulle"
 
+#: src/Config.php:97
+#: src/Widgets.php:48
 msgid "post excerpt"
 msgstr "l'extrait du billet"
 
+#: src/Config.php:98
+#: src/Widgets.php:48
 msgid "post content"
 msgstr "le contenu du billet"
 
+#: src/Config.php:99
+#: src/Widgets.php:48
 msgid "full post"
 msgstr "tout le billet"
 
+#: src/Config.php:105
+#: src/Widgets.php:66
 msgid "no alt"
 msgstr "pas d'attribut"
 
+#: src/Config.php:174
 msgid "Enable related posts on this blog"
 msgstr "Activer les billets connexes sur ce blog"
 
+#: src/Config.php:187
 msgid "Block title:"
 msgstr "Titre du bloc :"
 
+#: src/Config.php:193
 msgid "Display block before post content"
 msgstr "Afficher le bloc avant le contenu du billet"
 
+#: src/Config.php:200
 msgid "Display block after post content"
 msgstr "Afficher le bloc après le contenu du billet"
 
+#: src/Config.php:207
 msgid "Uncheck both boxes to use only the presentation widget."
 msgstr "Décocher les deux cases pour n'utiliser que le widget de présentation."
 
+#: src/Config.php:216
 msgid "Images extracting options"
 msgstr "Options d'extraction des images"
 
+#: src/Config.php:219
+#: src/Widgets.php:41
 msgid "Extract images from related posts"
 msgstr "Extraire les images des billets connexes"
 
+#: src/Config.php:227
+#: src/Widgets.php:45
 msgid "Images origin:"
 msgstr "Origine des images :"
 
+#: src/Config.php:237
+#: src/Widgets.php:59
 msgid "Include images dimensions"
 msgstr "Inclure les dimensions des images"
 
+#: src/Config.php:245
+#: src/Widgets.php:63
 msgid "Images alt attribute:"
 msgstr "Attribut alt des images :"
 
+#: src/Config.php:255
+#: src/Widgets.php:69
 msgid "First image to extract:"
 msgstr "Première image à extraire :"
 
+#: src/Config.php:265
+#: src/Widgets.php:71
 msgid "Number of images to extract:"
 msgstr "Nombre d'images à extraire :"
 
+#: src/Config.php:278
+#: src/Widgets.php:83
 msgid "HTML tag around image:"
 msgstr "Balise HTML englobant l'image :"
 
+#: src/Config.php:286
+#: src/Widgets.php:89
 msgid "CSS class on images:"
 msgstr "Classe CSS des images :"
 
+#: src/Config.php:292
+#: src/Widgets.php:93
 msgid "Links destination:"
 msgstr "Destination des liens :"
 
+#: src/Config.php:298
+#: src/Widgets.php:101
 msgid "Bubble:"
 msgstr "Infobulle :"
 
+#: src/Config.php:310
 msgid "Install or activate listImages plugin to be able to display links to related entries as images"
 msgstr "Installez ou activez l'extension listImages pour pouvoir afficher les liens vers des billets connexes en tant qu'images"
 
+#: src/Install.php:64
+#: src/Manage.php:176
+#: src/Widgets.php:30
 msgid "Related posts"
 msgstr "Billets connexes"
 
+#: src/Manage.php:166
 msgid "Related entries"
 msgstr "Billets connexes"
 
+#: src/Manage.php:184
 msgid "Select posts related to entry:"
 msgstr "Sélectionner les billets connexes au billet :"
 
+#: src/Manage.php:213
 msgid "Add links to selected posts"
 msgstr "Ajouter les liens vers les billets sélectionnés"
 
+#: src/Manage.php:266
 msgid "Links have been successfully removed"
 msgstr "Les liens ont été supprimés avec succès"
 
+#: src/Manage.php:285
 msgid "Remove all links from selected posts"
 msgstr "Supprimer tous les liens des billets sélectionnés"
 
+#: src/Widgets.php:33
 msgid "Related entries to current post"
 msgstr "Billets connexes au billet courant"
 
+#: src/Widgets.php:53
 msgid "Image size"
 msgstr "Taille de l'image"
 
