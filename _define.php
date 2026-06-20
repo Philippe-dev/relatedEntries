@@ -13,12 +13,11 @@ $this->registerModule(
     'Related entries',
     'Add links to other related posts',
     'Philippe aka amalgame',
-    '6.1',
+    '6.2',
     [
-        'date'        => '2026-04-29T00:00:16+0100',
-        'requires'    => [['core', '2.36']],
+        'date'        => '2026-06-20T00:00:16+0100',
+        'requires'    => [['core', '2.38']],
         'permissions' => 'My',
-        'priority'    => 3000,
         'type'        => 'plugin',
         'support'     => 'https://github.com/Philippe-dev/relatedEntries',
     ]

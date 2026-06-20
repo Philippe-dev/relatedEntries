@@ -65,16 +65,16 @@ class FrontendTemplates
                 // Récupération des options d'affichage des images
                 $size     = $widget->size;
                 $html_tag = $widget->html_tag;
-                $link     = $widget->link;
+                $link     = 'entry';
                 $exif     = 0;
                 $legend   = $widget->legend;
-                $bubble   = $widget->bubble;
+                $bubble   = 'entry';
                 $from     = $widget->from;
                 $start    = abs((int) $widget->start);
                 $length   = abs((int) $widget->length);
                 $class    = $widget->class;
                 $alt      = $widget->alt;
-                $img_dim  = abs((int) $widget->img_dim);
+                $img_dim  = 'none';
                 $def_size = 'o';
 
                 // Début d'affichage
@@ -121,41 +121,26 @@ class FrontendTemplates
                 $link     = $img_options['link'] ? $img_options['link'] : 'entry';
                 $exif     = $img_options['exif'] ? $img_options['exif'] : 0;
                 $legend   = $img_options['legend'] ? $img_options['legend'] : 'none';
-                $bubble   = $img_options['bubble'] ? $img_options['bubble'] : 'image';
+                $bubble   = 'entry';
                 $from     = $img_options['from'] ? $img_options['from'] : 'full';
                 $start    = $img_options['start'] ? $img_options['start'] : 1;
                 $length   = $img_options['length'] ? $img_options['length'] : 1;
                 $class    = $img_options['class'] ? $img_options['class'] : '';
                 $alt      = $img_options['alt'] ? $img_options['alt'] : 'inherit';
-                $img_dim  = $img_options['img_dim'] ? $img_options['img_dim'] : 0;
+                $img_dim  = 'none';
                 $def_size = 'o';
 
                 $ret = My::settings()->title != '' ? '<h3>' . My::settings()->title . '</h3>' : '';
                 $ret .= '<' . ($html_tag == 'li' ? 'ul' : 'div') . ' class="relatedEntries">';
 
                 //listImages plugin comes here
-
                 while ($rs->fetch()) {
-                    if ($link !== 'none') {
-                        // Si un lien est requis
-                        if ($link === 'image') {
-                            // Lien vers l'image originale
-                            $href       = FrontendHelper::ContentImageLookup($p_root, $i, 'o', $orientation, $dimensions, $sizes, 'o');
-                            $href       = $p_url . (dirname($i) !== '/' ? dirname($i) : '') . '/' . $href;
-                            $href_title = match ($bubble) {
-                                'entry' => Html::escapeHTML($rs->$post_title),
-                                // default also stands for 'image'
-                                default => $img_alt,
-                            };
-                        } else {
-                            // Lien vers le billet d'origine
-                            $url        = is_string($url = $rs->getURL()) ? $url : '';
-                            $href       = $url;
-                            $href_title = Html::escapeHTML($rs->post_title);
-                        }
+                    // Lien vers le billet d'origine
+                    $url        = is_string($url = $rs->getURL()) ? $url : '';
+                    $href       = $url;
+                    $href_title = Html::escapeHTML($rs->post_title);
 
-                        $ret .= '<a class="link_' . $link . '" href="' . $href . '" title="' . $href_title . '">';
-                    }
+                    $ret .= '<a class="link_' . $link . '" href="' . $href . '" title="' . $href_title . '">';
 
                     $ret .= FrontendHelper::EntryImages((string) $size, (string) $html_tag, (string) $link, (int) $exif, (string) $legend, (string) $bubble, (string) $from, (int) $start, (int) $length, (string) $class, (string) $alt, (string) $img_dim, (string) $def_size, $rs);
                 }

@@ -71,13 +71,6 @@ class Config
             __('no tag') => 'none',
         ];
 
-        // Link combo
-        $link_combo = [
-            __('related posts')   => 'entry',
-            __('original images') => 'image',
-            __('no link')         => 'none',
-        ];
-
         // Legend combo
         $legend_combo = [
             __('entry title') => 'entry',
@@ -85,12 +78,6 @@ class Config
             __('no legend')   => 'none',
         ];
 
-        // Bubble combo
-        $bubble_combo = [
-            __('entry title') => 'entry',
-            __('image title') => 'image',
-            __('no bubble')   => 'none',
-        ];
 
         // From combo
         $from_combo = [
@@ -113,8 +100,7 @@ class Config
         App::backend()->alt_combo      = $alt_combo;
         App::backend()->legend_combo   = $legend_combo;
         App::backend()->html_tag_combo = $html_tag_combo;
-        App::backend()->link_combo     = $link_combo;
-        App::backend()->bubble_combo   = $bubble_combo;
+
 
         // init
         $settings = My::settings();
@@ -132,13 +118,13 @@ class Config
                 'link'     => !empty($_POST['link']) ? $_POST['link'] : 'entry',
                 'exif'     => 0,
                 'legend'   => !empty($_POST['legend']) ? $_POST['legend'] : 'none',
-                'bubble'   => !empty($_POST['bubble']) ? $_POST['bubble'] : 'image',
+                'bubble'   => !empty($_POST['bubble']) ? $_POST['bubble'] : 'entry',
                 'from'     => !empty($_POST['from']) ? $_POST['from'] : 'full',
                 'start'    => !empty($_POST['start']) ? (int) $_POST['start'] : 1,
                 'length'   => !empty($_POST['length']) ? (int) $_POST['length'] : 1,
                 'class'    => !empty($_POST['class']) ? (string) $_POST['class'] : '',
                 'alt'      => !empty($_POST['alt']) ? $_POST['alt'] : 'inherit',
-                'img_dim'  => !empty($_POST['img_dim']) ? $_POST['img_dim'] : 0,
+                'img_dim'  => !empty($_POST['img_dim']) ? $_POST['img_dim'] : 'none',
             ];
 
             $settings->put('images_options', serialize($opts), App::blogWorkspace()::NS_STRING, 'Related entries images options');
@@ -233,12 +219,6 @@ class Config
                             ->label(new Label(__('Image size:'), Label::OUTSIDE_LABEL_BEFORE)),
                     ]),
                     (new Para())->items([
-                        (new Checkbox('img_dim', (bool) $images['img_dim']))
-                            ->label(new Label(__('Include images dimensions'), Label::INSIDE_LABEL_AFTER))
-                            ->for('img_dim')
-                            ->class(['classic']),
-                    ]),
-                    (new Para())->items([
                         (new Select('alt'))
                             ->items(App::backend()->alt_combo)
                             ->default(($images['alt'] != '' ? $images['alt'] : 'inherit'))
@@ -285,19 +265,6 @@ class Config
                           ->value($images['class'])
                           ->label(new Label(__('CSS class on images:'), Label::OUTSIDE_LABEL_BEFORE)),
                     ]),
-                    (new Para())->items([
-                        (new Select('link'))
-                            ->items(App::backend()->link_combo)
-                            ->default(($images['link'] != '' ? $images['link'] : 'entry'))
-                            ->label(new Label(__('Links destination:'), Label::OUTSIDE_LABEL_BEFORE)),
-                    ]),
-                    (new Para())->items([
-                        (new Select('bubble'))
-                            ->items(App::backend()->bubble_combo)
-                            ->default(($images['bubble'] != '' ? $images['bubble'] : 'image'))
-                            ->label(new Label(__('Bubble:'), Label::OUTSIDE_LABEL_BEFORE)),
-                    ]),
-
                 ]),
             ])
             ->render();

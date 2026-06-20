@@ -1,6 +1,6 @@
 # Language: Français
 # Module: relatedEntries - 6.1
-# Date: 2026-04-29 15:29:37
+# Date: 2026-06-20 09:47:49
 # Translated with translater 2025.09.11
 
 msgid ""
@@ -8,7 +8,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Project-Id-Version: relatedEntries 6.1\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2026-04-29T15:29:37+00:00\n"
+"PO-Revision-Date: 2026-06-20T09:47:49+00:00\n"
 "Last-Translator: Philippe\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -65,140 +65,105 @@ msgid "Delete this link"
 msgstr "Supprimer ce lien"
 
 #: src/Config.php:71
-#: src/Widgets.php:86
+#: src/Widgets.php:84
 msgid "no tag"
 msgstr "aucune balise"
 
 #: src/Config.php:76
-#: src/Widgets.php:96
-msgid "related posts"
-msgstr "les billets connexes"
-
-#: src/Config.php:77
-#: src/Widgets.php:96
-msgid "original images"
-msgstr "les images originales"
-
-#: src/Config.php:78
-#: src/Widgets.php:96
-msgid "no link"
-msgstr "pas de lien"
-
-#: src/Config.php:83
-#: src/Widgets.php:78
+#: src/Widgets.php:76
 msgid "entry title"
 msgstr "titre du billet"
 
-#: src/Config.php:84
-#: src/Widgets.php:66
+#: src/Config.php:77
+#: src/Widgets.php:64
 msgid "image title"
 msgstr "titre de l'image"
 
-#: src/Config.php:85
-#: src/Widgets.php:78
+#: src/Config.php:78
+#: src/Widgets.php:76
 msgid "no legend"
 msgstr "pas de légende"
 
-#: src/Config.php:92
-#: src/Widgets.php:104
-msgid "no bubble"
-msgstr "pas d'infobulle"
-
-#: src/Config.php:97
+#: src/Config.php:84
 #: src/Widgets.php:48
 msgid "post excerpt"
 msgstr "l'extrait du billet"
 
-#: src/Config.php:98
+#: src/Config.php:85
 #: src/Widgets.php:48
 msgid "post content"
 msgstr "le contenu du billet"
 
-#: src/Config.php:99
+#: src/Config.php:86
 #: src/Widgets.php:48
 msgid "full post"
 msgstr "tout le billet"
 
-#: src/Config.php:105
-#: src/Widgets.php:66
+#: src/Config.php:92
+#: src/Widgets.php:64
 msgid "no alt"
 msgstr "pas d'attribut"
 
-#: src/Config.php:174
+#: src/Config.php:160
 msgid "Enable related posts on this blog"
 msgstr "Activer les billets connexes sur ce blog"
 
-#: src/Config.php:187
+#: src/Config.php:173
 msgid "Block title:"
 msgstr "Titre du bloc :"
 
-#: src/Config.php:193
+#: src/Config.php:179
 msgid "Display block before post content"
 msgstr "Afficher le bloc avant le contenu du billet"
 
-#: src/Config.php:200
+#: src/Config.php:186
 msgid "Display block after post content"
 msgstr "Afficher le bloc après le contenu du billet"
 
-#: src/Config.php:207
+#: src/Config.php:193
 msgid "Uncheck both boxes to use only the presentation widget."
 msgstr "Décocher les deux cases pour n'utiliser que le widget de présentation."
 
-#: src/Config.php:216
+#: src/Config.php:202
 msgid "Images extracting options"
 msgstr "Options d'extraction des images"
 
-#: src/Config.php:219
+#: src/Config.php:205
 #: src/Widgets.php:41
 msgid "Extract images from related posts"
 msgstr "Extraire les images des billets connexes"
 
-#: src/Config.php:227
+#: src/Config.php:213
 #: src/Widgets.php:45
 msgid "Images origin:"
 msgstr "Origine des images :"
 
-#: src/Config.php:237
-#: src/Widgets.php:59
-msgid "Include images dimensions"
-msgstr "Inclure les dimensions des images"
-
-#: src/Config.php:245
-#: src/Widgets.php:63
+#: src/Config.php:225
+#: src/Widgets.php:61
 msgid "Images alt attribute:"
 msgstr "Attribut alt des images :"
 
-#: src/Config.php:255
-#: src/Widgets.php:69
+#: src/Config.php:235
+#: src/Widgets.php:67
 msgid "First image to extract:"
 msgstr "Première image à extraire :"
 
-#: src/Config.php:265
-#: src/Widgets.php:71
+#: src/Config.php:245
+#: src/Widgets.php:69
 msgid "Number of images to extract:"
 msgstr "Nombre d'images à extraire :"
 
-#: src/Config.php:278
-#: src/Widgets.php:83
+#: src/Config.php:258
+#: src/Widgets.php:81
 msgid "HTML tag around image:"
 msgstr "Balise HTML englobant l'image :"
 
-#: src/Config.php:286
-#: src/Widgets.php:89
+#: src/Config.php:266
+#: src/Widgets.php:87
 msgid "CSS class on images:"
 msgstr "Classe CSS des images :"
 
-#: src/Config.php:292
-#: src/Widgets.php:93
-msgid "Links destination:"
-msgstr "Destination des liens :"
-
-#: src/Config.php:298
-#: src/Widgets.php:101
-msgid "Bubble:"
-msgstr "Infobulle :"
-
-#: src/Config.php:310
+#: src/Config.php:277
 msgid "Install or activate listImages plugin to be able to display links to related entries as images"
 msgstr "Installez ou activez l'extension listImages pour pouvoir afficher les liens vers des billets connexes en tant qu'images"
 
@@ -235,6 +200,27 @@ msgstr "Billets connexes au billet courant"
 #: src/Widgets.php:53
 msgid "Image size"
 msgstr "Taille de l'image"
+
+msgid "related posts"
+msgstr "les billets connexes"
+
+msgid "original images"
+msgstr "les images originales"
+
+msgid "no link"
+msgstr "pas de lien"
+
+msgid "no bubble"
+msgstr "pas d'infobulle"
+
+msgid "Include images dimensions"
+msgstr "Inclure les dimensions des images"
+
+msgid "Links destination:"
+msgstr "Destination des liens :"
+
+msgid "Bubble:"
+msgstr "Infobulle :"
 
 msgid "To get started, edit one of your posts and add links to other related posts below the <em>Personal notes</em> field."
 msgstr "Pour commencer, éditez un billet et ajoutez-y, sous le champ <em>Notes personnelles</em>, des liens vers d'autres billets."

@@ -56,8 +56,6 @@ class Widgets
                 [__('square') => 'sq', __('thumbnail') => 't',  __('small') => 's', __('medium') => 'm', __('original') => 'o']
             );
 
-            $widgets->relatedEntriesWidget->setting('img_dim', __('Include images dimensions'), 0, 'check');
-
             $widgets->relatedEntriesWidget->setting(
                 'alt',
                 __('Images alt attribute:'),
@@ -87,22 +85,6 @@ class Widgets
             );
 
             $widgets->relatedEntriesWidget->setting('class', __('CSS class on images:'), '', 'text');
-
-            $widgets->relatedEntriesWidget->setting(
-                'link',
-                __('Links destination:'),
-                'entry',
-                'combo',
-                [__('original images') => 'image', __('related posts') => 'entry', __('no link') => 'none']
-            );
-
-            $widgets->relatedEntriesWidget->setting(
-                'bubble',
-                __('Bubble:'),
-                1,
-                'combo',
-                [__('no bubble') => 'none', __('image title') => 'image', __('entry title') => 'entry']
-            );
         }
 
         $widgets->relatedEntriesWidget->addContentOnly();

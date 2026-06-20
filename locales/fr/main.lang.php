@@ -1,7 +1,9 @@
 <?php
+declare(strict_types=1);
+
 // Language: Français
 // Module: relatedEntries - 6.1
-// Date: 2026-04-29 15:29:37
+// Date: 2026-06-20 09:47:49
 // Translated with Translater - 2025.09.11
 
 
@@ -24,13 +26,9 @@ L10n::$locales['No links'] = 'Pas de liens';
 L10n::$locales['List of links (%s)'] = 'Liste des liens (%s)';
 L10n::$locales['Delete this link'] = 'Supprimer ce lien';
 L10n::$locales['no tag'] = 'aucune balise';
-L10n::$locales['related posts'] = 'les billets connexes';
-L10n::$locales['original images'] = 'les images originales';
-L10n::$locales['no link'] = 'pas de lien';
 L10n::$locales['entry title'] = 'titre du billet';
 L10n::$locales['image title'] = 'titre de l\'image';
 L10n::$locales['no legend'] = 'pas de légende';
-L10n::$locales['no bubble'] = 'pas d\'infobulle';
 L10n::$locales['post excerpt'] = 'l\'extrait du billet';
 L10n::$locales['post content'] = 'le contenu du billet';
 L10n::$locales['full post'] = 'tout le billet';
@@ -43,14 +41,11 @@ L10n::$locales['Uncheck both boxes to use only the presentation widget.'] = 'Dé
 L10n::$locales['Images extracting options'] = 'Options d\'extraction des images';
 L10n::$locales['Extract images from related posts'] = 'Extraire les images des billets connexes';
 L10n::$locales['Images origin:'] = 'Origine des images :';
-L10n::$locales['Include images dimensions'] = 'Inclure les dimensions des images';
 L10n::$locales['Images alt attribute:'] = 'Attribut alt des images :';
 L10n::$locales['First image to extract:'] = 'Première image à extraire :';
 L10n::$locales['Number of images to extract:'] = 'Nombre d\'images à extraire :';
 L10n::$locales['HTML tag around image:'] = 'Balise HTML englobant l\'image :';
 L10n::$locales['CSS class on images:'] = 'Classe CSS des images :';
-L10n::$locales['Links destination:'] = 'Destination des liens :';
-L10n::$locales['Bubble:'] = 'Infobulle :';
 L10n::$locales['Install or activate listImages plugin to be able to display links to related entries as images'] = 'Installez ou activez l\'extension listImages pour pouvoir afficher les liens vers des billets connexes en tant qu\'images';
 L10n::$locales['Related posts'] = 'Billets connexes';
 L10n::$locales['Related entries'] = 'Billets connexes';
@@ -60,6 +55,13 @@ L10n::$locales['Links have been successfully removed'] = 'Les liens ont été su
 L10n::$locales['Remove all links from selected posts'] = 'Supprimer tous les liens des billets sélectionnés';
 L10n::$locales['Related entries to current post'] = 'Billets connexes au billet courant';
 L10n::$locales['Image size'] = 'Taille de l\'image';
+L10n::$locales['related posts'] = 'les billets connexes';
+L10n::$locales['original images'] = 'les images originales';
+L10n::$locales['no link'] = 'pas de lien';
+L10n::$locales['no bubble'] = 'pas d\'infobulle';
+L10n::$locales['Include images dimensions'] = 'Inclure les dimensions des images';
+L10n::$locales['Links destination:'] = 'Destination des liens :';
+L10n::$locales['Bubble:'] = 'Infobulle :';
 L10n::$locales['To get started, edit one of your posts and add links to other related posts below the <em>Personal notes</em> field.'] = 'Pour commencer, éditez un billet et ajoutez-y, sous le champ <em>Notes personnelles</em>, des liens vers d\'autres billets.';
 L10n::$locales['Configuration successfully saved'] = 'Configuration enregistrée avec succès';
 L10n::$locales['Related posts list'] = 'Liste des billets connexes';
