@@ -83,7 +83,7 @@ class FrontendTemplates
 
                 // Appel de la fonction de traitement pour chacun des billets
                 while ($rs->fetch()) {
-                    $ret .= FrontendHelper::EntryImages((string) $size, (string) $html_tag, (string) $link, $exif, (string) $legend, (string) $bubble, (string) $from, (int) $start, (int) $length, (string) $class, (string) $alt, (string) $img_dim, (string) $def_size, $rs);
+                    $ret .= FrontendHelper::EntryImages((string) $size, (string) $html_tag, (string) $link, (int) $exif, (string) $legend, (string) $bubble, (string) $from, (int) $start, (int) $length, (string) $class, (string) $alt, (string) $img_dim, (string) $def_size, $rs);
                 }
 
                 // Fin d'affichage
@@ -129,12 +129,35 @@ class FrontendTemplates
                 $alt      = $img_options['alt'] ? $img_options['alt'] : 'inherit';
                 $img_dim  = $img_options['img_dim'] ? $img_options['img_dim'] : 0;
                 $def_size = 'o';
-                $ret      = My::settings()->title != '' ? '<h3>' . My::settings()->title . '</h3>' : '';
+
+                $ret = My::settings()->title != '' ? '<h3>' . My::settings()->title . '</h3>' : '';
                 $ret .= '<' . ($html_tag == 'li' ? 'ul' : 'div') . ' class="relatedEntries">';
 
                 //listImages plugin comes here
+
                 while ($rs->fetch()) {
-                    $ret .= FrontendHelper::EntryImages((string) $size, (string) $html_tag, (string) $link, $exif, (string) $legend, (string) $bubble, (string) $from, (int) $start, (int) $length, (string) $class, (string) $alt, (string) $img_dim, (string) $def_size, $rs);
+                    if ($link !== 'none') {
+                        // Si un lien est requis
+                        if ($link === 'image') {
+                            // Lien vers l'image originale
+                            $href       = FrontendHelper::ContentImageLookup($p_root, $i, 'o', $orientation, $dimensions, $sizes, 'o');
+                            $href       = $p_url . (dirname($i) !== '/' ? dirname($i) : '') . '/' . $href;
+                            $href_title = match ($bubble) {
+                                'entry' => Html::escapeHTML($rs->$post_title),
+                                // default also stands for 'image'
+                                default => $img_alt,
+                            };
+                        } else {
+                            // Lien vers le billet d'origine
+                            $url        = is_string($url = $rs->getURL()) ? $url : '';
+                            $href       = $url;
+                            $href_title = Html::escapeHTML($rs->post_title);
+                        }
+
+                        $ret .= '<a class="link_' . $link . '" href="' . $href . '" title="' . $href_title . '">';
+                    }
+
+                    $ret .= FrontendHelper::EntryImages((string) $size, (string) $html_tag, (string) $link, (int) $exif, (string) $legend, (string) $bubble, (string) $from, (int) $start, (int) $length, (string) $class, (string) $alt, (string) $img_dim, (string) $def_size, $rs);
                 }
 
                 $ret .= '</' . ($html_tag == 'li' ? 'ul' : 'div') . '>' . "\n";
