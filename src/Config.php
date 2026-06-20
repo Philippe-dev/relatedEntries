@@ -78,7 +78,6 @@ class Config
             __('no legend')   => 'none',
         ];
 
-
         // From combo
         $from_combo = [
             __('post excerpt') => 'excerpt',
@@ -100,7 +99,6 @@ class Config
         App::backend()->alt_combo      = $alt_combo;
         App::backend()->legend_combo   = $legend_combo;
         App::backend()->html_tag_combo = $html_tag_combo;
-
 
         // init
         $settings = My::settings();
