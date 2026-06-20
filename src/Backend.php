@@ -197,7 +197,7 @@ class Backend
 
                 $posts     = App::blog()->getPosts($params);
                 $counter   = App::blog()->getPosts($params, true);
-                $post_list = new BackendMiniList($posts, $counter->f(0));
+                $post_list = new BackendMiniList($posts, $counter->cardinal());
             } catch (Exception $e) {
                 App::error()->add($e->getMessage());
             }

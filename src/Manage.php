@@ -157,7 +157,7 @@ class Manage
                 $params['exclude_post_id'] = $post_id;
                 App::backend()->posts      = App::blog()->getPosts($params);
                 App::backend()->counter    = App::blog()->getPosts($params, true);
-                App::backend()->posts_list = new BackendList(App::backend()->posts, App::backend()->counter->f(0));
+                App::backend()->posts_list = new BackendList(App::backend()->posts, App::backend()->counter->cardinal());
             } catch (Exception $e) {
                 App::error()->add($e->getMessage());
             }
