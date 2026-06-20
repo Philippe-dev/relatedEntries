@@ -16,7 +16,7 @@ $this->registerModule(
     '6.2',
     [
         'date'        => '2026-06-20T00:00:16+0100',
-        'requires'    => [['core', '2.38']],
+        'requires'    => [['core', '2.39']],
         'permissions' => 'My',
         'type'        => 'plugin',
         'support'     => 'https://github.com/Philippe-dev/relatedEntries',
