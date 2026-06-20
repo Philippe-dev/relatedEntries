@@ -4,7 +4,7 @@
 ![License AGPL 3.0](https://img.shields.io/badge/License-AGPL_3.0-a5cc52)
 ![Dotclear 2.39](https://img.shields.io/badge/Dotclear-2.39-137bbb)
 
-Ce plugin permet d'afficher, avant ou après le contenu de vos billets, des liens vers les billets connexes que vous aurez choisis. Si vous avez installé préalablement l'extension listImages, les liens seront présentés sous forme d'images extraites des billets.
+Ce plugin permet d'afficher, avant ou après le contenu de vos billets, des liens vers les billets connexes que vous aurez choisis. Si vous avez installé préalablement le plugin listImages, les liens seront présentés sous forme d'images extraites des billets.
 
 Un widget permet d'afficher ces liens sur chacun des billets.
 
