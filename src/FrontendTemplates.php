@@ -34,11 +34,13 @@ class FrontendTemplates
             return '';
         }
 
-        if (!$widget->checkHomeOnly(App::url()->type)) {
+        if (($widget->homeonly === 1 && !App::url()->isType('default'))
+                    || ($widget->homeonly === 2 && App::url()->isType('default'))
+        ) {
             return '';
         }
 
-        if (App::url()->type != 'post') {
+        if (!App::url()->isType('post')) {
             return '';
         }
 
