@@ -1,6 +1,6 @@
 # Billets connexes
 
-![Release 6.3](https://img.shields.io/badge/Release-6.3-b7d7ee)
+![Release 6.4.0](https://img.shields.io/badge/Release-6.4.0-b7d7ee)
 ![License AGPL 3.0](https://img.shields.io/badge/License-AGPL_3.0-a5cc52)
 ![Dotclear 2.39](https://img.shields.io/badge/Dotclear-2.39-137bbb)
 

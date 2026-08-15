@@ -9,16 +9,20 @@
  *
  * @copyright AGPL-3.0
  */
-$this->registerModule(
-    'Related entries',
-    'Add links to other related posts',
-    'Philippe aka amalgame',
-    '6.3',
-    [
-        'date'        => '2026-07-16T00:00:16+0100',
-        'requires'    => [['core', '2.39']],
-        'permissions' => 'My',
-        'type'        => 'plugin',
-        'support'     => 'https://github.com/Philippe-dev/relatedEntries',
-    ]
-);
+declare(strict_types=1);
+
+if (isset($this) && is_object($this) && method_exists($this, 'registerModule') && isset($this->id) && is_string($this->id)) {
+    $this->registerModule(
+        'Related entries',
+        'Add links to other related posts',
+        'Philippe aka amalgame',
+        '6.4.0',
+        [
+            'date'        => '2026-07-16T00:00:16+0100',
+            'requires'    => [['core', '2.39']],
+            'permissions' => 'My',
+            'type'        => 'plugin',
+            'support'     => 'https://github.com/Philippe-dev/relatedEntries',
+        ]
+    )
+};
