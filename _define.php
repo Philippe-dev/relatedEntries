@@ -24,5 +24,5 @@ if (isset($this) && is_object($this) && method_exists($this, 'registerModule') &
             'type'        => 'plugin',
             'support'     => 'https://github.com/Philippe-dev/relatedEntries',
         ]
-    )
-};
+    );
+}
