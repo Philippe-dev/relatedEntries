@@ -16,10 +16,10 @@ if (isset($this) && is_object($this) && method_exists($this, 'registerModule') &
         'Related entries',
         'Add links to other related posts',
         'Philippe aka amalgame',
-        '6.4.0',
+        '6.5.0',
         [
-            'date'        => '2026-07-16T00:00:16+0100',
-            'requires'    => [['core', '2.39']],
+            'date'        => '2026-11-22T00:00:16+0100',
+            'requires'    => [['core', '2.40']],
             'permissions' => 'My',
             'type'        => 'plugin',
             'support'     => 'https://github.com/Philippe-dev/relatedEntries',

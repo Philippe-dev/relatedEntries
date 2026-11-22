@@ -62,7 +62,7 @@ class BackendBehaviors
     {
         $cols['Links'] = (new Td())
             ->class(['nowrap','count'])
-            ->text(App::meta()->getMetaRecordset($rs->post_meta, 'relatedEntries')->count())
+            ->text((string) App::meta()->getMetaRecordset($rs->post_meta, 'relatedEntries')->count())
             ->render();
 
         return '';

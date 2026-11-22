@@ -18,7 +18,6 @@ use ArrayObject;
 use Dotclear\App;
 use Dotclear\Core\Backend\Favorites;
 use Dotclear\Core\Backend\UserPref;
-use Dotclear\Core\Backend\Utility;
 use Dotclear\Helper\Process\TraitProcess;
 use Dotclear\Helper\Html\Form\Capture;
 use Dotclear\Helper\Html\Form\Div;
@@ -62,7 +61,7 @@ class Backend
             },
         ]);
 
-        My::addBackendMenuItem(Utility::MENU_BLOG);
+        My::addBackendMenuItem(App::backend()->menus()::MENU_BLOG);
 
         if ((isset($_GET['addlinks']) && $_GET['addlinks'] == 1) || (isset($_GET['p']) && $_GET['p'] == 'relatedEntries')) {
             App::behavior()->addBehavior('adminColumnsListsV2', BackendBehaviors::adminColumnsLists(...));
