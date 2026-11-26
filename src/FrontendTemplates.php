@@ -57,7 +57,8 @@ class FrontendTemplates
             $params['post_type']  = ['post'];
             $rs                   = App::blog()->getPosts($params);
 
-            $ret = $widget->getTitle();
+            $ret = ($widget->getTitle() !== '' ? $widget->renderTitle(Html::escapeHTML($widget->getTitle())) : '');
+
             if (!(bool) $widget->get('images') || !App::plugins()->moduleExists('listImages')) {
                 $ret .= '<ul>';
                 while ($rs->fetch()) {
