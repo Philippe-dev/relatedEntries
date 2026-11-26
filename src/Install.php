@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @brief Related Entries, a plugin for Dotclear 2
  *
@@ -40,7 +41,7 @@ class Install
             // Update
             $old_version = App::version()->getVersion(My::id());
 
-            if (version_compare((string) $old_version, '6.1', '<')) {
+            if (version_compare($old_version, '6.1', '<')) {
                 // Change settings names (remove relatedEntries_ prefix in them)
                 $rename = static function (string $name, BlogWorkspaceInterface $settings): void {
                     if ($settings->settingExists('relatedEntries_' . $name, true)) {

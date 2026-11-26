@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @brief Related Entries, a plugin for Dotclear 2
  *
@@ -53,14 +54,16 @@ class Config
 
         // Image size combo
         $img_size_combo = [];
-        $media          = App::media();
 
         $img_size_combo[__('square')]    = 'sq';
         $img_size_combo[__('thumbnail')] = 't';
         $img_size_combo[__('small')]     = 's';
         $img_size_combo[__('medium')]    = 'm';
         $img_size_combo[__('original')]  = 'o';
-        foreach ($media->thumb_sizes as $code => $size) {
+
+        $thumb_sizes = App::media()->getThumbSizes();
+
+        foreach ($thumb_sizes as $code => $size) {
             $img_size_combo[__($size[2])] = $code;
         }
 

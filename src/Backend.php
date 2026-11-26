@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @brief Related Entries, a plugin for Dotclear 2
  *
@@ -18,6 +19,7 @@ use ArrayObject;
 use Dotclear\App;
 use Dotclear\Core\Backend\Favorites;
 use Dotclear\Core\Backend\UserPref;
+use Dotclear\Database\MetaRecord;
 use Dotclear\Helper\Process\TraitProcess;
 use Dotclear\Helper\Html\Form\Capture;
 use Dotclear\Helper\Html\Form\Div;
@@ -63,7 +65,10 @@ class Backend
 
         My::addBackendMenuItem(App::backend()->menus()::MENU_BLOG);
 
-        if ((isset($_GET['addlinks']) && $_GET['addlinks'] == 1) || (isset($_GET['p']) && $_GET['p'] == 'relatedEntries')) {
+        $addlinks = isset($_GET['addlinks']) && is_numeric($addlinks = $_GET['addlinks']) ? (int) $addlinks : 0;
+        $plugin   = isset($_GET['p'])        && is_string($plugin = $_GET['p']) ? $plugin : '';
+
+        if ($addlinks === 1 || $plugin === 'relatedEntries') {
             App::behavior()->addBehavior('adminColumnsListsV2', BackendBehaviors::adminColumnsLists(...));
             App::behavior()->addBehavior('adminPostListHeaderV2', BackendBehaviors::adminPostListHeader(...));
             App::behavior()->addBehavior('adminPostListValueV2', BackendBehaviors::adminPostListValue(...));
@@ -77,15 +82,16 @@ class Backend
         if (isset($_GET['id']) && isset($_GET['r_id'])) {
             try {
                 $meta  = App::meta();
-                $id    = $_GET['id'];
-                $r_ids = $_GET['r_id'];
+                $id    = is_numeric($id = $_GET['id']) ? strval($id) : null;
+                $r_ids = is_string($r_ids = $_GET['r_id']) ? $r_ids : '';
 
-                foreach ($meta->splitMetaValues($r_ids) as $tag) {
-                    $meta->delPostMeta($id, 'relatedEntries', $tag);
-                    $meta->delPostMeta($tag, 'relatedEntries', $id);
+                if ($id !== null) {
+                    foreach ($meta->splitMetaValues($r_ids) as $tag) {
+                        $meta->delPostMeta($id, 'relatedEntries', $tag);
+                        $meta->delPostMeta($tag, 'relatedEntries', $id);
+                    }
+                    Http::redirect(App::postTypes()->get('post')->adminUrl($id, false, ['del' => 1,'upd' => 1]));
                 }
-
-                Http::redirect(App::postTypes()->get('post')->adminUrl($id, false, ['del' => 1,'upd' => 1]));
             } catch (Exception $e) {
                 App::error()->add($e->getMessage());
             }
@@ -94,6 +100,9 @@ class Backend
         return true;
     }
 
+    /**
+     * @param   ArrayObject<string, mixed>     $blocks     The blocks
+     */
     public static function adminPageHelpBlock(ArrayObject $blocks): void
     {
         if (array_search('core_post', $blocks->getArrayCopy(), true) !== false) {
@@ -103,7 +112,7 @@ class Backend
 
     public static function postHeaders(): string
     {
-        if (!My::settings()->enabled) {
+        if (!My::settings()->getBool('enabled', false)) {
             return '';
         }
 
@@ -136,11 +145,14 @@ class Backend
         My::cssLoad('admin-post.css') . "\n";
     }
 
-    public static function adminPostForm($post)
+    /**
+     * @param      MetaRecord|null  $post   The post
+     */
+    public static function adminPostForm(?MetaRecord $post): void
     {
         $postTypes = ['post'];
 
-        if (!My::settings()->enabled) {
+        if (!My::settings()->getBool('enabled', false)) {
             return;
         }
         if (is_null($post) || !in_array($post->post_type, $postTypes)) {

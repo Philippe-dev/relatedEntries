@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @brief Related Entries, a plugin for Dotclear 2
  *
@@ -25,22 +26,22 @@ class Widgets
      */
     public static function initWidgets(WidgetsStack $widgets): void
     {
-        $widgets->create(
+        $widget = $widgets->create(
             'relatedEntriesWidget',
             __('Related posts'),
-            [FrontendTemplates::class, 'relatedEntriesWidget'],
+            FrontendTemplates::relatedEntriesWidget(...),
             null,
             __('Related entries to current post')
         );
 
         // Widget title
-        $widgets->relatedEntriesWidget->addTitle(__('Related posts'));
+        $widget->addTitle(__('Related posts'));
         // Only if listImages plugin
 
         if (App::plugins()->moduleExists('listImages')) {
-            $widgets->relatedEntriesWidget->setting('images', __('Extract images from related posts'), 0, 'check');
+            $widget->setting('images', __('Extract images from related posts'), 0, 'check');
 
-            $widgets->relatedEntriesWidget->setting(
+            $widget->setting(
                 'from',
                 __('Images origin:'),
                 1,
@@ -48,7 +49,7 @@ class Widgets
                 [__('full post') => 'full', __('post excerpt') => 'excerpt', __('post content') => 'content']
             );
 
-            $widgets->relatedEntriesWidget->setting(
+            $widget->setting(
                 'size',
                 __('Image size'),
                 1,
@@ -56,7 +57,7 @@ class Widgets
                 [__('square') => 'sq', __('thumbnail') => 't',  __('small') => 's', __('medium') => 'm', __('original') => 'o']
             );
 
-            $widgets->relatedEntriesWidget->setting(
+            $widget->setting(
                 'alt',
                 __('Images alt attribute:'),
                 'inherit',
@@ -64,11 +65,11 @@ class Widgets
                 [__('image title') => 'inherit', __('no alt') => 'none']
             );
 
-            $widgets->relatedEntriesWidget->setting('start', __('First image to extract:'), '1');
+            $widget->setting('start', __('First image to extract:'), '1');
 
-            $widgets->relatedEntriesWidget->setting('length', __('Number of images to extract:'), '1');
+            $widget->setting('length', __('Number of images to extract:'), '1');
 
-            $widgets->relatedEntriesWidget->setting(
+            $widget->setting(
                 'legend',
                 __('Legend:'),
                 1,
@@ -76,7 +77,7 @@ class Widgets
                 [__('no legend') => 'none', __('image title') => 'image', __('entry title') => 'entry']
             );
 
-            $widgets->relatedEntriesWidget->setting(
+            $widget->setting(
                 'html_tag',
                 __('HTML tag around image:'),
                 'div',
@@ -84,11 +85,11 @@ class Widgets
                 ['list' => 'li', 'div' => 'div', __('no tag') => 'none']
             );
 
-            $widgets->relatedEntriesWidget->setting('class', __('CSS class on images:'), '', 'text');
+            $widget->setting('class', __('CSS class on images:'), '', 'text');
         }
 
-        $widgets->relatedEntriesWidget->addContentOnly();
-        $widgets->relatedEntriesWidget->addClass();
-        $widgets->relatedEntriesWidget->addOffline();
+        $widget->addContentOnly();
+        $widget->addClass();
+        $widget->addOffline();
     }
 }

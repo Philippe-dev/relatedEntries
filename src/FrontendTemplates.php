@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @brief Related Entries, a plugin for Dotclear 2
  *
@@ -14,6 +15,7 @@ declare(strict_types=1);
 namespace Dotclear\Plugin\relatedEntries;
 
 use Dotclear\App;
+use Dotclear\Database\MetaRecord;
 use Dotclear\Plugin\widgets\WidgetsElement;
 use Dotclear\Helper\Html\Html;
 use Dotclear\Plugin\listImages\FrontendHelper;
@@ -30,13 +32,11 @@ class FrontendTemplates
     public static function relatedEntriesWidget(WidgetsElement $widget)
     {
         $params = [];
-        if ($widget->offline) {
+        if ($widget->isOffline()) {
             return '';
         }
 
-        if (($widget->homeonly === 1 && !App::url()->isType('default'))
-                    || ($widget->homeonly === 2 && App::url()->isType('default'))
-        ) {
+        if (!$widget->checkHomeOnly(App::url()->getType())) {
             return '';
         }
 
@@ -46,54 +46,57 @@ class FrontendTemplates
 
         $meta = App::meta();
 
-        $meta_rs = $meta->getMetaStr(App::frontend()->context()->posts->post_meta, 'relatedEntries');
+        $post_meta = App::frontend()->context()->posts instanceof MetaRecord ? App::frontend()->context()->posts->strField('post_meta') : '';
+        $meta_rs   = $meta->getMetaStr($post_meta, 'relatedEntries');
 
-        if ($meta_rs != '') {
+        if ($meta_rs !== '') {
             //related posts
             App::blog()->withoutPassword(false);
             $params['post_id']    = $meta->splitMetaValues($meta_rs);
             $params['no_content'] = false;
             $params['post_type']  = ['post'];
             $rs                   = App::blog()->getPosts($params);
-            $ret                  = ($widget->title ? $widget->renderTitle(Html::escapeHTML($widget->title)) : '');
 
-            if (!$widget->images || !App::plugins()->moduleExists('listImages')) {
+            $ret = $widget->getTitle();
+            if (!(bool) $widget->get('images') || !App::plugins()->moduleExists('listImages')) {
                 $ret .= '<ul>';
                 while ($rs->fetch()) {
-                    $ret .= '<li><a href="' . $rs->getURL() . '" title="' . Html::escapeHTML($rs->post_title) . '">' . $rs->post_title . '</a></li>';
+                    $ret .= '<li><a href="' . $rs->getURL() . '" title="' . Html::escapeHTML($rs->strField('post_title')) . '">' . $rs->strField('post_title') . '</a></li>';
                 }
                 $ret .= '</ul>';
             } else {
                 // Récupération des options d'affichage des images
-                $size     = $widget->size;
-                $html_tag = $widget->html_tag;
+                $size     = is_string($size = $widget->get('size')) ? $size : '';
+                $html_tag = is_string($html_tag = $widget->get('html_tag')) ? $html_tag : '';
                 $link     = 'entry';
                 $exif     = 0;
-                $legend   = $widget->legend;
+                $legend   = is_string($legend = $widget->get('legend')) ? $legend : '';
                 $bubble   = 'entry';
-                $from     = $widget->from;
-                $start    = abs((int) $widget->start);
-                $length   = abs((int) $widget->length);
-                $class    = $widget->class;
-                $alt      = $widget->alt;
+                $from     = is_string($from = $widget->get('from')) ? $from : '';
+                $start    = is_numeric($start = $widget->get('start')) ? abs((int) $start) : 0;
+                $length   = is_numeric($length = $widget->get('length')) ? abs((int) $length) : 0;
+                $class    = $widget->getClass();
+                $alt      = is_string($alt = $widget->get('alt')) ? $alt : '';
                 $img_dim  = 'none';
                 $def_size = 'o';
 
                 // Début d'affichage
 
-                $ret .= '<' . ($html_tag == 'li' ? 'ul' : 'div') . ' class="relatedEntries-wrapper">';
+                $ret .= '<' . ($html_tag === 'li' ? 'ul' : 'div') . ' class="relatedEntries-wrapper">';
 
                 // Appel de la fonction de traitement pour chacun des billets
                 while ($rs->fetch()) {
-                    $ret .= FrontendHelper::EntryImages((string) $size, (string) $html_tag, (string) $link, (int) $exif, (string) $legend, (string) $bubble, (string) $from, (int) $start, (int) $length, (string) $class, (string) $alt, (string) $img_dim, (string) $def_size, $rs);
+                    $ret .= FrontendHelper::EntryImages($size, $html_tag, $link, $exif, $legend, $bubble, $from, $start, $length, $class, $alt, $img_dim, $def_size, $rs);
                 }
 
                 // Fin d'affichage
-                $ret .= '</' . ($html_tag == 'li' ? 'ul' : 'div') . '>' . "\n";
+                $ret .= '</' . ($html_tag === 'li' ? 'ul' : 'div') . '>' . "\n";
             }
 
-            return $widget->renderDiv((bool) $widget->content_only, 'relatedEntries ' . $widget->class, '', $ret);
+            return $widget->renderDiv($widget->getContentOnly(), 'relatedEntries ' . $widget->getClass(), '', $ret);
         }
+
+        return '';
     }
 
     /**

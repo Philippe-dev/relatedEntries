@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @brief myGmaps, a plugin for Dotclear 2
  *
@@ -88,7 +89,7 @@ class Uninstall
             ],
 
             // Plugin or Theme
-            (App::plugins()->getDefines(['id' => $module]) ? 'plugins' : 'themes') => [
+            (App::plugins()->getDefines(['id' => $module]) !== [] ? 'plugins' : 'themes') => [
                 ['delete', $module],    // Same as plugin/theme Delete button in plugin/theme management
             ],
 
@@ -151,7 +152,7 @@ class Uninstall
             ],
 
             // Plugin or Theme
-            (App::plugins()->getDefines(['id' => $module]) ? 'plugins' : 'themes') => [
+            (App::plugins()->getDefines(['id' => $module]) !== [] ? 'plugins' : 'themes') => [
                 ['delete', $module],    // Same as plugin/theme Delete button in plugin/theme management
             ],
 
