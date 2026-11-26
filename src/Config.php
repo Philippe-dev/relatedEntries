@@ -34,6 +34,35 @@ class Config
     use TraitProcess;
 
     /**
+     * Local variables
+     */
+
+    /**
+     * @var array<string, string> $from_combo
+     */
+    private static array $from_combo;
+
+    /**
+     * @var array<string, string> $img_size_combo
+     */
+    private static array  $img_size_combo;
+
+    /**
+     * @var array<string, string> $alt_combo
+     */
+    private static array  $alt_combo;
+
+    /**
+     * @var array<string, string> $legend_combo
+     */
+    private static array  $legend_combo;
+
+    /**
+     * @var array<string, string> $html_tag_combo
+     */
+    private static array  $html_tag_combo;
+
+    /**
      * Initializes the page.
      */
     public static function init(): bool
@@ -53,65 +82,62 @@ class Config
         }
 
         // Image size combo
-        $img_size_combo = [];
+        self::$img_size_combo = [];
 
-        $img_size_combo[__('square')]    = 'sq';
-        $img_size_combo[__('thumbnail')] = 't';
-        $img_size_combo[__('small')]     = 's';
-        $img_size_combo[__('medium')]    = 'm';
-        $img_size_combo[__('original')]  = 'o';
+        self::$img_size_combo[__('square')]    = 'sq';
+        self::$img_size_combo[__('thumbnail')] = 't';
+        self::$img_size_combo[__('small')]     = 's';
+        self::$img_size_combo[__('medium')]    = 'm';
+        self::$img_size_combo[__('original')]  = 'o';
 
         $thumb_sizes = App::media()->getThumbSizes();
 
         foreach ($thumb_sizes as $code => $size) {
-            $img_size_combo[__($size[2])] = $code;
+            self::$img_size_combo[__($size[2])] = $code;
         }
 
         // Html tag combo
-        $html_tag_combo = [
+        self::$html_tag_combo = [
             __('div')    => 'div',
             __('li')     => 'li',
             __('no tag') => 'none',
         ];
 
         // Legend combo
-        $legend_combo = [
+        self::$legend_combo = [
             __('entry title') => 'entry',
             __('image title') => 'image',
             __('no legend')   => 'none',
         ];
 
         // From combo
-        $from_combo = [
+        self::$from_combo = [
             __('post excerpt') => 'excerpt',
             __('post content') => 'content',
             __('full post')    => 'full',
         ];
 
         // Alt combo
-        $alt_combo = [
+        self::$alt_combo = [
             __('image title') => 'inherit',
             __('no alt')      => 'none',
         ];
-
-        /*
-        * Admin page params.
-        */
-        App::backend()->from_combo     = $from_combo;
-        App::backend()->img_size_combo = $img_size_combo;
-        App::backend()->alt_combo      = $alt_combo;
-        App::backend()->legend_combo   = $legend_combo;
-        App::backend()->html_tag_combo = $html_tag_combo;
 
         // init
         $settings = My::settings();
         // Saving configurations
         if (isset($_POST['save'])) {
+            $title = isset($_POST['title']) && is_string($title = $_POST['title']) ? $title : '';
+
             $settings->put('enabled', !empty($_POST['enabled']), App::blogWorkspace()::NS_BOOL, 'Enable related entries');
-            $settings->put('title', Html::escapeHTML($_POST['title']), App::blogWorkspace()::NS_STRING, 'Title for related entries');
+            $settings->put('title', Html::escapeHTML($title), App::blogWorkspace()::NS_STRING, 'Title for related entries');
             $settings->put('beforePost', !empty($_POST['beforePost']), App::blogWorkspace()::NS_BOOL, 'Display related entries before post content');
             $settings->put('afterPost', !empty($_POST['afterPost']), App::blogWorkspace()::NS_BOOL, 'Display related entries after post content');
             $settings->put('images', !empty($_POST['images']), App::blogWorkspace()::NS_BOOL, 'Display images for related entries');
+
+            $start  = isset($_POST['start'])  && is_numeric($start = $_POST['start']) ? (int) $start : 1;
+            $length = isset($_POST['length']) && is_numeric($length = $_POST['length']) ? (int) $length : 1;
+            $class  = isset($_POST['class'])  && is_string($class = $_POST['class']) ? $class : '';
 
             $opts = [
                 'size'     => !empty($_POST['size']) ? $_POST['size'] : 't',
@@ -121,9 +147,9 @@ class Config
                 'legend'   => !empty($_POST['legend']) ? $_POST['legend'] : 'none',
                 'bubble'   => !empty($_POST['bubble']) ? $_POST['bubble'] : 'entry',
                 'from'     => !empty($_POST['from']) ? $_POST['from'] : 'full',
-                'start'    => !empty($_POST['start']) ? (int) $_POST['start'] : 1,
-                'length'   => !empty($_POST['length']) ? (int) $_POST['length'] : 1,
-                'class'    => !empty($_POST['class']) ? (string) $_POST['class'] : '',
+                'start'    => $start,
+                'length'   => $length,
+                'class'    => $class,
                 'alt'      => !empty($_POST['alt']) ? $_POST['alt'] : 'inherit',
                 'img_dim'  => !empty($_POST['img_dim']) ? $_POST['img_dim'] : 'none',
             ];
@@ -151,13 +177,31 @@ class Config
 
         echo App::backend()->page()->jsConfirmClose('module_config');
 
-        $images = unserialize(My::settings()->images_options);
+        $images_options = My::settings()->getStr('images_options', false);
+
+        /**
+         * @var array{
+         *          size: string,
+         *          html_tag: string,
+         *          link: string,
+         *          exif: int,
+         *          legend: string,
+         *          bubble: string,
+         *          from: string,
+         *          start: int,
+         *          length: int,
+         *          class: string,
+         *          alt: string,
+         *          img_dim: string
+         *      } $images
+         */
+        $images = unserialize($images_options);
 
         echo
         (new Div())->items([
             (new Fieldset())->class('fieldset')->legend((new Legend(__('Activation'))))->fields([
                 (new Para())->items([
-                    (new Checkbox('enabled', (bool) My::settings()->enabled)),
+                    (new Checkbox('enabled', My::settings()->getBool('enabled', false))),
                     (new Label(__('Enable related posts on this blog'), Label::OUTSIDE_LABEL_AFTER))
                         ->for('enabled')
                         ->class('classic'),
@@ -169,21 +213,21 @@ class Config
                         ->class('classic')
                         ->size(50)
                         ->maxlength(255)
-                        ->value(My::settings()->title)
+                        ->value(My::settings()->getStr('title', false))
                         ->label((new Label(
                             __('Block title:'),
                             Label::OUTSIDE_TEXT_BEFORE
                         ))),
                 ]),
                 (new Para())->items([
-                    (new Checkbox('beforePost', (bool) My::settings()->beforePost)),
+                    (new Checkbox('beforePost', My::settings()->getBool('beforePost', false))),
                     (new Label(__('Display block before post content'), Label::OUTSIDE_LABEL_AFTER))
                         ->for('beforePost')
                         ->class('classic'),
 
                 ]),
                 (new Para())->items([
-                    (new Checkbox('afterPost', (bool) My::settings()->afterPost)),
+                    (new Checkbox('afterPost', My::settings()->getBool('afterPost', false))),
                     (new Label(__('Display block after post content'), Label::OUTSIDE_LABEL_AFTER))
                         ->for('afterPost')
                         ->class('classic'),
@@ -202,27 +246,27 @@ class Config
             (new Div())->items([
                 (new Fieldset())->class('fieldset')->legend((new Legend(__('Images extracting options'))))->fields([
                     (new Para())->items([
-                        (new Checkbox('images', (bool) My::settings()->images)),
+                        (new Checkbox('images', My::settings()->getBool('images', false))),
                         (new Label(__('Extract images from related posts'), Label::OUTSIDE_LABEL_AFTER))
                             ->for('images')
                             ->class(['classic']),
                     ]),
                     (new Para())->items([
                         (new Select('from'))
-                            ->items(App::backend()->from_combo)
-                            ->default(($images['from'] != '' ? $images['from'] : 'image'))
+                            ->items(self::$from_combo)
+                            ->default(($images['from'] !== '' ? $images['from'] : 'image'))
                             ->label(new Label(__('Images origin:'), Label::OUTSIDE_LABEL_BEFORE)),
                     ]),
                     (new Para())->items([
                         (new Select('size'))
-                            ->items(App::backend()->img_size_combo)
-                            ->default(($images['size'] != '' ? $images['size'] : 't'))
+                            ->items(self::$img_size_combo)
+                            ->default(($images['size'] !== '' ? $images['size'] : 't'))
                             ->label(new Label(__('Image size:'), Label::OUTSIDE_LABEL_BEFORE)),
                     ]),
                     (new Para())->items([
                         (new Select('alt'))
-                            ->items(App::backend()->alt_combo)
-                            ->default(($images['alt'] != '' ? $images['alt'] : 'inherit'))
+                            ->items(self::$alt_combo)
+                            ->default(($images['alt'] !== '' ? $images['alt'] : 'inherit'))
                             ->label(new Label(__('Images alt attribute:'), Label::OUTSIDE_LABEL_BEFORE)),
                     ]),
                     (new Para())->items([
@@ -248,14 +292,14 @@ class Config
 
                     (new Para())->items([
                         (new Select('legend'))
-                        ->items(App::backend()->legend_combo)
-                        ->default(($images['legend'] != '' ? $images['legend'] : 'none'))
+                        ->items(self::$legend_combo)
+                        ->default(($images['legend'] !== '' ? $images['legend'] : 'none'))
                         ->label(new Label(__('Legend:'), Label::OUTSIDE_LABEL_BEFORE)),
                     ]),
                     (new Para())->items([
                         (new Select('html_tag'))
-                            ->items(App::backend()->html_tag_combo)
-                            ->default(($images['html_tag'] != '' ? $images['html_tag'] : 'div'))
+                            ->items(self::$html_tag_combo)
+                            ->default(($images['html_tag'] !== '' ? $images['html_tag'] : 'div'))
                             ->label(new Label(__('HTML tag around image:'), Label::OUTSIDE_LABEL_BEFORE)),
                     ]),
                     (new Para())->items([

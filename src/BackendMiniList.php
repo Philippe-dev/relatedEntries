@@ -56,17 +56,10 @@ class BackendMiniList extends Listing
             echo (new Para())
                 ->items([
                     (new Strong(__('No links'))),
-                ]);
+                ])
+            ->render();
 
             return;
-        }
-
-        $pager   = (new Pager($page, $this->rs_count, $nb_per_page, 10))->getLinks();
-        $entries = [];
-        if (isset($_REQUEST['entries'])) {
-            foreach ($_REQUEST['entries'] as $v) {
-                $entries[(int) $v] = true;
-            }
         }
 
         $cols = [
@@ -103,12 +96,10 @@ class BackendMiniList extends Listing
         $lines = [];
         $types = [];
 
-        $count = 0;
-
         while ($this->rs->fetch()) {
-            $lines[] = $this->postLine($id, $post_type);
-            if (!in_array($this->rs->post_type, $types)) {
-                $types[] = $this->rs->post_type;
+            $lines[] = $this->postLine();
+            if (!in_array($this->rs->strField('post_type'), $types, true)) {
+                $types[] = $this->rs->strField('post_type');
             }
         }
 
@@ -141,22 +132,21 @@ class BackendMiniList extends Listing
 
     /**
      * Get a line.
-     *
-     * @param   bool    $checked    The checked flag
      */
-    private function postLine(int $id, string $posttype = ''): Tr
+    private function postLine(): Tr
     {
-        $id = $_GET['id'];
+        $id = isset($_GET['id']) && is_numeric($id = $_GET['id']) ? (int) $id : 0;
 
         $post_classes = ['line'];
-        if (App::status()->post()->isRestricted((int) $this->rs->post_status)) {
+        if (App::status()->post()->isRestricted($this->rs->intField('post_status'))) {
             $post_classes[] = 'offline';
         }
-        $post_classes[] = 'sts-' . App::status()->post()->id((int) $this->rs->post_status); // used ?
+
+        $post_classes[] = 'sts-' . App::status()->post()->id($this->rs->intField('post_status')); // used ?
 
         $status = [];
 
-        switch ((int) $this->rs->post_status) {
+        switch ($this->rs->intField('post_status')) {
             case App::status()->post()::PUBLISHED:
                 $status[] = self::getMyRowImage(__('Published'), 'images/published.svg', 'published');
 
@@ -175,45 +165,45 @@ class BackendMiniList extends Listing
                 break;
         }
 
-        if ($this->rs->post_selected) {
+        if ($this->rs->boolField('post_selected')) {
             $status[] = self::getMyRowImage(__('Selected'), 'images/selected.svg', 'selected');
         }
 
         $nb_media = $this->rs->countMedia();
         if ($nb_media > 0) {
-            $status[] = self::getRowImage(sprintf($nb_media == 1 ? __('%d attachment') : __('%d attachments'), $nb_media), 'images/attach.svg', 'attach');
+            $status[] = self::getRowImage(sprintf($nb_media === 1 ? __('%d attachment') : __('%d attachments'), $nb_media), 'images/attach.svg', 'attach');
         }
 
-        if ($this->rs->cat_title) {
+        if ($this->rs->strField('cat_title') !== '') {
             if (App::auth()->check(App::auth()->makePermissions([
                 App::auth()::PERMISSION_CATEGORIES,
             ]), App::blog()->id())) {
                 $category = (new Link())
-                    ->href(App::backend()->url()->get('admin.category', ['id' => $this->rs->cat_id], '&amp;', true))
-                    ->text(Html::escapeHTML($this->rs->cat_title));
+                    ->href(App::backend()->url()->get('admin.category', ['id' => $this->rs->intField('cat_id')], '&amp;', true))
+                    ->text(Html::escapeHTML($this->rs->strField('cat_title')));
             } else {
-                $category = (new Text(null, Html::escapeHTML($this->rs->cat_title)));
+                $category = (new Text(null, Html::escapeHTML($this->rs->strField('cat_title'))));
             }
         } else {
             $category = (new Text(null, __('(No cat)')));
         }
 
-        $actions[] = self::getRowImage(__('Selected'), 'images/trash.svg', 'selected');
+        $user_tz = is_string($user_tz = App::auth()->getInfo('user_tz')) ? $user_tz : 'UTC';
 
         $cols = [
             'title' => (new Td())
                 ->class('maximal')
                 ->items([
                     (new Link())
-                        ->href(App::postTypes()->get($this->rs->post_type)->adminUrl($this->rs->post_id))
+                        ->href(App::postTypes()->get($this->rs->strField('post_type'))->adminUrl($this->rs->intField('post_id')))
                         ->title(Html::escapeHTML($this->rs->getURL()))
-                        ->text(Html::escapeHTML(trim(Html::clean($this->rs->post_title)))),
+                        ->text(Html::escapeHTML(trim(Html::clean($this->rs->strField('post_title'))))),
                 ]),
             'date' => (new Td())
                 ->class(['nowrap', 'count'])
                 ->items([
-                    (new Timestamp(Date::dt2str(__('%Y-%m-%d %H:%M'), $this->rs->post_dt)))
-                        ->datetime(Date::iso8601((int) strtotime($this->rs->post_dt), App::auth()->getInfo('user_tz'))),
+                    (new Timestamp(Date::dt2str(__('%Y-%m-%d %H:%M'), $this->rs->strField('post_dt'))))
+                        ->datetime(Date::iso8601((int) strtotime($this->rs->strField('post_dt')), $user_tz)),
                 ]),
 
             'category' => (new Td())
@@ -234,11 +224,11 @@ class BackendMiniList extends Listing
                 ->separator(' ')
                 ->items([
                     (new Link())
-                        ->href(App::backend()->url()->get('admin.plugin', ['p' => My::id(),'id' => $id, 'r_id' => $this->rs->post_id], '&'))
-                        ->title(__('Delete this link') . ': ' . Html::escapeHTML($this->rs->post_title))
+                        ->href(App::backend()->url()->get('admin.plugin', ['p' => My::id(),'id' => $id, 'r_id' => $this->rs->intField('post_id')], '&'))
+                        ->title(__('Delete this link') . ': ' . Html::escapeHTML($this->rs->strField('post_title')))
                         ->class(['mark', 'link-remove'])
                         ->items([
-                            self::getMyRowImage(__('Delete this link') . ': ' . Html::escapeHTML($this->rs->post_title), 'images/trash.svg', 'remove'),
+                            self::getMyRowImage(__('Delete this link') . ': ' . Html::escapeHTML($this->rs->strField('post_title')), 'images/trash.svg', 'remove'),
                         ]),
                 ]),
         ];
@@ -248,7 +238,7 @@ class BackendMiniList extends Listing
         App::behavior()->callBehavior('adminPostMiniListValueV2', $this->rs, $cols, true);
 
         return (new Tr())
-            ->id('p' . $this->rs->post_id)
+            ->id('p' . $this->rs->intField('post_id'))
             ->class($post_classes)
             ->items($cols);
     }
@@ -260,7 +250,6 @@ class BackendMiniList extends Listing
      * @param string $image the image source
      * @param string $class the class to apply to the image
      * @param bool   $with_text Whether to include the title as text next to the image
-     * @return Img|Text
      */
     public static function getMyRowImage(string $title, string $image, string $class, bool $with_text = false): Img|Text
     {

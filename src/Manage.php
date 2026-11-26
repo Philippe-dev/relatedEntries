@@ -53,23 +53,29 @@ class Manage
             return false;
         }
 
-        if (isset($_POST['entries'])) {
-            if (isset($_POST['id'])) {
+        /**
+         * @var string[] $entries
+         */
+        $entries = isset($_POST['entries']) && is_array($entries = $_POST['entries']) ? $entries : [];
+
+        if ($entries !== []) {
+            $id = isset($_POST['id']) && is_numeric($id = $_POST['id']) ? (int) $id : 0;
+            if ($id !== 0) {
                 // Save Post relatedEntries
                 try {
-                    $meta    = App::meta();
-                    $entries = implode(', ', $_POST['entries']);
-                    $id      = $_POST['id'];
+                    $meta        = App::meta();
+                    $all_entries = implode(', ', $entries);
 
-                    foreach ($meta->splitMetaValues($entries) as $tag) {
+                    foreach ($meta->splitMetaValues($all_entries) as $tag) {
                         $meta->delPostMeta($id, 'relatedEntries', $tag);
                         $meta->setPostMeta($id, 'relatedEntries', $tag);
                     }
-                    foreach ($meta->splitMetaValues($entries) as $tag) {
-                        $r_tags = $meta->getMetaStr(serialize($tag), 'relatedEntries');
-                        $r_tags = explode(', ', $r_tags);
-                        array_push($r_tags, $id);
-                        $r_tags = implode(', ', $r_tags);
+
+                    foreach ($meta->splitMetaValues($all_entries) as $tag) {
+                        $r_tags   = $meta->getMetaStr(serialize($tag), 'relatedEntries');
+                        $r_tags   = explode(', ', $r_tags);
+                        $r_tags[] = $id;
+                        $r_tags   = implode(', ', $r_tags);
                         foreach ($meta->splitMetaValues($r_tags) as $tags) {
                             $meta->delPostMeta($tag, 'relatedEntries', $tags);
                             $meta->setPostMeta($tag, 'relatedEntries', $tags);
@@ -83,18 +89,22 @@ class Manage
             } else {
                 //Remove related posts links
                 try {
-                    $tags = [];
                     $meta = App::meta();
 
-                    foreach ($_POST['entries'] as $id) {
+                    foreach ($entries as $id) {
                         // Get tags for post
-                        $post_meta = $meta->getMetadata([
-                            'meta_type' => 'relatedEntries',
-                            'post_id'   => $id, ]);
+                        $post_meta = $meta->getMetadata(
+                            [
+                                'meta_type' => 'relatedEntries',
+                                'post_id'   => $id,
+                            ]
+                        );
+
                         $pm = [];
                         while ($post_meta->fetch()) {
-                            $pm[] = $post_meta->meta_id;
+                            $pm[] = $post_meta->strField('meta_id');
                         }
+
                         foreach ($pm as $tag) {
                             $meta->delPostMeta($id, 'relatedEntries', $tag);
                             $meta->delPostMeta($tag, 'relatedEntries', $id);
@@ -129,24 +139,33 @@ class Manage
         App::backend()->posts      = null;
         App::backend()->posts_list = null;
 
-        App::backend()->page        = !empty($_GET['page']) ? max(1, (int) $_GET['page']) : 1;
+        App::backend()->page        = isset($_GET['page']) && is_numeric($page = $_GET['page']) ? max(1, (int) $page) : 1;
         App::backend()->nb_per_page = UserPref::getUserFilters('pages', 'nb');
 
-        if (isset($_GET['id']) && isset($_GET['addlinks']) && $_GET['addlinks'] == 1) {
+        $id       = isset($_GET['id'])       && is_numeric($id = $_GET['id']) ? (int) $id : 0;
+        $addlinks = isset($_GET['addlinks']) && is_numeric($addlinks = $_GET['addlinks']) ? (int) $addlinks : 0;
+
+        if ($id !== 0 && $addlinks === 1) {
             /*
             *   List of posts to be linked to current
             */
 
             // Get current post
 
+            $post_id    = $id;
+            $post_type  = '';
+            $post_title = '';
+
             try {
-                $post_id                 = (int) $_GET['id'];
-                $my_params['post_id']    = $post_id;
-                $my_params['no_content'] = true;
-                $my_params['post_type']  = ['post'];
-                $rs                      = App::blog()->getPosts($my_params);
-                $post_title              = $rs->post_title;
-                $post_type               = $rs->post_type;
+                $my_params = [
+                    'post_id'    => $post_id,
+                    'no_content' => true,
+                    'post_type'  => ['post'],
+                ];
+
+                $rs         = App::blog()->getPosts($my_params);
+                $post_title = $rs->strField('post_title');
+                $post_type  = $rs->strField('post_type');
             } catch (Exception $e) {
                 App::error()->add($e->getMessage());
             }
@@ -173,9 +192,9 @@ class Manage
 
             echo App::backend()->page()->breadcrumb(
                 [
-                    Html::escapeHTML(App::blog()->name) => '',
-                    __('Related posts')                 => App::backend()->getPageURL(),
-                    App::backend()->page_title          => '',
+                    Html::escapeHTML(App::blog()->name()) => '',
+                    __('Related posts')                   => App::backend()->getPageURL(),
+                    App::backend()->page_title            => '',
                 ]
             ) .
             App::backend()->notices()->getNotices();
@@ -223,12 +242,16 @@ class Manage
                     ])
                 ->render();
 
-                App::backend()->posts_list->display(
-                    App::backend()->post_filter->page,
-                    App::backend()->post_filter->nb,
-                    $block,
-                    App::backend()->post_filter->show()
-                );
+                if (App::backend()->posts_list instanceof BackendList) {
+                    App::backend()->posts_list->display(
+                        // @phpstan-ignore argument.type
+                        App::backend()->post_filter->page,
+                        // @phpstan-ignore argument.type
+                        App::backend()->post_filter->nb,
+                        $block,
+                        App::backend()->post_filter->show()
+                    );
+                }
             }
 
             App::backend()->page()->helpBlock('posts');
@@ -257,13 +280,14 @@ class Manage
 
             echo App::backend()->page()->breadcrumb(
                 [
-                    Html::escapeHTML(App::blog()->name) => '',
-                    __('Related posts')                 => '',
+                    Html::escapeHTML(App::blog()->name()) => '',
+                    __('Related posts')                   => '',
                 ]
             ) .
             App::backend()->notices()->getNotices();
 
-            if (isset($_GET['upd']) && $_GET['upd'] == 2) {
+            $upd = isset($_GET['upd']) && is_numeric($upd = $_GET['upd']) ? (int) $upd : 0;
+            if ($upd === 2) {
                 App::backend()->notices()->success(__('Links have been successfully removed'));
             }
 
@@ -291,12 +315,16 @@ class Manage
                 ])
             ->render();
 
-            App::backend()->posts_list->display(
-                App::backend()->post_filter->page,
-                App::backend()->post_filter->nb,
-                $block,
-                App::backend()->post_filter->show()
-            );
+            if (App::backend()->posts_list instanceof BackendList) {
+                App::backend()->posts_list->display(
+                    // @phpstan-ignore argument.type
+                    App::backend()->post_filter->page,
+                    // @phpstan-ignore argument.type
+                    App::backend()->post_filter->nb,
+                    $block,
+                    App::backend()->post_filter->show()
+                );
+            }
 
             App::backend()->page()->helpBlock('manage');
             App::backend()->page()->closeModule();

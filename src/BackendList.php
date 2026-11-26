@@ -61,12 +61,19 @@ class BackendList extends Listing
             return;
         }
 
-        $pager   = (new Pager($page, $this->rs_count, $nb_per_page, 10))->getLinks();
+        $pager = (new Pager($page, $this->rs_count, $nb_per_page, 10))->getLinks();
+
+        /**
+         * @var string[] $form_entries
+         */
+        $form_entries = isset($_REQUEST['entries']) && is_array($form_entries = $_REQUEST['entries']) ? $form_entries : [];
+
+        /**
+         * @var array<int, true> $entries
+         */
         $entries = [];
-        if (isset($_REQUEST['entries'])) {
-            foreach ($_REQUEST['entries'] as $v) {
-                $entries[(int) $v] = true;
-            }
+        foreach ($form_entries as $v) {
+            $entries[(int) $v] = true;
         }
 
         $cols = [
@@ -133,12 +140,13 @@ class BackendList extends Listing
         $lines = [];
         $types = [];
         while ($this->rs->fetch()) {
-            $lines[] = $this->postLine(isset($entries[$this->rs->post_id]), $include_type);
-            if (!in_array($this->rs->post_type, $types)) {
-                $types[] = $this->rs->post_type;
+            $lines[] = $this->postLine(isset($entries[$this->rs->intField('post_id')]), $include_type);
+            if (!in_array($this->rs->strField('post_type'), $types, true)) {
+                $types[] = $this->rs->strField('post_type');
             }
         }
 
+        $caption = '';
         if ($filter) {
             $caption = sprintf(
                 __('List of %s entry matching the filter.', 'List of %s entries matching the filter.', $this->rs_count),
@@ -149,7 +157,7 @@ class BackendList extends Listing
                 (new Text(null, sprintf((!isset($_GET['id']) ? __('List of linked posts (%s)') : __('List of posts (%s)')), $this->rs_count))),
             ];
             foreach (App::status()->post()->dump(false) as $status) {
-                $nb = (int) App::blog()->getPosts(['post_status' => $status->level()], true)->f(0);
+                $nb = App::blog()->getPosts(['post_status' => $status->level()], true)->cardinal();
                 if ($nb !== 0) {
                     $stats[] = (new Set())
                         ->separator(' ')
@@ -215,43 +223,48 @@ class BackendList extends Listing
     private function postLine(bool $checked, bool $include_type): Tr
     {
         $post_classes = ['line'];
-        if (App::status()->post()->isRestricted((int) $this->rs->post_status)) {
+        if (App::status()->post()->isRestricted($this->rs->intField('post_status'))) {
             $post_classes[] = 'offline';
         }
-        $post_classes[] = 'sts-' . App::status()->post()->id((int) $this->rs->post_status);
+
+        $post_classes[] = 'sts-' . App::status()->post()->id($this->rs->intField('post_status'));
 
         $status = [];
-        if ($this->rs->post_password) {
+        if ($this->rs->strField('post_password') !== '') {
             $status[] = self::getRowImage(__('Protected'), 'images/locker.svg', 'locked');
         }
-        if ($this->rs->post_selected) {
+
+        if ($this->rs->boolField('post_selected')) {
             $status[] = self::getRowImage(__('Selected'), 'images/selected.svg', 'selected');
         }
+
         $nb_media = $this->rs->countMedia();
         if ($nb_media > 0) {
-            $status[] = self::getRowImage(sprintf($nb_media == 1 ? __('%d attachment') : __('%d attachments'), $nb_media), 'images/attach.svg', 'attach');
+            $status[] = self::getRowImage(sprintf($nb_media === 1 ? __('%d attachment') : __('%d attachments'), $nb_media), 'images/attach.svg', 'attach');
         }
 
-        if ($this->rs->cat_title) {
+        if ($this->rs->strField('cat_title') !== '') {
             if (App::auth()->check(App::auth()->makePermissions([
                 App::auth()::PERMISSION_CATEGORIES,
             ]), App::blog()->id())) {
                 $category = (new Link())
-                    ->href(App::backend()->url()->get('admin.category', ['id' => $this->rs->cat_id], '&amp;', true))
-                    ->text(Html::escapeHTML($this->rs->cat_title));
+                    ->href(App::backend()->url()->get('admin.category', ['id' => $this->rs->intField('cat_id')], '&amp;', true))
+                    ->text(Html::escapeHTML($this->rs->strField('cat_title')));
             } else {
-                $category = (new Text(null, Html::escapeHTML($this->rs->cat_title)));
+                $category = (new Text(null, Html::escapeHTML($this->rs->strField('cat_title'))));
             }
         } else {
             $category = (new Text(null, __('(No cat)')));
         }
+
+        $user_tz = is_string($user_tz = App::auth()->getInfo('user_tz')) ? $user_tz : 'UTC';
 
         $cols = [
             'check' => (new Td())
                 ->class('nowrap')
                 ->items([
                     (new Checkbox(['entries[]'], $checked))
-                        ->value($this->rs->post_id)
+                        ->value($this->rs->intField('post_id'))
                         ->disabled(!$this->rs->isEditable())
                         ->title(__('Select this post')),
                 ]),
@@ -259,14 +272,14 @@ class BackendList extends Listing
                 ->class('maximal')
                 ->items([
                     (new Link())
-                        ->href(App::postTypes()->get($this->rs->post_type)->adminUrl($this->rs->post_id))
-                        ->text(Html::escapeHTML(trim(Html::clean($this->rs->post_title)))),
+                        ->href(App::postTypes()->get($this->rs->strField('post_type'))->adminUrl($this->rs->intField('post_id')))
+                        ->text(Html::escapeHTML(trim(Html::clean($this->rs->strField('post_title'))))),
                 ]),
             'date' => (new Td())
                 ->class(['nowrap', 'count'])
                 ->items([
-                    (new Timestamp(Date::dt2str(__('%Y-%m-%d %H:%M'), $this->rs->post_dt)))
-                        ->datetime(Date::iso8601((int) strtotime($this->rs->post_dt), App::auth()->getInfo('user_tz'))),
+                    (new Timestamp(Date::dt2str(__('%Y-%m-%d %H:%M'), $this->rs->strField('post_dt'))))
+                        ->datetime(Date::iso8601((int) strtotime($this->rs->strField('post_dt')), $user_tz)),
                 ]),
             'category' => (new Td())
                 ->class('nowrap')
@@ -275,18 +288,18 @@ class BackendList extends Listing
                 ]),
             'author' => (new Td())
                 ->class('nowrap')
-                ->text($this->rs->user_id),
+                ->text($this->rs->strField('user_id')),
             'comments' => (new Td())
                 ->class(['nowrap', 'count'])
-                ->text($this->rs->nb_comment),
+                ->text((string) $this->rs->intField('nb_comment')),
             'trackbacks' => (new Td())
                 ->class(['nowrap', 'count'])
-                ->text($this->rs->nb_trackback),
+                ->text((string) $this->rs->intField('nb_trackback')),
             'status' => (new Td())
                 ->class(['nowrap', 'status'])
                 ->separator(' ')
                 ->items([
-                    App::status()->post()->image((int) $this->rs->post_status),
+                    App::status()->post()->image($this->rs->intField('post_status')),
                     ... $status,
                 ]),
         ];
@@ -297,7 +310,7 @@ class BackendList extends Listing
                     ->class(['nowrap', 'status'])
                     ->separator(' ')
                     ->items([
-                        App::postTypes()->image($this->rs->post_type),
+                        App::postTypes()->image($this->rs->strField('post_type')),
                     ])
                 ->render(),
             ]);
@@ -309,11 +322,13 @@ class BackendList extends Listing
         App::behavior()->callBehavior('adminPostListValueV2', $this->rs, $cols, true);
 
         // Cope with optional columns
+        // @phpstan-ignore argument.type
         $this->userColumns('posts', $cols, true);
 
         return (new Tr())
-            ->id('p' . $this->rs->post_id)
+            ->id('p' . $this->rs->intField('post_id'))
             ->class($post_classes)
-            ->items($cols);
+            // @phpstan-ignore argument.type
+            ->items($cols->getArrayCopy());
     }
 }

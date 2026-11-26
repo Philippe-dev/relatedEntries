@@ -28,7 +28,12 @@ class BackendBehaviors
      */
     public static function adminColumnsLists(ArrayObject $cols): string
     {
-        $cols['posts'][1]['Links'] = [true, __('Links')];
+        if (isset($cols['posts'])
+            && is_array($cols['posts'])
+            && is_array($cols['posts'][1])
+        ) {
+            $cols['posts'][1]['Links'] = [true, __('Links')];
+        }
 
         return '';
     }
@@ -63,7 +68,7 @@ class BackendBehaviors
     {
         $cols['Links'] = (new Td())
             ->class(['nowrap','count'])
-            ->text((string) App::meta()->getMetaRecordset($rs->post_meta, 'relatedEntries')->count())
+            ->text((string) App::meta()->getMetaRecordset($rs->strField('post_meta'), 'relatedEntries')->count())
             ->render();
 
         return '';

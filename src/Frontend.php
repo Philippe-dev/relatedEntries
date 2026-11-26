@@ -41,28 +41,34 @@ class Frontend
         return true;
     }
 
-    public static function publicHeadContent()
+    public static function publicHeadContent(): string
     {
         // Settings
 
-        if (!My::settings()->enabled) {
-            return;
+        if (!My::settings()->getBool('enabled', false)) {
+            return '';
         }
 
         echo My::cssLoad('style.css');
+
+        return '';
     }
 
-    public static function publicEntryBeforeContent()
+    public static function publicEntryBeforeContent(): string
     {
-        if (My::settings()->enabled && My::settings()->beforePost) {
+        if (My::settings()->getBool('enabled', false) && My::settings()->getBool('beforePost', false)) {
             return FrontendTemplates::htmlBlock();
         }
+
+        return '';
     }
 
-    public static function publicEntryAfterContent()
+    public static function publicEntryAfterContent(): string
     {
-        if (My::settings()->enabled && My::settings()->afterPost) {
+        if (My::settings()->getBool('enabled', false) && My::settings()->getBool('afterPost', false)) {
             return FrontendTemplates::htmlBlock();
         }
+
+        return '';
     }
 }

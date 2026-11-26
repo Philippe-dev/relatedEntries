@@ -50,7 +50,7 @@ class Backend
         }
 
         App::behavior()->addBehaviors([
-            'adminDashboardFavoritesV2' => function (Favorites $favs) {
+            'adminDashboardFavoritesV2' => function (Favorites $favs): string {
                 $favs->register(My::id(), [
                     'title'       => My::name(),
                     'url'         => My::manageUrl(),
@@ -60,6 +60,8 @@ class Backend
                         App::auth()::PERMISSION_ADMIN,
                     ]),
                 ]);
+
+                return '';
             },
         ]);
 
@@ -90,6 +92,7 @@ class Backend
                         $meta->delPostMeta($id, 'relatedEntries', $tag);
                         $meta->delPostMeta($tag, 'relatedEntries', $id);
                     }
+
                     Http::redirect(App::postTypes()->get('post')->adminUrl($id, false, ['del' => 1,'upd' => 1]));
                 }
             } catch (Exception $e) {
@@ -105,7 +108,7 @@ class Backend
      */
     public static function adminPageHelpBlock(ArrayObject $blocks): void
     {
-        if (array_search('core_post', $blocks->getArrayCopy(), true) !== false) {
+        if (in_array('core_post', $blocks->getArrayCopy(), true)) {
             $blocks->append('post');
         }
     }
@@ -151,18 +154,20 @@ class Backend
     public static function adminPostForm(?MetaRecord $post): void
     {
         $postTypes = ['post'];
+        $post_list = null;
 
         if (!My::settings()->getBool('enabled', false)) {
             return;
         }
-        if (is_null($post) || !in_array($post->post_type, $postTypes)) {
+
+        if (is_null($post) || !in_array($post->strField('post_type'), $postTypes, true)) {
             return;
         }
 
-        $id        = $post->post_id;
-        $post_type = $post->post_type;
+        $id        = $post->intField('post_id');
+        $post_type = $post->strField('post_type');
         $meta      = App::meta();
-        $meta_rs   = $meta->getMetaStr($post->post_meta, 'relatedEntries');
+        $meta_rs   = $meta->getMetaStr($post->strField('post_meta'), 'relatedEntries');
 
         $addlinksurl    = App::backend()->url()->get('admin.plugin', ['p' => My::id(),'id' => $id, 'upd' => '1','addlinks' => '1'], '&');
         $removelinksurl = App::backend()->url()->get('admin.plugin', ['p' => My::id(),'id' => $id, 'upd' => '1','r_id' => $meta_rs], '&');
@@ -179,7 +184,7 @@ class Backend
                 ]),
         ]);
 
-        if (!$meta_rs) {
+        if ($meta_rs === '') {
             echo
             (new Div())->class('area')->id('relatedEntries-area')->items([
                 (new Label(__('Related entries:') . ' ' . $form_note))
@@ -200,11 +205,11 @@ class Backend
             try {
                 App::blog()->withoutPassword(false);
 
-                $params['post_id']    = $meta->splitMetaValues($meta_rs);
-                $params['no_content'] = true;
-                $params['post_type']  = ['post'];
-
-                $post_type = 'post';
+                $params = [
+                    'post_id'    => $meta->splitMetaValues($meta_rs),
+                    'no_content' => true,
+                    'post_type'  => ['post'],
+                ];
 
                 $posts     = App::blog()->getPosts($params);
                 $counter   = App::blog()->getPosts($params, true);
@@ -212,40 +217,54 @@ class Backend
             } catch (Exception $e) {
                 App::error()->add($e->getMessage());
             }
-            App::backend()->page        = !empty($_GET['page']) ? max(1, (int) $_GET['page']) : 1;
+
+            $page = isset($_GET['page']) && is_numeric($page = $_GET['page']) ? max(1, (int) $page) : 1;
+
+            App::backend()->page        = $page;
             App::backend()->nb_per_page = UserPref::getUserFilters('pages', 'nb');
 
-            echo
-            (new Div())->class('area')->id('relatedEntries-area')->items([
-                (new Label(__('Related entries:') . ' ' . $form_note))
-                    ->class('bold')
-                    ->for('relatedEntries-list'),
-                (new Div())->id('relatedEntries-list')->items([
-                    (new Div())->items([
-                        (new Capture($post_list->display(...), [App::backend()->page, App::backend()->nb_per_page, (int) $id, $enclose_block = '', (string) $post_type])),
-                        (new Ul())
-                        ->class('minilist')
-                        ->items([
-                            (new Li())->items([
-                                (new Link())
-                                    ->class('add')
-                                    ->href($addlinksurl)
-                                    ->items([
-                                        ((new Strong(__('Add links')))),
-                                    ]),
-                            ]),
-                            (new Li())->class('right')->items([
-                                (new Link())->href($removelinksurl)
-                                    ->class(['links-remove', 'delete'])
-                                    ->items([
-                                        ((new Strong(__('Remove all links')))),
-                                    ]),
+            if ($post_list instanceof BackendMiniList) {
+                echo
+                (new Div())->class('area')->id('relatedEntries-area')->items([
+                    (new Label(__('Related entries:') . ' ' . $form_note))
+                        ->class('bold')
+                        ->for('relatedEntries-list'),
+                    (new Div())->id('relatedEntries-list')->items([
+                        (new Div())->items([
+                            (new Capture(
+                                $post_list->display(...),
+                                [
+                                    App::backend()->page,
+                                    App::backend()->nb_per_page,
+                                    $id,
+                                    '',
+                                    $post_type,
+                                ]
+                            )),
+                            (new Ul())
+                            ->class('minilist')
+                            ->items([
+                                (new Li())->items([
+                                    (new Link())
+                                        ->class('add')
+                                        ->href($addlinksurl)
+                                        ->items([
+                                            ((new Strong(__('Add links')))),
+                                        ]),
+                                ]),
+                                (new Li())->class('right')->items([
+                                    (new Link())->href($removelinksurl)
+                                        ->class(['links-remove', 'delete'])
+                                        ->items([
+                                            ((new Strong(__('Remove all links')))),
+                                        ]),
+                                ]),
                             ]),
                         ]),
-                    ]),
 
-                ]),
-            ])->render();
+                    ]),
+                ])->render();
+            }
         }
     }
 }
