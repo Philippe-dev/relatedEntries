@@ -6,7 +6,7 @@
  * @package    Dotclear
  * @subpackage Plugins
  *
- * @author Philippe aka amalgame
+ * @author Philippe aka amalgame and Franck Paul
  *
  * @copyright AGPL-3.0
  */
